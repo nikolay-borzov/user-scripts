@@ -1,12 +1,20 @@
 // ==UserScript==
 // @name         JoyReactor Download Button
+// @description  Adds download buttton to images
+// @copyright    2017+, shikiyoku
+// @license      MIT
+// @homepageURL  https://github.com/shikiyoku/user-scripts
+// @supportURL   https://github.com/shikiyoku/user-scripts/issues
 // @namespace    http://tampermonkey.net/
 // @version      1.0.0
-// @description  Adds download buttton to images
+// @updateURL    https://openuserjs.org/meta/shikiyoku/joyreactor-download-button.meta.js
 // @author       shikiyoku
 // @include      http://joyreactor.cc/*
 // @grant        GM_addStyle
 // ==/UserScript==
+// ==OpenUserJS==
+// @author shikiyoku
+// ==/OpenUserJS==
 
 /*
 https://jakearchibald.github.io/svgomg/
