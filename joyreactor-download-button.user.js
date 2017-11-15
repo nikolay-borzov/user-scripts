@@ -3,6 +3,7 @@
 // @description  Adds download buttton to images
 // @copyright    2017+, shikiyoku
 // @license      MIT
+// @icon         http://joyreactor.cc/favicon.ico
 // @homepageURL  https://github.com/shikiyoku/user-scripts
 // @supportURL   https://github.com/shikiyoku/user-scripts/issues
 // @namespace    http://tampermonkey.net/
@@ -89,7 +90,7 @@ https://codepen.io/lehollandaisvolant/pen/dMQXYX
 .download-link:focus:not(:active)::after {
   animation: ripple 1s ease-out;
 }
- `)
+ `);
 
   const CLASSES = {
     processed: 'js-has-download-button'
