@@ -23,8 +23,8 @@ http://b64.io/
 https://codepen.io/lehollandaisvolant/pen/dMQXYX
 */
 
-(function() {
-  'use strict';
+(function () {
+  'use strict'
 
   GM_addStyle(`
 .image {
@@ -40,7 +40,7 @@ https://codepen.io/lehollandaisvolant/pen/dMQXYX
   opacity: 0;
   position: absolute;
   top: 10px;
-  right: 30px;
+  right: 60px;
   width: 35px;
   height: 35px;
   overflow: hidden;
@@ -54,7 +54,6 @@ https://codepen.io/lehollandaisvolant/pen/dMQXYX
 
 .download-link:hover {
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-  /*box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);*/
 }
 
 .download-link:after {
@@ -90,61 +89,61 @@ https://codepen.io/lehollandaisvolant/pen/dMQXYX
 .download-link:focus:not(:active)::after {
   animation: ripple 1s ease-out;
 }
- `);
+ `)
 
   const CLASSES = {
     processed: 'js-has-download-button'
-  };
+  }
 
   /**
    * Event delegation
    */
-  function on(parent, eventName, childSelector, cb) {
-    parent.addEventListener(eventName, function(event) {
-      const matchingChild = event.target.closest(childSelector);
+  function on (parent, eventName, childSelector, cb) {
+    parent.addEventListener(eventName, function (event) {
+      const matchingChild = event.target.closest(childSelector)
 
-      if(matchingChild) {
-        cb(matchingChild);
+      if (matchingChild) {
+        cb(matchingChild)
       }
-    });
+    })
   }
 
-  function createDownloadLink(imgContainer) {
+  function createDownloadLink (imgContainer) {
     // Mark as processed
-    imgContainer.classList.add(CLASSES.processed);
+    imgContainer.classList.add(CLASSES.processed)
 
-    const gifLink = imgContainer.querySelector('a.video_gif_source');
+    const gifLink = imgContainer.querySelector('a.video_gif_source')
     // Image is an animated gif
-    if(gifLink) {
+    if (gifLink) {
       // Make it downloadable
-      gifLink.setAttribute('download', '');
-      return;
+      gifLink.setAttribute('download', '')
+      return
     }
 
-    let imgURL = '';
-    const imgLink = imgContainer.querySelector('a');
+    let imgURL = ''
+    const imgLink = imgContainer.querySelector('a')
 
     // Image has a full link
-    if(imgLink) {
-      imgURL = imgLink.href;
+    if (imgLink) {
+      imgURL = imgLink.href
     } else {
-      const img = imgContainer.querySelector('img');
-      if(img) {
-        imgURL = img.src;
+      const img = imgContainer.querySelector('img')
+      if (img) {
+        imgURL = img.src
       }
     }
 
-    if(!imgURL) {
-      return;
+    if (!imgURL) {
+      return
     }
 
-    const link = document.createElement('a');
-    link.classList.add('download-link');
-    link.setAttribute('href', imgURL);
-    link.setAttribute('download', '');
+    const link = document.createElement('a')
+    link.classList.add('download-link')
+    link.setAttribute('href', imgURL)
+    link.setAttribute('download', '')
 
-    imgContainer.appendChild(link);
+    imgContainer.appendChild(link)
   }
 
-  on(document.body, 'mouseover', `.image:not(.${CLASSES.processed})`, createDownloadLink);
-})();
+  on(document.body, 'mouseover', `.image:not(.${CLASSES.processed})`, createDownloadLink)
+})()
