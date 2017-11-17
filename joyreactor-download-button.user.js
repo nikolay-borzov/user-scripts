@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name         JoyReactor Download Button
+// @version      1.0.0
 // @description  Adds download buttton to images
-// @copyright    2017+, shikiyoku
+// @author       shikiyoku
 // @license      MIT
+// @copyright    2017+, shikiyoku
+// @namespace    https://github.com/shikiyoku
 // @icon         http://joyreactor.cc/favicon.ico
 // @homepageURL  https://github.com/shikiyoku/user-scripts
 // @supportURL   https://github.com/shikiyoku/user-scripts/issues
-// @namespace    http://tampermonkey.net/
-// @version      1.0.0
 // @updateURL    https://openuserjs.org/meta/shikiyoku/joyreactor-download-button.meta.js
-// @author       shikiyoku
 // @include      http://joyreactor.cc/*
+// @run-at       document-start
 // @grant        GM_addStyle
 // ==/UserScript==
 // ==OpenUserJS==
