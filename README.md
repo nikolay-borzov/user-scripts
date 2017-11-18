@@ -9,6 +9,7 @@ User scripts for Tampermonkey and Greasemonkey
 "Downloadable" means you can download image by clicking (lmb) on the button. Link has [download](https://caniuse.com/#feat=download) attribute
 
 # Pornolab Enhancer
+[OpenUserJS](https://openuserjs.org/scripts/shikiyoku/Pornolab_Enhancer) | [Greasy Fork](https://greasyfork.org/en/scripts/35355-pornolab-enhancer)
 Improves UX
 - Tags as search links: Turns everything inside `[ ]` into search link. Also removes tags from the title
 - Improves pager styles
