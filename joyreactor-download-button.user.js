@@ -10,7 +10,7 @@
 // @homepageURL  https://github.com/shikiyoku/user-scripts
 // @supportURL   https://github.com/shikiyoku/user-scripts/issues
 // @updateURL    https://openuserjs.org/meta/shikiyoku/joyreactor-download-button.meta.js
-// @include      http://joyreactor.cc/*
+// @include      *reactor.cc*
 // @run-at       document-start
 // @grant        GM_addStyle
 // ==/UserScript==
