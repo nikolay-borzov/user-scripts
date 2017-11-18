@@ -2,6 +2,7 @@
 User scripts for Tampermonkey and Greasemonkey
 
 # JoyReactor Download Button
+[OpenUserJS](https://openuserjs.org/scripts/shikiyoku/JoyReactor_Download_Button) | [Greasy Fork](https://greasyfork.org/en/scripts/35272-joyreactor-download-button)
 - Shows image download link on hover
 - Makes gif image link downloadable
 
