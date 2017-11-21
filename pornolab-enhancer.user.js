@@ -35,14 +35,46 @@
     }
   }
 
+  // Convenient wrappers and aliases
+  const create = {
+    element (tag, { classes, attributes, textContent }) {
+      const el = document.createElement(tag)
+
+      if (typeof classes === 'string') {
+        el.classList.add(classes)
+      }
+
+      if (attributes) {
+        Object.keys(attributes).forEach((attrName) => {
+          el.setAttribute(attrName, attributes[attrName])
+        })
+      }
+
+      if (textContent) {
+        el.textContent = textContent
+      }
+
+      return el
+    },
+
+    documentFragment: document.createDocumentFragment.bind(document),
+    textNode: document.createTextNode.bind(document)
+  }
+
+  const $ = document.querySelector.bind(document)
+
   const enhance = {
     title () {
+      if (location.pathname !== TOPIC_PATH) {
+        return
+      }
+
       const TAGS_REGEX = /\[([^[]*)\]/g
       const TAGS_SEPARATOR_REGEX = /(?:,\s?|;)/
       const TAGS_SEPARATOR = ', '
       const TAGS_GROUP_SEPARATOR = ' | '
 
-      const titleElement = document.querySelector('.maintitle')
+      const titleElement = $('.maintitle')
       const titleLink = titleElement.children[0]
       const title = titleLink.textContent
 
@@ -86,31 +118,37 @@
       // Add tags links
 
       function createTagLinks (tags) {
-        const docFragment = document.createDocumentFragment()
+        const docFragment = create.documentFragment()
 
         tags.forEach((tag, index) => {
-          const tagLink = document.createElement('a')
-          tagLink.classList.add('tags-row-tag')
-          tagLink.setAttribute('href', `/forum/tracker.php?nm=${tag}`)
-          tagLink.setAttribute('target', `_blank`)
-          tagLink.textContent = tag
+          const tagLink = create.element('a', {
+            classes: 'tags-row-tag',
+            attributes: {
+              'href': `/forum/tracker.php?nm=${tag}`,
+              'target': `_blank`
+            },
+            textContent: tag
+          })
 
           docFragment.appendChild(tagLink)
+
           if (index + 1 !== tags.length) {
-            docFragment.appendChild(document.createTextNode(TAGS_SEPARATOR))
+            docFragment.appendChild(create.textNode(TAGS_SEPARATOR))
           }
         })
 
         return docFragment
       }
 
-      const row = document.createElement('div')
-      row.classList.add('tags-row')
+      const row = create.element('div', {
+        classes: 'tags-row'
+      })
 
       tagGroups.forEach((tags, index) => {
         row.appendChild(createTagLinks(tags))
+
         if (index + 1 !== tagGroups.length) {
-          row.appendChild(document.createTextNode(TAGS_GROUP_SEPARATOR))
+          row.appendChild(create.textNode(TAGS_GROUP_SEPARATOR))
         }
       })
 
@@ -155,12 +193,122 @@
         background-position: 95% 50%;
       }
       `)
+    },
+
+    download () {
+      const downloadLink = $('.dl-link')
+
+      if (!downloadLink) {
+        return
+      }
+
+      GM_addStyle(`
+      .quick-download {
+        color: #000 !important;
+        position: fixed;
+        right: 25%;
+        top: 0;
+        width: 65px;
+        height: 65px;
+        overflow: hidden;
+        text-align: center;
+        text-decoration: none;
+        background-color: #efefef;
+        border: solid 1px #cacaca;
+        border-radius: 0 0 10px 10px;
+        transform: translateY(-90%);
+        transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+      }
+      
+      .quick-download:hover {
+        color: #000 !important;
+        text-decoration: none !important;
+        transform: translateY(0);
+        border-color: #345da4;
+      }
+      
+      .quick-download-icon {
+        display: block;
+        height: 45px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: contain;
+        background-image: url(data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI0IiBmaWxsPSIjMzQ1ZGE0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTkgOWgtNFYzSDl2Nkg1bDcgNyA3LTd6TTUgMTh2MmgxNHYtMkg1eiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=);
+      }
+      
+      .quick-download:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 5px;
+        background: rgba(52, 93, 164, .25);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+      }
+      
+      @keyframes ripple {
+        0% {
+          transform: scale(0, 0);
+          opacity: 1;
+        }
+        20% {
+          transform: scale(25, 25);
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: scale(40, 40);
+        }
+      }
+      
+      .quick-download:focus:not(:active)::after {
+        animation: ripple 1s ease-out;
+      }
+      `)
+
+      const link = create.element('a', {
+        classes: 'quick-download',
+        attributes: {
+          'href': '#'
+        }
+      })
+
+      link.addEventListener('click', (e) => {
+        e.preventDefault()
+
+        var event = document.createEvent('MouseEvents')
+        event.initEvent('click', true, true)
+
+        downloadLink.dispatchEvent(event)
+      }, false)
+
+      const icon = create.element('span', {
+        classes: 'quick-download-icon'
+      })
+
+      const sizeElement = create.element('span', {
+        textContent: document.querySelector('.attach')
+          .querySelector('.row1:nth-child(5)')
+          .querySelector('td:nth-child(2)')
+          .textContent
+      })
+
+      link.appendChild(icon)
+      link.appendChild(sizeElement)
+
+      document.body.appendChild(link)
     }
   }
 
-  if (location.pathname === TOPIC_PATH) {
-    enhance.title()
-  }
+  enhance.title()
 
   enhance.pager()
+
+  enhance.download()
 })()

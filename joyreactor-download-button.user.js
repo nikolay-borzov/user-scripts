@@ -18,12 +18,6 @@
 // @author shikiyoku
 // ==/OpenUserJS==
 
-/*
-https://jakearchibald.github.io/svgomg/
-http://b64.io/
-https://codepen.io/lehollandaisvolant/pen/dMQXYX
-*/
-
 (function () {
   'use strict'
 

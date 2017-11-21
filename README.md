@@ -13,3 +13,11 @@ User scripts for Tampermonkey and Greasemonkey
 Improves UX
 - Tags as search links: Turns everything inside `[ ]` into search link. Also removes tags from the title
 - Improves pager styles
+- Adds quick download button to the top of the page
+
+## Tools and Resources
+
+- https://jakearchibald.github.io/svgomg/
+- http://b64.io/
+- https://codepen.io/lehollandaisvolant/pen/dMQXYX
+- http://keepachangelog.com/en/1.0.0/
