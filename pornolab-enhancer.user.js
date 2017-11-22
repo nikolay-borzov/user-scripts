@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Pornolab Enhancer
-// @version      1.0.0
+// @version      1.2.0
 // @description  Improves UX
 // @author       shikiyoku
 // @license      MIT
@@ -10,14 +10,19 @@
 // @homepageURL  https://github.com/shikiyoku/user-scripts
 // @supportURL   https://github.com/shikiyoku/user-scripts/issues
 // @include      *pornolab.*
+// @connect      fastpic.ru
+// @connect      www.imagebam.com
+// @connect      imagevenue.com
 // @run-at       document-body
 // @grant        GM_addStyle
+// @grant        GM_xmlhttpRequest
 // ==/UserScript==
 // ==OpenUserJS==
 // @author shikiyoku
 // ==/OpenUserJS==
 
 (function () {
+  /* global GM_addStyle GM_xmlhttpRequest */
   'use strict'
 
   const TOPIC_PATH = '/forum/viewtopic.php'
@@ -32,6 +37,25 @@
       }
 
       return results
+    },
+
+    getFirstMatchGroup (regEx, str) {
+      let match = regEx.exec(str)
+
+      return match ? match[1] : null
+    },
+
+    /**
+    * Event delegation
+    */
+    on (parent, eventName, childSelector, cb) {
+      parent.addEventListener(eventName, function (event) {
+        const matchingChild = event.target.closest(childSelector)
+
+        if (matchingChild) {
+          cb(event, matchingChild)
+        }
+      })
     }
   }
 
@@ -62,6 +86,9 @@
   }
 
   const $ = document.querySelector.bind(document)
+  const $$ = function (selector, parent = document) {
+    return Array.from(parent.querySelectorAll(selector))
+  }
 
   const enhance = {
     title () {
@@ -303,6 +330,296 @@
       link.appendChild(sizeElement)
 
       document.body.appendChild(link)
+    },
+
+    imageView () {
+      if (location.pathname !== TOPIC_PATH) {
+        return
+      }
+
+      GM_addStyle(`
+      .image-link {
+        display: inline-flex;
+        position: relative;
+      }
+      
+      .image-link:hover:before,
+      .loading-indicator:before {
+        position: absolute;
+        content: '';
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, .5);
+      }
+      
+      .image-link:hover:after {
+        position: absolute;
+        content: '';
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTUuNSAxNGgtLjc5bC0uMjgtLjI3QzE1LjQxIDEyLjU5IDE2IDExLjExIDE2IDkuNSAxNiA1LjkxIDEzLjA5IDMgOS41IDNTMyA1LjkxIDMgOS41IDUuOTEgMTYgOS41IDE2YzEuNjEgMCAzLjA5LS41OSA0LjIzLTEuNTdsLjI3LjI4di43OWw1IDQuOTlMMjAuNDkgMTlsLTQuOTktNXptLTYgMEM3LjAxIDE0IDUgMTEuOTkgNSA5LjVTNy4wMSA1IDkuNSA1IDE0IDcuMDEgMTQgOS41IDExLjk5IDE0IDkuNSAxNHoiLz48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTIgMTBoLTJ2Mkg5di0ySDdWOWgyVjdoMXYyaDJ2MXoiLz48L3N2Zz4=);
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: contain;
+      }
+      
+      .loading-indicator:after {
+        position: absolute;
+        content: '';
+        top: 50%;
+        left: 50%;
+        width: 50px;
+        height: 50px;
+        background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgNnYzbDQtNC00LTR2M2MtNC40MiAwLTggMy41OC04IDggMCAxLjU3LjQ2IDMuMDMgMS4yNCA0LjI2TDYuNyAxNC44Yy0uNDUtLjgzLS43LTEuNzktLjctMi44IDAtMy4zMSAyLjY5LTYgNi02em02Ljc2IDEuNzRMMTcuMyA5LjJjLjQ0Ljg0LjcgMS43OS43IDIuOCAwIDMuMzEtMi42OSA2LTYgNnYtM2wtNCA0IDQgNHYtM2M0LjQyIDAgOC0zLjU4IDgtOCAwLTEuNTctLjQ2LTMuMDMtMS4yNC00LjI2eiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=) !important;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: contain;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        from {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+      
+      .image-view-container {
+        display: flex;
+        box-sizing: border-box;
+        height: 0;
+        overflow: auto;
+        background: rgba(0, 0, 0, .6);
+        opacity: 0;
+        transition: all .35s ease-out;
+      }
+      
+      body.image-view-open {
+        overflow: hidden;
+      }
+      
+      body.image-view-open .image-view-container {
+        opacity: 1;
+        height: auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      
+      .image-view {
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
+        /* fit in view port */
+        /* align in the center */
+        margin: auto;
+      }
+      `)
+
+      const CLASSES = {
+        imageLink: 'image-link',
+        loading: 'loading-indicator',
+        open: 'image-view-open'
+      }
+
+      const SELECTORS = {
+        imageLink: `.${CLASSES.imageLink}`
+      }
+
+      const linkExtractors = [
+        {
+          name: 'FastPic',
+          linkSelector: '[href^="http://fastpic.ru/view/"]',
+          linkRegEx: new RegExp('^http://fastpic.ru/view/'),
+          imageUrlRegex: /loading_img = '([^']*)'/
+        },
+        {
+          name: 'ImageBam',
+          linkSelector: '[href^="http://www.imagebam.com/image/"]',
+          linkRegEx: new RegExp('^http://www.imagebam.com/image/'),
+          imageUrlRegex: /property="og:image" content="([^"]*)"/
+        },
+        {
+          name: 'ImageVenue',
+          linkSelector: '[href*=".imagevenue.com/img.php"]',
+          linkRegEx: new RegExp('imagevenue.com/img.php'),
+          imageUrlRegex: /id="thepic".*src="([^"]*)"/i,
+          buildImageUrl (pageUrl, imageUrl) {
+            const url = new URL(pageUrl)
+            url.search = ''
+            url.pathname = imageUrl
+
+            return url.href
+          }
+        }
+      ]
+
+      const elements = {
+        body: document.body,
+        container: null,
+        image: null
+      }
+
+      const state = {
+        open: false,
+        currentLink: null,
+        linksSet: [],
+        getCurrentLinkIndex () {
+          return state.linksSet.indexOf(state.currentLink)
+        },
+        getLastLinkIndex () {
+          return state.linksSet.length - 1
+        }
+      }
+
+      function showImage (imageUrl) {
+        elements.container.classList.add(CLASSES.loading)
+
+        elements.image.src = ''
+        let imageObj = new Image()
+        imageObj.onload = function () {
+          elements.image.src = this.src
+          elements.container.classList.remove(CLASSES.loading)
+        }
+        imageObj.src = imageUrl
+
+        elements.body.classList.add(CLASSES.open)
+        state.open = true
+      }
+
+      function hideImage (imageUrl) {
+        elements.body.classList.remove(CLASSES.open)
+        state.open = false
+        state.currentLink = null
+        elements.image.src = ''
+      }
+
+      function setImage (link) {
+        state.currentLink = link
+
+        let imageUrl = link.dataset['imgUrl']
+        if (imageUrl) {
+          showImage(imageUrl)
+          return
+        }
+
+        link.classList.add(CLASSES.loading)
+        getImageUrl(link.href, (imageUrl) => {
+          link.dataset['imgUrl'] = imageUrl
+
+          link.classList.remove(CLASSES.loading)
+
+          showImage(imageUrl)
+        })
+      }
+
+      function nextImage () {
+        if (!state.currentLink) { return }
+
+        const currentIndex = state.getCurrentLinkIndex()
+        const newIndex = currentIndex < state.getLastLinkIndex()
+          ? currentIndex + 1
+          : 0
+
+        setImage(state.linksSet[newIndex])
+      }
+
+      function previousImage () {
+        if (!state.currentLink) { return }
+
+        const currentIndex = state.getCurrentLinkIndex()
+        const newIndex = currentIndex === 0
+          ? state.getLastLinkIndex()
+          : currentIndex - 1
+
+        setImage(state.linksSet[newIndex])
+      }
+
+      function getExtractor (pageUrl) {
+        return linkExtractors.find((ext) => {
+          return ext.linkRegEx.test(pageUrl)
+        })
+      }
+
+      function getImageUrl (pageUrl, cb) {
+        GM_xmlhttpRequest({
+          method: 'GET',
+          url: pageUrl,
+          onerror (response) {
+            console.log('[Pornolab Enhancer] Cannot load page', response)
+          },
+          onload (response) {
+            const extractor = getExtractor(pageUrl)
+            let imageUrl = helpers.getFirstMatchGroup(extractor.imageUrlRegex, response.responseText)
+
+            if (extractor.buildImageUrl) {
+              imageUrl = extractor.buildImageUrl(pageUrl, imageUrl)
+            }
+
+            if (imageUrl) {
+              cb(imageUrl)
+            }
+          }
+        })
+      }
+
+      function handleLinkClick (event, link) {
+        event.preventDefault()
+
+        state.linksSet = $$(SELECTORS.imageLink, link.parentNode)
+
+        setImage(link)
+      }
+
+      elements.container = create.element('div', {
+        classes: 'image-view-container'
+      })
+
+      elements.image = create.element('img', {
+        classes: 'image-view'
+      })
+
+      elements.container.appendChild(elements.image)
+
+      elements.container.addEventListener('click', hideImage, false)
+
+      document.addEventListener('keydown', (event) => {
+        if (!state.open) {
+          return
+        }
+
+        if (event.key === 'ArrowRight') {
+          nextImage()
+        } else if (event.key === 'ArrowLeft') {
+          previousImage()
+        }
+      }, false)
+
+      document.body.appendChild(elements.container)
+
+      const topic = $('table.topic')
+
+      // Assign class to image links
+      const linkSelector = linkExtractors
+        .map((extractor) => {
+          return `a${extractor.linkSelector}.postLink`
+        })
+        .join(',')
+      console.log(linkSelector)
+      $$(linkSelector, topic).forEach((link) => {
+        link.classList.add(CLASSES.imageLink)
+      })
+
+      helpers.on(topic, 'click', SELECTORS.imageLink, handleLinkClick)
     }
   }
 
@@ -311,4 +628,6 @@
   enhance.pager()
 
   enhance.download()
+
+  enhance.imageView()
 })()

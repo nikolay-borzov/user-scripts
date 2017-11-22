@@ -10,14 +10,18 @@ User scripts for Tampermonkey and Greasemonkey
 
 # Pornolab Enhancer
 [OpenUserJS](https://openuserjs.org/scripts/shikiyoku/Pornolab_Enhancer) | [Greasy Fork](https://greasyfork.org/en/scripts/35355-pornolab-enhancer)
+
 Improves UX
 - Tags as search links: Turns everything inside `[ ]` into search link. Also removes tags from the title
 - Improves pager styles
 - Adds quick download button to the top of the page
+- Fastpic, ImageBam, ImageVenue on page image view. Press →/← to see next/previous image 
 
 ## Tools and Resources
 
+- https://material.io/icons
 - https://jakearchibald.github.io/svgomg/
 - http://b64.io/
 - https://codepen.io/lehollandaisvolant/pen/dMQXYX
 - http://keepachangelog.com/en/1.0.0/
+- https://regex101.com/
