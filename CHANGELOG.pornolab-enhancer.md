@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-## 1.2.0 - 2017-XX-XX
+## 1.2.1 - 2017-11-22
+### Fixed
+- Script installation on Firefox
+
+## 1.2.0 - 2017-11-22
 ### Added
 - Fastpic, ImageBam, ImageVenue on page image view
 - View next/previous image in teh set by pressing →/←

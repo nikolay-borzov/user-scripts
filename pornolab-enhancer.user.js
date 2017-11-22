@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Pornolab Enhancer
-// @version      1.2.0
+// @version      1.2.1
 // @description  Improves UX
 // @author       shikiyoku
 // @license      MIT
 // @copyright    2017+, shikiyoku
 // @namespace    https://github.com/shikiyoku
+// @icon         http://pornolab.lib/favicon.ico
 // @icon         http://pornolab.cc/favicon.ico
 // @homepageURL  https://github.com/shikiyoku/user-scripts
 // @supportURL   https://github.com/shikiyoku/user-scripts/issues
