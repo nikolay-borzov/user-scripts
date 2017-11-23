@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Pornolab Enhancer
-// @version      1.2.1
+// @version      1.2.2
 // @description  Improves UX
 // @author       shikiyoku
 // @license      MIT
@@ -14,7 +14,7 @@
 // @connect      fastpic.ru
 // @connect      www.imagebam.com
 // @connect      imagevenue.com
-// @run-at       document-body
+// @run-at       document-end
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
@@ -615,7 +615,7 @@
           return `a${extractor.linkSelector}.postLink`
         })
         .join(',')
-      console.log(linkSelector)
+
       $$(linkSelector, topic).forEach((link) => {
         link.classList.add(CLASSES.imageLink)
       })

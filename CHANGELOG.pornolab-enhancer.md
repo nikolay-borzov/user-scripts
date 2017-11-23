@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.2.2 - 2017-11-23
+### Changed
+- Init on document end
+
+### Fixed
+- Remove console output
+
 ## 1.2.1 - 2017-11-22
 ### Fixed
 - Script installation on Firefox

@@ -15,7 +15,7 @@ Improves UX
 - Tags as search links: Turns everything inside `[ ]` into search link. Also removes tags from the title
 - Improves pager styles
 - Adds quick download button to the top of the page
-- Fastpic, ImageBam, ImageVenue on page image view. Press →/← to see next/previous image 
+- Fastpic, ImageBam, ImageVenue on page image view. Press `→`/`←` to see next/previous image 
 
 ## Tools and Resources
 
