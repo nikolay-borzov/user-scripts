@@ -6,7 +6,7 @@
 // @license      MIT
 // @copyright    2017+, shikiyoku
 // @namespace    https://github.com/shikiyoku
-// @icon         resources/icon.png
+// @icon         https://raw.githubusercontent.com/shikiyoku/user-scripts/master/pornolab-enhancer/resources/icon.png
 // @homepageURL  https://github.com/shikiyoku/user-scripts
 // @supportURL   https://github.com/shikiyoku/user-scripts/issues
 // @include      *pornolab.*
