@@ -1,0 +1,23 @@
+.tags-row {
+  padding: 3px 0 0;
+}
+
+.tags-row-tag {
+  display: inline-block;
+  margin: 7px 5px 0;
+  padding: 5px;
+  border: solid 1px #cacaca;
+  border-radius: 5px;
+  background-color: #efefef;
+  text-decoration: none;
+}
+
+.tags-row-tag:hover {
+  border-color: #345da4;
+  color: #345da4;
+  text-decoration: none !important;
+}
+
+.tags-row-tag:nth-child {
+  margin-left: 0;
+}

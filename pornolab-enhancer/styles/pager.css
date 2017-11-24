@@ -1,0 +1,35 @@
+.small > b > .menu-root,
+.nav .menu-root,
+a.pg {
+  display: inline-block;
+  padding: 0.5em 0.7em;
+  border: solid 1px #cacaca;
+  background-color: #efefef;
+  text-decoration: none;
+}
+
+a.pg {
+  margin-right: 0.1em;
+}
+
+.small > b > .menu-root:hover,
+.nav .menu-root:hover,
+a.pg:hover {
+  border-color: #345da4;
+  color: #345da4;
+  text-decoration: none !important;
+}
+
+.menu-root ~ b {
+  display: inline-block;
+  margin-right: 0.1em;
+  padding: 0.5em 0.7em;
+  border: solid 1px transparent;
+}
+
+.small > b > .menu-root,
+.nav .menu-root {
+  padding-right: 20px;
+  background-repeat: no-repeat;
+  background-position: 95% 50%;
+}

@@ -14,9 +14,6 @@
 // @run-at       document-start
 // @grant        GM_addStyle
 // ==/UserScript==
-// ==OpenUserJS==
-// @author shikiyoku
-// ==/OpenUserJS==
 
 (function () {
   'use strict'
