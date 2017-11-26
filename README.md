@@ -1,4 +1,6 @@
 # user-scripts
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/shikiyoku/user-scripts.svg)](https://greenkeeper.io/)
 User scripts for Tampermonkey and ~~Greasemonkey~~
 
 # JoyReactor Download Button
