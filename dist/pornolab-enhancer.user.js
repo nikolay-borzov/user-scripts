@@ -28,7 +28,7 @@
   /* global GM_addStyle */
 
   var addStyle = 'GM_addStyle' in window
-    ? GM_addStyle
+    ? GM_addStyle // eslint-disable-line camelcase
     : (css) => {
       var head = document.getElementsByTagName('head')[0]
       if (head) {
@@ -321,17 +321,13 @@ a.pg:hover {
     }
   })()
 
-  /**
- * Requires:
- * GM_xmlhttpRequest (GM.xmlHttpRequest)
- */
-  var request = (function () {
   /* global GM_xmlhttpRequest GM */
 
+  var request = (function () {
   // polyfill xmlhttpRequest
     const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM
       ? GM.xmlHttpRequest
-      : GM_xmlhttpRequest
+      : GM_xmlhttpRequest //  eslint-disable-line camelcase
 
     return function (url, { method = 'GET' } = {}) {
       return new Promise((resolve, reject) => {

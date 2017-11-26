@@ -1,7 +1,7 @@
 /* global GM_addStyle */
 
 export default 'GM_addStyle' in window
-  ? GM_addStyle
+  ? GM_addStyle // eslint-disable-line camelcase
   : (css) => {
     var head = document.getElementsByTagName('head')[0]
     if (head) {

@@ -4,10 +4,11 @@
   "description": "User scripts for Tampermonkey",
   "main": "index.js",
   "scripts": {
-    "test": "eslint src/* && npm run ple:test",
+    "test": "npm run lint:js && npm run ple:test",
     "ple:test": "rollup --config rollup.config.ple.js",
     "ple:build": "rollup --config rollup.config.ple.js && npm run lint:dist",
-    "lint:dist": "eslint --fix dist/*"
+    "lint:dist": "eslint --fix dist/*",
+    "lint:js": "eslint src/*"
   },
   "repository": {
     "type": "git",

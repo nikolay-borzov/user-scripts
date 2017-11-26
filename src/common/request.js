@@ -4,7 +4,7 @@ export default (function () {
   // polyfill xmlhttpRequest
   const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM
     ? GM.xmlHttpRequest
-    : GM_xmlhttpRequest
+    : GM_xmlhttpRequest //  eslint-disable-line camelcase
 
   return function (url, { method = 'GET' } = {}) {
     return new Promise((resolve, reject) => {
