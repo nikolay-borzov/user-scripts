@@ -1,6 +1,6 @@
 # user-scripts
+[![Build Status](https://travis-ci.org/shikiyoku/user-scripts.svg?branch=master)](https://travis-ci.org/shikiyoku/user-scripts) [![Greenkeeper badge](https://badges.greenkeeper.io/shikiyoku/user-scripts.svg)](https://greenkeeper.io/)
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/shikiyoku/user-scripts.svg)](https://greenkeeper.io/)
 User scripts for Tampermonkey and ~~Greasemonkey~~
 
 # JoyReactor Download Button
