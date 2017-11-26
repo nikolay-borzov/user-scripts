@@ -1,5 +1,4 @@
 /* global GM_xmlhttpRequest GM */
-
 export default (function () {
   // polyfill xmlhttpRequest
   const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM

@@ -15,9 +15,6 @@
 // @connect     imagevenue.com
 // @run-at      document-start
 // @grant       GM_addStyle
-// @grant       GM_getResourceText
-// @grant       GM_getResourceURL
-// @grant       GM.getResourceURL
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest
 // ==/UserScript==
@@ -26,7 +23,6 @@
   'use strict'
 
   /* global GM_addStyle */
-
   var addStyle = 'GM_addStyle' in window
     ? GM_addStyle // eslint-disable-line camelcase
     : (css) => {
@@ -322,7 +318,6 @@ a.pg:hover {
   })()
 
   /* global GM_xmlhttpRequest GM */
-
   var request = (function () {
   // polyfill xmlhttpRequest
     const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM

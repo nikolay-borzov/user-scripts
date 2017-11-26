@@ -1,5 +1,4 @@
 /* global GM_addStyle */
-
 export default 'GM_addStyle' in window
   ? GM_addStyle // eslint-disable-line camelcase
   : (css) => {

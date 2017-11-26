@@ -4,10 +4,12 @@
   "description": "User scripts for Tampermonkey",
   "main": "index.js",
   "scripts": {
-    "test": "npm run lint:js && npm run ple:test",
+    "test": "npm run lint:js && npm run jrdb:test && npm run ple:test",
     "ple:test": "rollup --config rollup.config.ple.js",
-    "ple:build": "rollup --config rollup.config.ple.js && npm run lint:dist",
+    "ple:build": "npm run ple:test && npm run lint:dist",
     "ple:wip:build": "rollup --config rollup.config.ple.wip.js && npm run lint:dist",
+    "jrdb:test": "rollup --config rollup.config.jrdb.js",
+    "jrdb:build": "npm run jrdb:test && npm run lint:dist",
     "lint:dist": "eslint --fix dist/*",
     "lint:js": "eslint src/*"
   },

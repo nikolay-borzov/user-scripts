@@ -17,8 +17,6 @@
   ],
   "grant": [
     "GM_addStyle",
-    "GM_getResourceText", "GM_getResourceURL",
-    "GM.getResourceURL",
     "GM_xmlhttpRequest", "GM.xmlHttpRequest"
   ],
   "run-at": "document-start"
