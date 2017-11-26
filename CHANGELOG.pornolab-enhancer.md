@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.3.0 - 2017-11-26
+### Changed
+- Build with rollup
+
+### Fixed
+- Remove empty tags
+
 ## 1.2.2 - 2017-11-23
 ### Changed
 - Init on document end

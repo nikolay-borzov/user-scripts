@@ -7,6 +7,7 @@
     "test": "npm run lint:js && npm run ple:test",
     "ple:test": "rollup --config rollup.config.ple.js",
     "ple:build": "rollup --config rollup.config.ple.js && npm run lint:dist",
+    "ple:wip:build": "rollup --config rollup.config.ple.wip.js && npm run lint:dist",
     "lint:dist": "eslint --fix dist/*",
     "lint:js": "eslint src/*"
   },
@@ -22,7 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "blissfuljs": "^1.0.3",
-    "eslint": "^4.11.0",
+    "eslint": "^4.12.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.1",
@@ -33,7 +34,7 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-userscript-metablock": "^0.1.0",
     "rollup-pluginutils": "^2.0.1",
-    "stylelint": "^8.2.0",
+    "stylelint": "^8.3.0",
     "stylelint-config-property-sort-order-smacss": "^2.0.0",
     "stylelint-config-standard": "^18.0.0",
     "stylelint-order": "^0.7.0"

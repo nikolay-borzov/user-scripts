@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name        Pornolab Enhancer
+// @name        Pornolab Enhancer (WIP)
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.3.0
+// @version     0.0.3
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
