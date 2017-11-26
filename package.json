@@ -35,7 +35,7 @@
     "rollup-pluginutils": "^2.0.1",
     "stylelint": "^8.2.0",
     "stylelint-config-property-sort-order-smacss": "^2.0.0",
-    "stylelint-config-standard": "^17.0.0",
+    "stylelint-config-standard": "^18.0.0",
     "stylelint-order": "^0.7.0"
   },
   "dependencies": {}
