@@ -1,9 +1,10 @@
-/**
- * Requires:
- * common/addStyles.js
- * common/regex.js
- */
-var PLE = (function (PLE, US, $) {
+import addStyle from '../common/addStyle'
+import regex from '../common/regex'
+import { $ } from '../libs/bliss'
+
+import tagsCSS from './styles/tags.css'
+
+export default (function () {
   const ENABLE_ON_PATH = '/forum/viewtopic.php'
 
   const TAGS_REGEX = /\[([^[]*)\]/g
@@ -11,7 +12,7 @@ var PLE = (function (PLE, US, $) {
   const TAGS_GROUP_SEPARATOR = ' | '
 
   function extractTagGroups (title) {
-    return US.regex.getAllMatchGroups(TAGS_REGEX, title)
+    return regex.getAllMatchGroups(TAGS_REGEX, title)
       .map((tagsString) => tagsString.split(TAGS_SEPARATOR_REGEX))
   }
 
@@ -37,7 +38,7 @@ var PLE = (function (PLE, US, $) {
 
     if (!tagGroups.length) { return }
 
-    US.addStyle('tagsCSS')
+    addStyle(tagsCSS)
 
     // Remove tags from title
     if (removeFromTitle) {
@@ -48,7 +49,6 @@ var PLE = (function (PLE, US, $) {
     }
 
     // Add tags links
-
     const tags = tagGroups.reduce((tags, tagsGroup, index) => {
       tags.push(...createTagLinks(tagsGroup))
 
@@ -67,17 +67,11 @@ var PLE = (function (PLE, US, $) {
     $.after(row, titleElement)
   }
 
-  PLE.tags = {
-    init () {
-      $.ready()
-        .then(() => {
-          if (location.pathname !== ENABLE_ON_PATH) { return }
-
-          createPostTags()
-        })
-    }
+  return function () {
+    $.ready()
+      .then(() => {
+        if (location.pathname !== ENABLE_ON_PATH) { return }
+        createPostTags()
+      })
   }
-
-  return PLE
-  // eslint-disable-next-line
-})(PLE || {}, US, Bliss);
+})()

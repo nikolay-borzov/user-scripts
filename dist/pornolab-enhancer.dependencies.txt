@@ -1,0 +1,8 @@
+Name: blissfuljs
+Version: 1.0.3
+License: MIT
+Private: false
+Description: Lightweight helper library for modern browsers.
+Repository: git+https://github.com/LeaVerou/bliss.git
+Homepage: http://blissfuljs.com
+Author: Lea Verou

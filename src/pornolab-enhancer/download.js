@@ -1,8 +1,9 @@
-/**
- * Requires:
- * common/addStyles.js
- */
-var PLE = (function (PLE, US, $) {
+import { $ } from '../libs/bliss'
+import addStyle from '../common/addStyle'
+
+import downloadCSS from './styles/download.css'
+
+export default (function () {
   const ENABLE_ON_PATH = '/forum/viewtopic.php'
 
   function createDownloadLink (downloadLink) {
@@ -37,23 +38,18 @@ var PLE = (function (PLE, US, $) {
     document.body.appendChild(link)
   }
 
-  PLE.download = {
-    init () {
-      $.ready()
-        .then(() => {
-          if (location.pathname !== ENABLE_ON_PATH) { return }
+  return function () {
+    $.ready()
+      .then(() => {
+        if (location.pathname !== ENABLE_ON_PATH) { return }
 
-          const downloadLink = $('.dl-link')
+        const downloadLink = $('.dl-link')
 
-          if (!downloadLink) { return }
+        if (!downloadLink) { return }
 
-          US.addStyle('downloadCSS')
+        addStyle(downloadCSS)
 
-          createDownloadLink(downloadLink)
-        })
-    }
+        createDownloadLink(downloadLink)
+      })
   }
-
-  return PLE
-  // eslint-disable-next-line
-})(PLE || {}, US, Bliss);
+})()

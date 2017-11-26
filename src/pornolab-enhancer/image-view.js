@@ -1,10 +1,11 @@
-/**
- * Requires:
- * common/addStyles.js
- * common/request.js
- * common/regex.js
- */
-var PLE = (function (PLE, US, $, $$) {
+import { $, $$ } from '../libs/bliss'
+import addStyle from '../common/addStyle'
+import request from '../common/request'
+import regex from '../common/regex'
+
+import imageViewCSS from './styles/image-view.css'
+
+export default (function () {
   const ENABLE_ON_PATH = '/forum/viewtopic.php'
 
   const CLASSES = {
@@ -127,17 +128,15 @@ var PLE = (function (PLE, US, $, $$) {
   }
 
   function getExtractor (pageUrl) {
-    return linkExtractors.find((ext) => {
-      return ext.linkRegEx.test(pageUrl)
-    })
+    return linkExtractors.find((ext) => ext.linkRegEx.test(pageUrl))
   }
 
   function getImageUrl (pageUrl, cb) {
-    US.request(pageUrl)
+    request(pageUrl)
       .then((response) => {
         const extractor = getExtractor(pageUrl)
-        let imageUrl = US.regex.getFirstMatchGroup(extractor.imageUrlRegex,
-                                                   response.responseText)
+        let imageUrl = regex.getFirstMatchGroup(extractor.imageUrlRegex,
+                                                response.responseText)
 
         if (extractor.buildImageUrl) {
           imageUrl = extractor.buildImageUrl(pageUrl, imageUrl)
@@ -158,65 +157,59 @@ var PLE = (function (PLE, US, $, $$) {
     setImage(link)
   }
 
-  PLE.imageView = {
-    init () {
-      if (location.pathname !== ENABLE_ON_PATH) {
-        return
-      }
-
-      US.addStyle('imageViewCSS')
-
-      $.ready()
-        .then(() => {
-          elements.body = document.body
-
-          elements.image = $.create('img', {
-            className: 'image-view'
-          })
-
-          elements.container = $.create('div', {
-            className: 'image-view-container',
-            contents: elements.image,
-            events: {
-              'click': hideImage
-            }
-          })
-
-          document.body.appendChild(elements.container)
-
-          const topic = $('table.topic')
-
-          // Assign class to image links
-          const linkSelector = linkExtractors
-            .map((extractor) => {
-              return `a${extractor.linkSelector}.postLink`
-            })
-            .join(',')
-
-          $.set($$(linkSelector, topic), {
-            className: CLASSES.imageLink
-          })
-
-          // Event handlers
-
-          document.addEventListener('keydown', (event) => {
-            if (!state.open) {
-              return
-            }
-
-            if (event.key === 'ArrowRight') {
-              nextImage()
-            } else if (event.key === 'ArrowLeft') {
-              previousImage()
-            }
-          }, false)
-
-          $.delegate(topic, 'click', SELECTORS.imageLink, handleLinkClick)
-        })
+  return function () {
+    if (location.pathname !== ENABLE_ON_PATH) {
+      return
     }
+
+    addStyle(imageViewCSS)
+
+    $.ready()
+      .then(() => {
+        elements.body = document.body
+
+        elements.image = $.create('img', {
+          className: 'image-view'
+        })
+
+        elements.container = $.create('div', {
+          className: 'image-view-container',
+          contents: elements.image,
+          events: {
+            'click': hideImage
+          }
+        })
+
+        document.body.appendChild(elements.container)
+
+        const topic = $('table.topic')
+
+        // Assign class to image links
+        const linkSelector = linkExtractors
+          .map((extractor) => {
+            return `a${extractor.linkSelector}.postLink`
+          })
+          .join(',')
+
+        $.set($$(linkSelector, topic), {
+          className: CLASSES.imageLink
+        })
+
+        // Event handlers
+
+        document.addEventListener('keydown', (event) => {
+          if (!state.open) {
+            return
+          }
+
+          if (event.key === 'ArrowRight') {
+            nextImage()
+          } else if (event.key === 'ArrowLeft') {
+            previousImage()
+          }
+        }, false)
+
+        $.delegate(topic, 'click', SELECTORS.imageLink, handleLinkClick)
+      })
   }
-
-  return PLE
-
-  // eslint-disable-next-line
-})(PLE || {}, US, Bliss, Bliss.$);
+})()
