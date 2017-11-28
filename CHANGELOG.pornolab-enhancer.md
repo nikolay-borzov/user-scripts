@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.4.0 - 2017-11-28
+### Changed
+- Place tags before and after title
+- Add `/` as tags separator
+
 ## 1.3.0 - 2017-11-26
 ### Changed
 - Build with rollup
