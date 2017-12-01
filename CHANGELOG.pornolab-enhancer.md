@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 1.5.0 - 2017-12-01
+### Added
+- Image view: TurboImageHost, PicForAll, imgbum.net, ImageTwist, PicShick, picage.ru, PixSense support
+- Mark forbidden hosts' images
+- Handle image loading error
+
+### Changed
+- Improve URL image extracting logic for FastPic
+
 ## 1.4.0 - 2017-11-28
 ### Changed
 - Place tags before and after title

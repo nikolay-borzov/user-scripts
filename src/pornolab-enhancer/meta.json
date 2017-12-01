@@ -11,9 +11,9 @@
   "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
   "include": [ "*pornolab.*" ],
   "connect": [
-    "fastpic.ru",
     "www.imagebam.com",
-    "imagevenue.com"
+    "imagevenue.com",
+    "www.turboimagehost.com"
   ],
   "grant": [
     "GM_addStyle",

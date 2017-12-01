@@ -17,7 +17,8 @@ Improves UX
 - Tags as search links: Turns everything inside `[ ]` into search link. Also removes tags from the title
 - Improves pager styles
 - Adds quick download button to the top of the page
-- Fastpic, ImageBam, ImageVenue on page image view. Press `→`/`←` to see next/previous image 
+- On page image view. Supported hosts are Fastpic, ImageBam, ImageVenue, TurboImageHost, PicForAll, imgbum.net, ImageTwist, PicShick, stuffed.ru, PixSense. Press `→`/`←` to see next/previous image
+- Mark images from forbidden hosts
 
 ## Tools and Resources
 

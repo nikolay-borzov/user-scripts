@@ -2,7 +2,7 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.4.0
+// @version     1.5.0
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
@@ -10,9 +10,9 @@
 // @homepageURL https://github.com/shikiyoku/user-scripts
 // @supportURL  https://github.com/shikiyoku/user-scripts/issues
 // @include     *pornolab.*
-// @connect     fastpic.ru
 // @connect     www.imagebam.com
 // @connect     imagevenue.com
+// @connect     www.turboimagehost.com
 // @run-at      document-start
 // @grant       GM_addStyle
 // @grant       GM_xmlhttpRequest
@@ -385,35 +385,29 @@ a.pg:hover {
     }
   })()
 
-  /* global GM_xmlhttpRequest GM */
-  var request = (function () {
-  // polyfill xmlhttpRequest
-    const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM
-      ? GM.xmlHttpRequest
-      : GM_xmlhttpRequest //  eslint-disable-line camelcase
-
-    return function (url, { method = 'GET' } = {}) {
-      return new Promise((resolve, reject) => {
-        xmlHttpRequest({
-          url,
-          method,
-          onerror (response) {
-            console.error(response.responseText)
-            reject(response.responseText)
-          },
-          onload: resolve
-        })
-      })
-    }
-  })()
-
   var imageViewCSS = `.image-link {
   display: inline-flex;
   position: relative;
 }
 
-.image-link:hover::before,
-.loading-indicator::before {
+img.postImg.image-link {
+  display: block;
+  margin: 2px; /* Remove bottom padding */
+}
+
+.image-link::before,
+.image-link::after {
+  content: '';
+  transition: opacity 350ms ease;
+  opacity: 0;
+}
+
+.image-link.loading-indicator::before {
+  opacity: 1;
+}
+
+/* Backdrop */
+.image-link::before {
   content: '';
   position: absolute;
   top: 0;
@@ -423,27 +417,67 @@ a.pg:hover {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.image-link:hover::after,
-.loading-indicator::after {
+.image-link.error-icon::before {
+  display: none;
+}
+
+.image-link.error-icon img {
+  opacity: 0.6;
+}
+
+/* Backdrop icon */
+.image-link::after,
+.image-view-container::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   width: 50px;
   height: 50px;
+  transform: translate(-50%, -50%);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
 }
 
+.image-link:hover::before,
 .image-link:hover::after {
-  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+/* Icons */
+.loading-icon::after,
+.error-icon::after {
+  opacity: 1;
+}
+
+.image-link:hover::after {
+  /* zoom in */
   background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTUuNSAxNGgtLjc5bC0uMjgtLjI3QzE1LjQxIDEyLjU5IDE2IDExLjExIDE2IDkuNSAxNiA1LjkxIDEzLjA5IDMgOS41IDNTMyA1LjkxIDMgOS41IDUuOTEgMTYgOS41IDE2YzEuNjEgMCAzLjA5LS41OSA0LjIzLTEuNTdsLjI3LjI4di43OWw1IDQuOTlMMjAuNDkgMTlsLTQuOTktNXptLTYgMEM3LjAxIDE0IDUgMTEuOTkgNSA5LjVTNy4wMSA1IDkuNSA1IDE0IDcuMDEgMTQgOS41IDExLjk5IDE0IDkuNSAxNHoiLz48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTIgMTBoLTJ2Mkg5di0ySDdWOWgyVjdoMXYyaDJ2MXoiLz48L3N2Zz4=);
 }
 
-.loading-indicator::after {
+.loading-icon::after {
   animation: spin 1s linear infinite;
   background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgNnYzbDQtNC00LTR2M2MtNC40MiAwLTggMy41OC04IDggMCAxLjU3LjQ2IDMuMDMgMS4yNCA0LjI2TDYuNyAxNC44Yy0uNDUtLjgzLS43LTEuNzktLjctMi44IDAtMy4zMSAyLjY5LTYgNi02em02Ljc2IDEuNzRMMTcuMyA5LjJjLjQ0Ljg0LjcgMS43OS43IDIuOCAwIDMuMzEtMi42OSA2LTYgNnYtM2wtNCA0IDQgNHYtM2M0LjQyIDAgOC0zLjU4IDgtOCAwLTEuNTctLjQ2LTMuMDMtMS4yNC00LjI2eiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=) !important;
+}
+
+.error-icon::after,
+.error-icon:hover::after {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjYzYyODI4IiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ3IDIgMiA2LjQ3IDIgMTJzNC40NyAxMCAxMCAxMCAxMC00LjQ3IDEwLTEwUzE3LjUzIDIgMTIgMnptNSAxMy41OUwxNS41OSAxNyAxMiAxMy40MSA4LjQxIDE3IDcgMTUuNTkgMTAuNTkgMTIgNyA4LjQxIDguNDEgNyAxMiAxMC41OSAxNS41OSA3IDE3IDguNDEgMTMuNDEgMTIgMTcgMTUuNTl6Ii8+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==);
+}
+
+.forbidden-host var::before {
+  content: '';
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 25px;
+  height: 25px;
+  opacity: 1;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmJjMDJkIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEgMjFoMjJMMTIgMiAxIDIxem0xMi0zaC0ydi0yaDJ2MnptMC00aC0ydi00aDJ2NHoiLz48L3N2Zz4=);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
 }
 
 @keyframes spin {
@@ -463,7 +497,7 @@ a.pg:hover {
   overflow: auto;
   transition: all 0.35s ease-out;
   opacity: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.8);
 }
 
 body.image-view-open {
@@ -492,12 +526,213 @@ body.image-view-open .image-view-container {
 }
 `
 
+  /* global GM_xmlhttpRequest GM */
+  var request = (function () {
+  // polyfill xmlhttpRequest
+    const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM
+      ? GM.xmlHttpRequest
+      : GM_xmlhttpRequest //  eslint-disable-line camelcase
+
+    return function (url, { method = 'GET' } = {}) {
+      return new Promise((resolve, reject) => {
+        xmlHttpRequest({
+          url,
+          method,
+          onerror (response) {
+            console.error(response.responseText)
+            reject(response.responseText)
+          },
+          onload: resolve
+        })
+      })
+    }
+  })()
+
+  var urlExtractor = (function () {
+    function getExtractor (pageUrl) {
+      return extractors.find((ext) => ext.linkRegEx.test(pageUrl))
+    }
+
+    async function getPageHtml (pageUrl) {
+      let response = await request(pageUrl)
+
+      return response.responseText
+    }
+
+    async function getUrlFromPage (extractor, link) {
+      const html = await getPageHtml(link.href)
+
+      return regex.getFirstMatchGroup(extractor.imageUrlRegEx, html)
+    }
+
+    function getThumbnailUrl (link) {
+      return $('img.postImg', link).src
+    }
+
+    const extractors = [
+      {
+        name: 'FastPic',
+        allowed: true,
+        linkSelector: '[href^="http://fastpic.ru/view/"]',
+        linkRegEx: new RegExp('^http://fastpic.ru/view/'),
+        extensionRegEx: /\.([^.]+)\.html$/,
+
+        async getUrl (extractor, link) {
+          const extension = regex.getFirstMatchGroup(extractor.extensionRegEx, link.href)
+          const thumbUrl = getThumbnailUrl(link)
+
+          return thumbUrl
+            .replace('thumb', 'big')
+            .replace('jpeg', extension)
+        }
+      },
+
+      {
+        name: 'ImageVenue',
+        allowed: true,
+        linkSelector: '[href*=".imagevenue.com/img.php"]',
+        linkRegEx: new RegExp('imagevenue.com/img.php'),
+        imageUrlRegEx: /id="thepic".*src="([^"]*)"/i,
+
+        async getUrl (extractor, link) {
+          const imageUrl = await getUrlFromPage(extractor, link)
+          const pageUrl = link.href
+
+          const url = new URL(pageUrl)
+          url.search = ''
+          url.pathname = imageUrl
+
+          return url.href
+        }
+      },
+
+      {
+        name: 'TurboImageHost',
+        allowed: true,
+        linkSelector: '[href^="https://www.turboimagehost.com/p"]',
+        linkRegEx: new RegExp('^https://www.turboimagehost.com/p'),
+        imageUrlRegEx: /property="og:image" content="([^"]*)"/,
+        getUrl: getUrlFromPage
+      },
+
+      // not allowed below
+
+      {
+        name: 'ImageBam',
+        linkSelector: '[href^="http://www.imagebam.com/image"]',
+        linkRegEx: new RegExp('^http://www.imagebam.com/image'),
+        imageUrlRegEx: /property="og:image" content="([^"]*)"/,
+        getUrl: getUrlFromPage
+      },
+
+      {
+        name: 'ImageTwist',
+        linkSelector: '[href^="http://imagetwist.com"]',
+        linkRegEx: new RegExp('^http://imagetwist.com'),
+
+        async getUrl (extractor, link) {
+          const imageName = link.href.split('/').pop()
+          const imageUrl = getThumbnailUrl(link)
+            .replace('/th/', '/i/')
+            .replace('jpg', 'JPG')
+
+          return `${imageUrl}/${imageName}`
+        }
+      },
+
+      {
+        name: 'PicShick',
+        linkSelector: '[href^="http://picshick.com"]',
+        linkRegEx: new RegExp('^http://picshick.com'),
+
+        async getUrl (extractor, link) {
+          const imageName = link.href.split('/').pop()
+          const imageUrl = getThumbnailUrl(link)
+            .replace('/th/', '/i/')
+            .replace('picshick', 'imagetwist')
+
+          return `${imageUrl}/${imageName}`
+        }
+      },
+
+      {
+        name: 'imgbum',
+        linkSelector: '[href^="http://imgbum.net"]',
+        linkRegEx: new RegExp('^http://imgbum.net'),
+
+        async getUrl (extractor, link) {
+          return getThumbnailUrl(link).replace('-thumb', '')
+        }
+      },
+
+      {
+        name: 'PicForAll',
+        linkSelector: '[href^="http://picforall.ru"]',
+        linkRegEx: new RegExp('^http://picforall.ru'),
+
+        async getUrl (extractor, link) {
+          return getThumbnailUrl(link)
+            .replace('picforall', 'p0xpicmoney')
+            .replace('-thumb', '')
+        }
+      },
+
+      {
+        name: 'picage',
+        linkSelector: '[href^="http://picage.ru"]',
+        linkRegEx: new RegExp('^http://picage.ru'),
+
+        async getUrl (extractor, link) {
+          return getThumbnailUrl(link)
+            .replace('picage', 'pic4you')
+            .replace('-thumb', '')
+        }
+      },
+
+      {
+        name: 'PixSense',
+        linkSelector: '[href^="http://www.pixsense.net"]',
+        linkRegEx: new RegExp('^http://www.pixsense.net'),
+
+        async getUrl (extractor, link) {
+          return getThumbnailUrl(link)
+            .replace('small-', '')
+            .replace('/small/', '/big/')
+        }
+      }
+    ]
+
+    return {
+      getImageUrl (link) {
+        const extractor = getExtractor(link.href)
+
+        return extractor.getUrl(extractor, link)
+      },
+
+      getLinksSelector () {
+        return extractors
+          .filter((e) => e.allowed)
+          .map((e) => `a${e.linkSelector}.postLink`)
+          .join(',')
+      },
+
+      getForbiddenHostLinksSelector () {
+        return extractors
+          .filter((e) => !e.allowed)
+          .map((e) => `a${e.linkSelector}.postLink`)
+          .join(',')
+      }
+    }
+  })()
+
   var imageView = (function () {
     const ENABLE_ON_PATH = '/forum/viewtopic.php'
 
     const CLASSES = {
       imageLink: 'image-link',
-      loading: 'loading-indicator',
+      error: 'error-icon',
+      forbiddenHost: 'forbidden-host',
+      loading: 'loading-icon',
       open: 'image-view-open'
     }
 
@@ -505,36 +740,7 @@ body.image-view-open .image-view-container {
       imageLink: `.${CLASSES.imageLink}`
     }
 
-    const linkExtractors = [
-      {
-        name: 'FastPic',
-        linkSelector: '[href^="http://fastpic.ru/view/"]',
-        linkRegEx: new RegExp('^http://fastpic.ru/view/'),
-        imageUrlRegex: /loading_img = '([^']*)'/
-      },
-      {
-        name: 'ImageBam',
-        linkSelector: '[href^="http://www.imagebam.com/image/"]',
-        linkRegEx: new RegExp('^http://www.imagebam.com/image/'),
-        imageUrlRegex: /property="og:image" content="([^"]*)"/
-      },
-      {
-        name: 'ImageVenue',
-        linkSelector: '[href*=".imagevenue.com/img.php"]',
-        linkRegEx: new RegExp('imagevenue.com/img.php'),
-        imageUrlRegex: /id="thepic".*src="([^"]*)"/i,
-        buildImageUrl (pageUrl, imageUrl) {
-          const url = new URL(pageUrl)
-          url.search = ''
-          url.pathname = imageUrl
-
-          return url.href
-        }
-      }
-    ]
-
     const elements = {
-      body: null,
       container: null,
       image: null
     }
@@ -552,28 +758,40 @@ body.image-view-open .image-view-container {
     }
 
     function showImage (imageUrl) {
-      elements.container.classList.add(CLASSES.loading)
+      return new Promise((resolve, reject) => {
+        elements.container.classList.add(CLASSES.loading)
+        elements.container.classList.remove(CLASSES.error)
 
-      elements.image.src = ''
-      let imageObj = new Image()
-      imageObj.onload = function () {
-        elements.image.src = this.src
-        elements.container.classList.remove(CLASSES.loading)
-      }
-      imageObj.src = imageUrl
+        // clear previous
+        elements.image.src = ''
 
-      elements.body.classList.add(CLASSES.open)
-      state.open = true
+        let imageObj = new Image()
+        imageObj.onload = function () {
+          elements.image.src = this.src
+          elements.container.classList.remove(CLASSES.loading)
+          resolve()
+        }
+        imageObj.onerror = function (e) {
+          elements.container.classList.remove(CLASSES.loading)
+          elements.container.classList.add(CLASSES.error)
+          reject(e)
+        }
+        // load image
+        imageObj.src = imageUrl
+
+        document.body.classList.add(CLASSES.open)
+        state.open = true
+      })
     }
 
-    function hideImage (imageUrl) {
-      elements.body.classList.remove(CLASSES.open)
+    function hideImage () {
+      document.body.classList.remove(CLASSES.open)
       state.open = false
       state.currentLink = null
       elements.image.src = ''
     }
 
-    function setImage (link) {
+    async function setImage (link) {
       state.currentLink = link
 
       let imageUrl = link.dataset['imgUrl']
@@ -583,13 +801,17 @@ body.image-view-open .image-view-container {
       }
 
       link.classList.add(CLASSES.loading)
-      getImageUrl(link.href, (imageUrl) => {
-        link.dataset['imgUrl'] = imageUrl
 
-        link.classList.remove(CLASSES.loading)
+      imageUrl = await urlExtractor.getImageUrl(link)
 
-        showImage(imageUrl)
-      })
+      link.dataset['imgUrl'] = imageUrl
+      link.classList.remove(CLASSES.loading)
+
+      showImage(imageUrl)
+        .catch(() => {
+        // hideImage()
+          link.classList.add(CLASSES.error)
+        })
     }
 
     function nextImage () {
@@ -614,27 +836,6 @@ body.image-view-open .image-view-container {
       setImage(state.linksSet[newIndex])
     }
 
-    function getExtractor (pageUrl) {
-      return linkExtractors.find((ext) => ext.linkRegEx.test(pageUrl))
-    }
-
-    function getImageUrl (pageUrl, cb) {
-      request(pageUrl)
-        .then((response) => {
-          const extractor = getExtractor(pageUrl)
-          let imageUrl = regex.getFirstMatchGroup(extractor.imageUrlRegex,
-                                                  response.responseText)
-
-          if (extractor.buildImageUrl) {
-            imageUrl = extractor.buildImageUrl(pageUrl, imageUrl)
-          }
-
-          if (imageUrl) {
-            cb(imageUrl)
-          }
-        })
-    }
-
     function handleLinkClick (event) {
       event.preventDefault()
 
@@ -653,8 +854,6 @@ body.image-view-open .image-view-container {
 
       $.ready()
         .then(() => {
-          elements.body = document.body
-
           elements.image = $.create('img', {
             className: 'image-view'
           })
@@ -672,14 +871,12 @@ body.image-view-open .image-view-container {
           const topic = $('table.topic')
 
           // Assign class to image links
-          const linkSelector = linkExtractors
-            .map((extractor) => {
-              return `a${extractor.linkSelector}.postLink`
-            })
-            .join(',')
-
-          $.set($$$1(linkSelector, topic), {
+          $.set($$$1(urlExtractor.getLinksSelector(), topic), {
             className: CLASSES.imageLink
+          })
+          // Mark forbidden hosts
+          $.set($$$1(urlExtractor.getForbiddenHostLinksSelector(), topic), {
+            className: `${CLASSES.forbiddenHost} ${CLASSES.imageLink}`
           })
 
           // Event handlers
