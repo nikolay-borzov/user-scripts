@@ -1,5 +1,5 @@
 # user-scripts
-[![Build Status][travis-image]][travis-url] [![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
+[![JavaScript Style Guide][standard-image]][standard-url] [![Build Status][travis-image]][travis-url] [![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
 
 User scripts for Tampermonkey and ~~Greasemonkey~~
 
@@ -35,6 +35,9 @@ Improves UX
 
 [greenkeeper-image]: https://badges.greenkeeper.io/shikiyoku/user-scripts.svg
 [greenkeeper-url]: https://greenkeeper.io/
+
+[standard-image]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
+[standard-url]: https://standardjs.com
 
 [jrdb-size]: https://img.shields.io/github/size/shikiyoku/user-scripts/dist/joyreactor-download-button.user.js.svg
 [jrdb-url]: https://github.com/shikiyoku/user-scripts/raw/master/dist/joyreactor-download-button.user.js
