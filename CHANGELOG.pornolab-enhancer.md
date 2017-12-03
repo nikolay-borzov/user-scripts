@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 1.6.0 - 2107-12-03
+### Changed
+- Add `+` as tags separator
+
+### Added
+- Icons for common tags
+
+### Fixed
+- ImageTwist image url extracting
+
 ## 1.5.0 - 2017-12-01
 ### Added
 - Image view: TurboImageHost, PicForAll, imgbum.net, ImageTwist, PicShick, picage.ru, PixSense support

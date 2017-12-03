@@ -20,15 +20,18 @@ Improves UX
 - Enables on page image view. Supported hosts are Fastpic, ImageBam, ImageVenue, TurboImageHost, PicForAll, imgbum.net, ImageTwist, PicShick, stuffed.ru, PixSense. Press `→`/`←` to see next/previous image
 - Mark images from forbidden hosts
 
+## Attributions
+- Flag icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
+
 ## Tools and Resources
 
-- https://material.io/icons
-- https://jakearchibald.github.io/svgomg/
-- http://b64.io/
-- https://codepen.io/lehollandaisvolant/pen/dMQXYX
-- http://keepachangelog.com/en/1.0.0/
-- https://regex101.com/
-- http://convertico.com/
+- [Material Design icons](https://material.io/icons)
+- [SVGOMG - SVGO's Missing GUI](https://jakearchibald.github.io/svgomg)
+- [b64.io - image optimisation & base64 encode](http://b64.io)
+- [Inkscape](https://inkscape.org/en/)
+- [Material Design Button "ripple" effect animation (pure CSS)](https://codepen.io/lehollandaisvolant/pen/dMQXYX)
+- [Keep a Changelog](http://keepachangelog.com/en/1.0.0)
+- [Online regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript](https://regex101.com)
 
 [travis-image]: https://travis-ci.org/shikiyoku/user-scripts.svg?branch=master
 [travis-url]: https://travis-ci.org/shikiyoku/user-scripts

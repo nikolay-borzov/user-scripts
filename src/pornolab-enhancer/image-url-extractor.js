@@ -86,11 +86,12 @@ export default (function () {
 
       async getUrl (extractor, link) {
         const imageName = link.href.split('/').pop()
+        const extension = imageName.split('.').pop()
         const imageUrl = getThumbnailUrl(link)
           .replace('/th/', '/i/')
-          .replace('jpg', 'JPG')
+          .slice(0, -extension.length)
 
-        return `${imageUrl}/${imageName}`
+        return `${imageUrl}${extension}/${imageName}`
       }
     },
 

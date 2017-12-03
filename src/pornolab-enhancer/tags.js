@@ -9,8 +9,37 @@ export default (function () {
 
   // separates tags from title
   const TITLE_REGEX = /(?:\[([^[\]]+)\]+)?([^[]*)?/g
-  const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|\/)/
+  const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|\/|\+)/
   const TAGS_GROUP_SEPARATOR = ' | '
+
+  const DIMENSIONS = [
+    '240p',
+    '360p',
+    '480p',
+    '540p',
+    '576p',
+    '720p',
+    '1080p',
+    '1080i',
+    '1440p',
+    '2160p'
+  ]
+  const DIMENSION_ICON_NAME = 'dimension'
+
+  const TAG_ICON_MAP = {
+    'eng': 'eng',
+    'jap': 'jap',
+    'rus': 'rus',
+    'chi': 'chi',
+    'spa': 'spa',
+    'por': 'por',
+    'ger': 'ger',
+    'inprogress': 'in-progress'
+  }
+
+  DIMENSIONS.forEach((dim) => {
+    TAG_ICON_MAP[dim] = DIMENSION_ICON_NAME
+  })
 
   /**
    * Extracts tags and title from title string
@@ -74,8 +103,16 @@ export default (function () {
     return tags
       .filter((tag) => tag.length)
       .map((tag) => {
+        let className = 'tags-row-tag'
+        tag = tag.trim()
+
+        const tagkey = tag.toLowerCase()
+        if (tagkey in TAG_ICON_MAP) {
+          className = `${className} tag-with-icon icon-${TAG_ICON_MAP[tagkey]}`
+        }
+
         return $.create('a', {
-          className: 'tags-row-tag',
+          className,
           textContent: tag,
           href: `/forum/tracker.php?nm=${tag}`,
           target: '_blank'

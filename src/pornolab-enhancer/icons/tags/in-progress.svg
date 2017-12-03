@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="500"
+   height="500"
+   version="1.1"
+   id="svg3761"
+   sodipodi:docname="in-progress.1.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata3767">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3765">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3986">
+      <rect
+         style="fill:#262425"
+         id="rect3988"
+         width="500"
+         height="100"
+         x="0"
+         y="100" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4005">
+      <rect
+         style="fill:#262425"
+         id="rect4007"
+         width="500"
+         height="100"
+         x="0"
+         y="300" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview3763"
+     showgrid="false"
+     inkscape:pagecheckerboard="false"
+     inkscape:showpageshadow="false"
+     inkscape:zoom="0.83007654"
+     inkscape:cx="131.86944"
+     inkscape:cy="202.51767"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3761" />
+  <circle
+     id="circle"
+     cx="2.8421709e-014"
+     cy="353.55341"
+     r="250"
+     style="fill:#ebb531"
+     transform="rotate(-45)" />
+  <circle
+     id="circle-9"
+     cx="250"
+     cy="250"
+     r="250"
+     style="fill:#262425"
+     clip-path="url(#clipPath3986)"
+     transform="rotate(-45,250,250)" />
+  <circle
+     id="circle-7"
+     cx="250"
+     cy="250"
+     r="250"
+     style="fill:#262425"
+     clip-path="url(#clipPath4005)"
+     transform="rotate(-45,250,250)" />
+</svg>
