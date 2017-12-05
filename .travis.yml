@@ -5,6 +5,12 @@ node_js:
 cache:
   directories:
     - "node_modules"
+env:
+  - SCRIPT_CODE=ple
+  - SCRIPT_CODE=jrdb
+script:
+  - npm run $SCRIPT_CODE:test
+  - npm run lint:src
 before_install: npm install -g greenkeeper-lockfile@1
 before_script: greenkeeper-lockfile-update
 after_script: greenkeeper-lockfile-upload
