@@ -1,6 +1,8 @@
 # Pornolab Enhancer Changelog
 
-## Unreleased
+## 1.7.0 - 2017-12-06
+### Added
+- New feature - Find similar post
 
 ## 1.6.0 - 2107-12-03
 ### Changed
