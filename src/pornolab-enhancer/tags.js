@@ -7,7 +7,7 @@ import tagsCSS from './styles/tags.css'
 export default (function () {
   const TOPIC_PATH = '/forum/viewtopic.php'
 
-  // separates tags from title
+  // Separates tags from title
   const TITLE_REGEX = /(?:\[([^[\]]+)\]+)?([^[]*)?/g
   const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|\/|\+)/
   const TAGS_GROUP_SEPARATOR = ' | '

@@ -1,0 +1,30 @@
+.find-similar-link::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  box-sizing: border-box;
+  width: 17px;
+  height: 17px;
+  transform: translate(-50%, -50%);
+  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMzQ1ZGE0IiBoZWlnaHQ9IjI0IiB3aWR0aD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0zIDVIMXYxNmMwIDEuMS45IDIgMiAyaDE2di0ySDNWNXptMTgtNEg3Yy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjNjMC0xLjEtLjktMi0yLTJ6bTAgMTZIN1YzaDE0djE0eiIvPjwvc3ZnPg==);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+.find-similar-link {
+  display: inline-block;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  margin-left: 10px;
+  border: 1px solid transparent;
+  border-radius: 100%;
+  vertical-align: middle;
+}
+
+.find-similar-link:hover {
+  border-color: #345da4;
+  background-color: #efefef;
+}

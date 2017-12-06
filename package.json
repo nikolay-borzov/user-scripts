@@ -11,7 +11,9 @@
     "jrdb:build": "npm run jrdb:test && npm run lint:dist",
     "ple:wip:build": "rollup --config rollup.config.ple.wip.js && npm run lint:dist",
     "ple:watch": "chokidar \"src/**\" -c \"npm run ple:test\"",
-    "lint:dist": "eslint --fix dist/*",
+    "ple:lint": "eslint src/pornolab-enhancer/**/*.js",
+    "jrdb:lint": "eslint src/joyreactor-download-button/**/*.js",
+    "lint:dist": "eslint --fix dist/**.js",
     "lint:src": "eslint src/*"
   },
   "repository": {

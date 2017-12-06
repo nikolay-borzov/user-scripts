@@ -2,7 +2,7 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.6.0
+// @version     1.7.0
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
@@ -73,11 +73,12 @@
     }
   }
 
-  !(function () { function t (e, n, s) { return n = void 0 === n ? 1 : n, s = s || n + 1, s - n <= 1 ? function () { if (arguments.length <= n || r.type(arguments[n]) === 'string') return e.apply(this, arguments); var t, s = arguments[n]; for (var i in s) { var o = Array.from(arguments); o.splice(n, 1, i, s[i]), t = e.apply(this, o) } return t } : t(t(e, n + 1, s), n, s - 1) } function e (t, r, s) { var i = n(s); if (i === 'string') { var o = Object.getOwnPropertyDescriptor(r, s); !o || o.writable && o.configurable && o.enumerable && !o.get && !o.set ? t[s] = r[s] : (delete t[s], Object.defineProperty(t, s, o)) } else if (i === 'array')s.forEach(function (n) { n in r && e(t, r, n) }); else for (var a in r)s && (i === 'regexp' && !s.test(a) || i === 'function' && !s.call(r, a)) || e(t, r, a); return t } function n (t) { if (t === null) return 'null'; if (void 0 === t) return 'undefined'; var e = (Object.prototype.toString.call(t).match(/^\[object\s+(.*?)\]$/)[1] || '').toLowerCase(); return e == 'number' && isNaN(t) ? 'nan' : e } var r = self.Bliss = e(function (t, e) { return arguments.length == 2 && !e || !t ? null : r.type(t) === 'string' ? (e || document).querySelector(t) : t || null }, self.Bliss); e(r, {extend: e, overload: t, type: n, property: r.property || '_', sources: {}, noop: function () {}, $: function (t, e) { return t instanceof Node || t instanceof Window ? [t] : arguments.length != 2 || e ? Array.from(typeof t === 'string' ? (e || document).querySelectorAll(t) : t || []) : [] }, defined: function () { for (var t = 0; t < arguments.length; t++) if (void 0 !== arguments[t]) return arguments[t] }, create: function (t, e) { return t instanceof Node ? r.set(t, e) : (arguments.length === 1 && (r.type(t) === 'string' ? e = {} : (e = t, t = e.tag, e = r.extend({}, e, function (t) { return t !== 'tag' }))), r.set(document.createElement(t || 'div'), e)) }, each: function (t, e, n) { n = n || {}; for (var r in t)n[r] = e.call(t, r, t[r]); return n }, ready: function (t) { return t = t || document, new Promise(function (e, n) { t.readyState !== 'loading' ? e() : t.addEventListener('DOMContentLoaded', function () { e() }) }) }, Class: function (t) { var e = ['constructor', 'extends', 'abstract', 'static'].concat(Object.keys(r.classProps)), n = t.hasOwnProperty('constructor') ? t.constructor : r.noop, s = function () { if (this.constructor.__abstract && this.constructor === s) throw new Error('Abstract classes cannot be directly instantiated.'); s['super'] && s['super'].apply(this, arguments), n.apply(this, arguments) }; s['super'] = t['extends'] || null, s.prototype = r.extend(Object.create(s['super'] ? s['super'].prototype : Object), {constructor: s}); var i = function (t) { return this.hasOwnProperty(t) && e.indexOf(t) === -1 }; if (t['static']) { r.extend(s, t['static'], i); for (var o in r.classProps)o in t['static'] && r.classProps[o](s, t['static'][o]) }r.extend(s.prototype, t, i); for (var o in r.classProps)o in t && r.classProps[o](s.prototype, t[o]); return s.prototype['super'] = s['super'] ? s['super'].prototype : null, s.__abstract = !!t['abstract'], s }, classProps: {lazy: t(function (t, e, n) { return Object.defineProperty(t, e, {get: function () { var t = n.call(this); return Object.defineProperty(this, e, {value: t, configurable: !0, enumerable: !0, writable: !0}), t }, set: function (t) { Object.defineProperty(this, e, {value: t, configurable: !0, enumerable: !0, writable: !0}) }, configurable: !0, enumerable: !0}), t }), live: t(function (t, e, n) { return r.type(n) === 'function' && (n = {set: n}), Object.defineProperty(t, e, {get: function () { var t = this['_' + e], r = n.get && n.get.call(this, t); return void 0 !== r ? r : t }, set: function (t) { var r = this['_' + e], s = n.set && n.set.call(this, t, r); this['_' + e] = void 0 !== s ? s : t }, configurable: n.configurable, enumerable: n.enumerable}), t })}, include: function () { var t = arguments[arguments.length - 1], e = arguments.length === 2 ? arguments[0] : !1, n = document.createElement('script'); return e ? Promise.resolve() : new Promise(function (e, s) { r.set(n, {async: !0, onload: function () { e(), r.remove(n) }, onerror: function () { s() }, src: t, inside: document.head}) }) }, fetch: function (t, n) { if (!t) throw new TypeError('URL parameter is mandatory and cannot be ' + t); var s = e({url: new URL(t, location), data: '', method: 'GET', headers: {}, xhr: new XMLHttpRequest()}, n); s.method = s.method.toUpperCase(), r.hooks.run('fetch-args', s), s.method === 'GET' && s.data && (s.url.search += s.data), document.body.setAttribute('data-loading', s.url), s.xhr.open(s.method, s.url.href, s.async !== !1, s.user, s.password); for (var i in n) if (i in s.xhr) try { s.xhr[i] = n[i] } catch (o) { self.console && console.error(o) }s.method === 'GET' || s.headers['Content-type'] || s.headers['Content-Type'] || s.xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); for (var a in s.headers)s.xhr.setRequestHeader(a, s.headers[a]); return new Promise(function (t, e) { s.xhr.onload = function () { document.body.removeAttribute('data-loading'), s.xhr.status === 0 || s.xhr.status >= 200 && s.xhr.status < 300 || s.xhr.status === 304 ? t(s.xhr) : e(r.extend(Error(s.xhr.statusText), {xhr: s.xhr, get status () { return this.xhr.status }})) }, s.xhr.onerror = function () { document.body.removeAttribute('data-loading'), e(r.extend(Error('Network Error'), {xhr: s.xhr})) }, s.xhr.ontimeout = function () { document.body.removeAttribute('data-loading'), e(r.extend(Error('Network Timeout'), {xhr: s.xhr})) }, s.xhr.send(s.method === 'GET' ? null : s.data) }) }, value: function (t) { var e = r.type(t) !== 'string'; return r.$(arguments).slice(+e).reduce(function (t, e) { return t && t[e] }, e ? t : self) }}), r.Hooks = new r.Class({add: function (t, e, n) { (Array.isArray(t) ? t : [t]).forEach(function (t) { this[t] = this[t] || [], this[t][n ? 'unshift' : 'push'](e) }, this) }, run: function (t, e) { this[t] = this[t] || [], this[t].forEach(function (t) { t.call(e && e.context ? e.context : e, e) }) }}), r.hooks = new r.Hooks(); var s = r.property; r.Element = function (t) { this.subject = t, this.data = {}, this.bliss = {} }, r.Element.prototype = {set: t(function (t, e) { t in r.setProps ? r.setProps[t].call(this, e) : t in this ? this[t] = e : this.setAttribute(t, e) }, 0), transition: function (t, e) { return e = +e || 400, new Promise(function (n, s) { if ('transition' in this.style) { var i = r.extend({}, this.style, /^transition(Duration|Property)$/); r.style(this, {transitionDuration: (e || 400) + 'ms', transitionProperty: Object.keys(t).join(', ')}), r.once(this, 'transitionend', function () { clearTimeout(o), r.style(this, i), n(this) }); var o = setTimeout(n, e + 50, this); r.style(this, t) } else r.style(this, t), n(this) }.bind(this)) }, fire: function (t, e) { var n = document.createEvent('HTMLEvents'); return n.initEvent(t, !0, !0), this.dispatchEvent(r.extend(n, e)) }, unbind: t(function (t, e) { (t || '').split(/\s+/).forEach(function (t) { if (s in this && (t.indexOf('.') > -1 || !e)) { t = (t || '').split('.'); var n = t[1]; t = t[0]; var r = this[s].bliss.listeners = this[s].bliss.listeners || {}; for (var i in r) if (!t || i === t) for (var o, a = 0; o = r[i][a]; a++)n && n !== o.className || e && e !== o.callback || (this.removeEventListener(i, o.callback, o.capture), a--) } else this.removeEventListener(t, e) }, this) }, 0)}, r.setProps = {style: function (t) { r.extend(this.style, t) }, attributes: function (t) { for (var e in t) this.setAttribute(e, t[e]) }, properties: function (t) { r.extend(this, t) }, events: function (t) { if (t && t.addEventListener) { var e = this; if (t[s] && t[s].bliss) { var n = t[s].bliss.listeners; for (var i in n)n[i].forEach(function (t) { e.addEventListener(i, t.callback, t.capture) }) } for (var o in t)o.indexOf('on') === 0 && (this[o] = t[o]) } else if (arguments.length > 1 && r.type(t) === 'string') { var a = arguments[1], u = arguments[2]; t.split(/\s+/).forEach(function (t) { this.addEventListener(t, a, u) }, this) } else for (var c in t)r.events(this, c, t[c]) }, once: t(function (t, e) { t = t.split(/\s+/); var n = this, r = function () { return t.forEach(function (t) { n.removeEventListener(t, r) }), e.apply(n, arguments) }; t.forEach(function (t) { n.addEventListener(t, r) }) }, 0), delegate: t(function (t, e, n) { this.addEventListener(t, function (t) { t.target.closest(e) && n.call(this, t) }) }, 0, 2), contents: function (t) { (t || t === 0) && (Array.isArray(t) ? t : [t]).forEach(function (t) { var e = r.type(t); /^(string|number)$/.test(e) ? t = document.createTextNode(t + '') : e === 'object' && (t = r.create(t)), t instanceof Node && this.appendChild(t) }, this) }, inside: function (t) { t.appendChild(this) }, before: function (t) { t.parentNode.insertBefore(this, t) }, after: function (t) { t.parentNode.insertBefore(this, t.nextSibling) }, start: function (t) { t.insertBefore(this, t.firstChild) }, around: function (t) { t.parentNode && r.before(this, t), (/^template$/i.test(this.nodeName) ? this.content || this : this).appendChild(t) }}, r.Array = function (t) { this.subject = t }, r.Array.prototype = {all: function (t) { var e = $$(arguments).slice(1); return this[t].apply(this, e) }}, r.add = t(function (t, e, n, s) { n = r.extend({$: !0, element: !0, array: !0}, n), r.type(e) == 'function' && (!n.element || t in r.Element.prototype && s || (r.Element.prototype[t] = function () { return this.subject && r.defined(e.apply(this.subject, arguments), this.subject) }), !n.array || t in r.Array.prototype && s || (r.Array.prototype[t] = function () { var t = arguments; return this.subject.map(function (n) { return n && r.defined(e.apply(n, t), n) }) }), n.$ && (r.sources[t] = r[t] = e, (n.array || n.element) && (r[t] = function () { var e = [].slice.apply(arguments), s = e.shift(), i = n.array && Array.isArray(s) ? 'Array' : 'Element'; return r[i].prototype[t].apply({subject: s}, e) }))) }, 0), r.add(r.Array.prototype, {element: !1}), r.add(r.Element.prototype), r.add(r.setProps), r.add(r.classProps, {element: !1, array: !1}); var i = document.createElement('_'); r.add(r.extend({}, HTMLElement.prototype, function (t) { return r.type(i[t]) === 'function' }), null, !0) }())
-
   /* global Bliss */
+  // eslint-disable-next-line
+!(function(){function t(e,n,i){return n=void 0===n?1:n, i=i||n+1, i-n<=1?function(){if(arguments.length<=n||"string"===r.type(arguments[n]))return e.apply(this,arguments);var t,i=arguments[n];for(var o in i){var s=Array.prototype.slice.call(arguments);s.splice(n,1,o,i[o]), t=e.apply(this,s);}return t}:t(t(e,n+1,i),n,i-1)}function e(t,r,i){var o=n(i);if("string"===o){var s=Object.getOwnPropertyDescriptor(r,i);!s||s.writable&&s.configurable&&s.enumerable&&!s.get&&!s.set?t[i]=r[i]:(delete t[i], Object.defineProperty(t,i,s));}else if("array"===o)i.forEach(function(n){n in r&&e(t,r,n);});else for(var a in r)i&&("regexp"===o&&!i.test(a)||"function"===o&&!i.call(r,a))||e(t,r,a);return t}function n(t){if(null===t)return"null";if(void 0===t)return"undefined";var e=(Object.prototype.toString.call(t).match(/^\[object\s+(.*?)\]$/)[1]||"").toLowerCase();return"number"==e&&isNaN(t)?"nan":e}var r=self.Bliss=e(function(t,e){return 2==arguments.length&&!e||!t?null:"string"===r.type(t)?(e||document).querySelector(t):t||null},self.Bliss);e(r,{extend:e,overload:t,type:n,property:r.property||"_",listeners:self.WeakMap?new WeakMap:new Map,original:{addEventListener:(self.EventTarget||Node).prototype.addEventListener,removeEventListener:(self.EventTarget||Node).prototype.removeEventListener},sources:{},noop:function(){},$:function(t,e){return t instanceof Node||t instanceof Window?[t]:2!=arguments.length||e?Array.prototype.slice.call("string"==typeof t?(e||document).querySelectorAll(t):t||[]):[]},defined:function(){for(var t=0;t<arguments.length;t++)if(void 0!==arguments[t])return arguments[t]},create:function(t,e){return t instanceof Node?r.set(t,e):(1===arguments.length&&("string"===r.type(t)?e={}:(e=t, t=e.tag, e=r.extend({},e,function(t){return"tag"!==t}))), r.set(document.createElement(t||"div"),e))},each:function(t,e,n){n=n||{};for(var r in t)n[r]=e.call(t,r,t[r]);return n},ready:function(t,e,n){if("function"!=typeof t||e||(e=t, t=void 0), t=t||document, e&&("loading"!==t.readyState?e():r.once(t,"DOMContentLoaded",function(){e();})), !n)return new Promise(function(e){r.ready(t,e,!0);})},Class:function(t){var e,n=["constructor","extends","abstract","static"].concat(Object.keys(r.classProps)),i=t.hasOwnProperty("constructor")?t.constructor:r.noop;2==arguments.length?(e=arguments[0], t=arguments[1]):(e=function(){if(this.constructor.__abstract&&this.constructor===e)throw new Error("Abstract classes cannot be directly instantiated.");e["super"]&&e["super"].apply(this,arguments), i.apply(this,arguments);}, e["super"]=t["extends"]||null, e.prototype=r.extend(Object.create(e["super"]?e["super"].prototype:Object),{constructor:e}), e.prototype["super"]=e["super"]?e["super"].prototype:null, e.__abstract=!!t["abstract"]);var o=function(t){return this.hasOwnProperty(t)&&n.indexOf(t)===-1};if(t["static"]){r.extend(e,t["static"],o);for(var s in r.classProps)s in t["static"]&&r.classProps[s](e,t["static"][s]);}r.extend(e.prototype,t,o);for(var s in r.classProps)s in t&&r.classProps[s](e.prototype,t[s]);return e},classProps:{lazy:t(function(t,e,n){return Object.defineProperty(t,e,{get:function(){var t=n.call(this);return Object.defineProperty(this,e,{value:t,configurable:!0,enumerable:!0,writable:!0}), t},set:function(t){Object.defineProperty(this,e,{value:t,configurable:!0,enumerable:!0,writable:!0});},configurable:!0,enumerable:!0}), t}),live:t(function(t,e,n){return"function"===r.type(n)&&(n={set:n}), Object.defineProperty(t,e,{get:function(){var t=this["_"+e],r=n.get&&n.get.call(this,t);return void 0!==r?r:t},set:function(t){var r=this["_"+e],i=n.set&&n.set.call(this,t,r);this["_"+e]=void 0!==i?i:t;},configurable:n.configurable,enumerable:n.enumerable}), t})},include:function(){var t=arguments[arguments.length-1],e=2===arguments.length&&arguments[0],n=document.createElement("script");return e?Promise.resolve():new Promise(function(e,i){r.set(n,{async:!0,onload:function(){e(), n.parentNode&&n.parentNode.removeChild(n);},onerror:function(){i();},src:t,inside:document.head});})},fetch:function(t,n){if(!t)throw new TypeError("URL parameter is mandatory and cannot be "+t);var i=e({url:new URL(t,location),data:"",method:"GET",headers:{},xhr:new XMLHttpRequest},n);i.method=i.method.toUpperCase(), r.hooks.run("fetch-args",i), "GET"===i.method&&i.data&&(i.url.search+=i.data), document.body.setAttribute("data-loading",i.url), i.xhr.open(i.method,i.url.href,i.async!==!1,i.user,i.password);for(var o in n)if("upload"===o)i.xhr.upload&&"object"==typeof n[o]&&r.extend(i.xhr.upload,n[o]);else if(o in i.xhr)try{i.xhr[o]=n[o];}catch(s){self.console&&console.error(s);}var a=Object.keys(i.headers).map(function(t){return t.toLowerCase()});"GET"!==i.method&&a.indexOf("content-type")===-1&&i.xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");for(var c in i.headers)void 0!==i.headers[c]&&i.xhr.setRequestHeader(c,i.headers[c]);var u=new Promise(function(t,e){i.xhr.onload=function(){document.body.removeAttribute("data-loading"), 0===i.xhr.status||i.xhr.status>=200&&i.xhr.status<300||304===i.xhr.status?t(i.xhr):e(r.extend(Error(i.xhr.statusText),{xhr:i.xhr,get status(){return this.xhr.status}}));}, i.xhr.onerror=function(){document.body.removeAttribute("data-loading"), e(r.extend(Error("Network Error"),{xhr:i.xhr}));}, i.xhr.ontimeout=function(){document.body.removeAttribute("data-loading"), e(r.extend(Error("Network Timeout"),{xhr:i.xhr}));}, i.xhr.send("GET"===i.method?null:i.data);});return u.xhr=i.xhr, u},value:function(t){var e="string"!==r.type(t);return r.$(arguments).slice(+e).reduce(function(t,e){return t&&t[e]},e?t:self)}}), r.Hooks=new r.Class({add:function(t,e,n){if("string"==typeof arguments[0])(Array.isArray(t)?t:[t]).forEach(function(t){this[t]=this[t]||[], e&&this[t][n?"unshift":"push"](e);},this);else for(var t in arguments[0])this.add(t,arguments[0][t],arguments[1]);},run:function(t,e){this[t]=this[t]||[], this[t].forEach(function(t){t.call(e&&e.context?e.context:e,e);});}}), r.hooks=new r.Hooks;r.property;r.Element=function(t){this.subject=t, this.data={}, this.bliss={};}, r.Element.prototype={set:t(function(t,e){t in r.setProps?r.setProps[t].call(this,e):t in this?this[t]=e:this.setAttribute(t,e);},0),transition:function(t,e){return e=+e||400, new Promise(function(n,i){if("transition"in this.style){var o=r.extend({},this.style,/^transition(Duration|Property)$/);r.style(this,{transitionDuration:(e||400)+"ms",transitionProperty:Object.keys(t).join(", ")}), r.once(this,"transitionend",function(){clearTimeout(s), r.style(this,o), n(this);});var s=setTimeout(n,e+50,this);r.style(this,t);}else r.style(this,t), n(this);}.bind(this))},fire:function(t,e){var n=document.createEvent("HTMLEvents");return n.initEvent(t,!0,!0), this.dispatchEvent(r.extend(n,e))},bind:t(function(t,e){if(arguments.length>1&&("function"===r.type(e)||e.handleEvent)){var n=e;e="object"===r.type(arguments[2])?arguments[2]:{capture:!!arguments[2]}, e.callback=n;}var i=r.listeners.get(this)||{};t.trim().split(/\s+/).forEach(function(t){if(t.indexOf(".")>-1){t=t.split(".");var n=t[1];t=t[0];}i[t]=i[t]||[], 0===i[t].filter(function(t){return t.callback===e.callback&&t.capture==e.capture}).length&&i[t].push(r.extend({className:n},e)), r.original.addEventListener.call(this,t,e.callback,e);},this), r.listeners.set(this,i);},0),unbind:t(function(t,e){if(e&&("function"===r.type(e)||e.handleEvent)){var n=e;e=arguments[2];}"boolean"==r.type(e)&&(e={capture:e}), e=e||{}, e.callback=e.callback||n;var i=r.listeners.get(this);(t||"").trim().split(/\s+/).forEach(function(t){if(t.indexOf(".")>-1){t=t.split(".");var n=t[1];t=t[0];}if(t&&e.callback)return r.original.removeEventListener.call(this,t,e.callback,e.capture);if(i)for(var o in i)if(!t||o===t)for(var s,a=0;s=i[o][a];a++)n&&n!==s.className||e.callback&&e.callback!==s.callback||!!e.capture!=!!s.capture||(i[o].splice(a,1), r.original.removeEventListener.call(this,o,s.callback,s.capture), a--);},this);},0)}, r.setProps={style:function(t){for(var e in t)e in this.style?this.style[e]=t[e]:this.style.setProperty(e,t[e]);},attributes:function(t){for(var e in t)this.setAttribute(e,t[e]);},properties:function(t){r.extend(this,t);},events:function(t){if(1!=arguments.length||!t||!t.addEventListener)return r.bind.apply(this,[this].concat(r.$(arguments)));var e=this;if(r.listeners){var n=r.listeners.get(t);for(var i in n)n[i].forEach(function(t){r.bind(e,i,t.callback,t.capture);});}for(var o in t)0===o.indexOf("on")&&(this[o]=t[o]);},once:t(function(t,e){var n=this,i=function(){return r.unbind(n,t,i), e.apply(n,arguments)};r.bind(this,t,i,{once:!0});},0),delegate:t(function(t,e,n){r.bind(this,t,function(t){t.target.closest(e)&&n.call(this,t);});},0,2),contents:function(t){(t||0===t)&&(Array.isArray(t)?t:[t]).forEach(function(t){var e=r.type(t);/^(string|number)$/.test(e)?t=document.createTextNode(t+""):"object"===e&&(t=r.create(t)), t instanceof Node&&this.appendChild(t);},this);},inside:function(t){t&&t.appendChild(this);},before:function(t){t&&t.parentNode.insertBefore(this,t);},after:function(t){t&&t.parentNode.insertBefore(this,t.nextSibling);},start:function(t){t&&t.insertBefore(this,t.firstChild);},around:function(t){t&&t.parentNode&&r.before(this,t), this.appendChild(t);}}, r.Array=function(t){this.subject=t;}, r.Array.prototype={all:function(t){var e=r.$(arguments).slice(1);return this[t].apply(this,e)}}, r.add=t(function(t,e,n,i){n=r.extend({$:!0,element:!0,array:!0},n), "function"==r.type(e)&&(!n.element||t in r.Element.prototype&&i||(r.Element.prototype[t]=function(){return this.subject&&r.defined(e.apply(this.subject,arguments),this.subject)}), !n.array||t in r.Array.prototype&&i||(r.Array.prototype[t]=function(){var t=arguments;return this.subject.map(function(n){return n&&r.defined(e.apply(n,t),n)})}), n.$&&(r.sources[t]=r[t]=e, (n.array||n.element)&&(r[t]=function(){var e=[].slice.apply(arguments),i=e.shift(),o=n.array&&Array.isArray(i)?"Array":"Element";return r[o].prototype[t].apply({subject:i},e)})));},0), r.add(r.Array.prototype,{element:!1}), r.add(r.Element.prototype), r.add(r.setProps), r.add(r.classProps,{element:!1,array:!1});var i=document.createElement("_");r.add(r.extend({},HTMLElement.prototype,function(t){return"function"===r.type(i[t])}),null,!0);}());
+
   const $ = Bliss
-  const $$$1 = Bliss.$
+  const $$ = Bliss.$
 
   var tagsCSS = `.tags-row {
   padding: 3px 0 0;
@@ -165,7 +166,7 @@
   var tags = (function () {
     const TOPIC_PATH = '/forum/viewtopic.php'
 
-    // separates tags from title
+    // Separates tags from title
     const TITLE_REGEX = /(?:\[([^[\]]+)\]+)?([^[]*)?/g
     const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|\/|\+)/
     const TAGS_GROUP_SEPARATOR = ' | '
@@ -936,7 +937,7 @@ body.image-view-open .image-view-container {
       event.preventDefault()
 
       let link = event.target
-      state.linksSet = $$$1(SELECTORS.imageLink, link.parentNode)
+      state.linksSet = $$(SELECTORS.imageLink, link.parentNode)
 
       setImage(link)
     }
@@ -967,11 +968,11 @@ body.image-view-open .image-view-container {
           const topic = $('table.topic')
 
           // Assign class to image links
-          $.set($$$1(urlExtractor.getLinksSelector(), topic), {
+          $.set($$(urlExtractor.getLinksSelector(), topic), {
             className: CLASSES.imageLink
           })
           // Mark forbidden hosts
-          $.set($$$1(urlExtractor.getForbiddenHostLinksSelector(), topic), {
+          $.set($$(urlExtractor.getForbiddenHostLinksSelector(), topic), {
             className: `${CLASSES.forbiddenHost} ${CLASSES.imageLink}`
           })
 
@@ -994,8 +995,78 @@ body.image-view-open .image-view-container {
     }
   })()
 
+  var findSimilarCSS = `.find-similar-link::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  box-sizing: border-box;
+  width: 17px;
+  height: 17px;
+  transform: translate(-50%, -50%);
+  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMzQ1ZGE0IiBoZWlnaHQ9IjI0IiB3aWR0aD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0zIDVIMXYxNmMwIDEuMS45IDIgMiAyaDE2di0ySDNWNXptMTgtNEg3Yy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjNjMC0xLjEtLjktMi0yLTJ6bTAgMTZIN1YzaDE0djE0eiIvPjwvc3ZnPg==);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+.find-similar-link {
+  display: inline-block;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  margin-left: 10px;
+  border: 1px solid transparent;
+  border-radius: 100%;
+  vertical-align: middle;
+}
+
+.find-similar-link:hover {
+  border-color: #345da4;
+  background-color: #efefef;
+}
+`
+
+  var findSimilar = (function () {
+    const TOPIC_PATH = '/forum/viewtopic.php'
+    // Match tags
+    const TAGS_REGEX = /\[[^\]]+\]/g
+    const REMOVE_CHARS_REGEX = /[,:()#/\d.]/g
+    const TRIM_SPACES_REGEX = /\s{2,}/g
+    // const SEARCH_TERM_MAX_LENGTH = 60
+
+    function createFindSimilarLink () {
+      const titleElement = $('.maintitle')
+      const titleLink = titleElement.children[0]
+      const searchTerm = titleLink.textContent
+        .trim()
+        .replace(TAGS_REGEX, '')
+        .replace(REMOVE_CHARS_REGEX, '')
+        .replace(TRIM_SPACES_REGEX, ' ')
+
+      $.create('a', {
+        className: 'find-similar-link',
+        href: `/forum/tracker.php?nm=${searchTerm}`,
+        target: '_blank',
+        title: 'Find similar',
+        after: titleLink
+      })
+    }
+
+    return function () {
+      $.ready()
+        .then(() => {
+          if (location.pathname === TOPIC_PATH) {
+            addStyle(findSimilarCSS)
+            createFindSimilarLink()
+          }
+        })
+    }
+  })()
+
   tags()
   addStyle(pagerCSS)
   download()
   imageView()
+  findSimilar()
 }())
