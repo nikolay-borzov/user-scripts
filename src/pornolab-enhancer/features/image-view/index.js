@@ -1,7 +1,7 @@
-import { $, $$ } from '../libs/bliss'
-import addStyle from '../common/addStyle'
+import { $, $$ } from 'bliss'
+import addStyle from 'addStyle'
 
-import imageViewCSS from './styles/image-view.css'
+import imageViewCSS from './styles.css'
 
 import urlExtractor from './image-url-extractor'
 

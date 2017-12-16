@@ -1,7 +1,8 @@
+import path from 'path'
 import resolve from 'rollup-plugin-node-resolve'
+import alias from 'rollup-plugin-alias'
 import stringLiteral from './rollup-plugins/string-literal'
 import metablock from 'rollup-plugin-userscript-metablock'
-import license from 'rollup-plugin-license'
 
 export default {
   input: 'src/pornolab-enhancer/main.js',
@@ -15,14 +16,16 @@ export default {
       include: '**/*.css'
     }),
     resolve(),
+    alias({
+      resolve: ['.js'],
+      bliss: path.resolve('src/libs/bliss'),
+      addStyle: path.resolve('src/common/addStyle'),
+      regex: path.resolve('src/common/regex'),
+      request: path.resolve('src/common/request')
+    }),
     metablock({
       file: 'src/pornolab-enhancer/meta.json',
-      version: '1.7.0'
-    }),
-    license({
-      thirdParty: {
-        output: 'dist/pornolab-enhancer.dependencies.txt'
-      }
+      version: '1.7.1'
     })
   ]
 }

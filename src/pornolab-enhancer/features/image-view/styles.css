@@ -130,10 +130,12 @@ body.image-view-open .image-view-container {
 .image-view {
   width: auto;
   max-width: 100%;
-
   /* fit in view port */
   max-height: 100%;
-
   /* align in the center */
   margin: auto;
+}
+
+.loading-icon .image-view {
+  display: none;
 }

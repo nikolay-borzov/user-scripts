@@ -1,6 +1,6 @@
-import request from '../common/request'
-import regex from '../common/regex'
-import { $ } from '../libs/bliss'
+import request from 'request'
+import regex from 'regex'
+import { $ } from 'bliss'
 
 export default (function () {
   function getExtractor (pageUrl) {

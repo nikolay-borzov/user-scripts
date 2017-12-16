@@ -1,5 +1,16 @@
 # Pornolab Enhancer Changelog
 
+## 1.7.1 - 2017-12-16
+### Changed
+- Feature based folder structure
+- Remove `&` character from title when searching similar posts
+
+### Added
+- French tag icon
+
+### Fixed
+- Hide image during loading
+
 ## 1.7.0 - 2017-12-06
 ### Added
 - New feature - Find similar post

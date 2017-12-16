@@ -1,13 +1,13 @@
-import addStyle from '../common/addStyle'
-import { $ } from '../libs/bliss'
+import addStyle from 'addStyle'
+import { $ } from 'bliss'
 
-import findSimilarCSS from './styles/find-similar.css'
+import findSimilarCSS from './styles.css'
 
 export default (function () {
   const TOPIC_PATH = '/forum/viewtopic.php'
   // Match tags
   const TAGS_REGEX = /\[[^\]]+\]/g
-  const REMOVE_CHARS_REGEX = /[,:()#/\d.]/g
+  const REMOVE_CHARS_REGEX = /[&,:()#/\d.]/g
   const TRIM_SPACES_REGEX = /\s{2,}/g
   // const SEARCH_TERM_MAX_LENGTH = 60
 

@@ -1,10 +1,10 @@
-import addStyle from '../common/addStyle'
+import addStyle from 'addStyle'
 
-import tags from './tags'
+import tags from './features/tags'
 import pagerCSS from './styles/pager.css'
-import download from './download'
-import imageView from './image-view'
-import findSimilar from './find-similar'
+import download from './features/download'
+import imageView from './features/image-view'
+import findSimilar from './features/find-similar'
 
 tags()
 addStyle(pagerCSS)

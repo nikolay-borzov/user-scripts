@@ -5,5 +5,8 @@ module.exports = {
   ],
   plugins: [
     'stylelint-order'
-  ]
+  ],
+  'rules': {
+    'comment-empty-line-before': null
+  }
 }

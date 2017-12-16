@@ -1,7 +1,7 @@
-import { $ } from '../libs/bliss'
-import addStyle from '../common/addStyle'
+import { $ } from 'bliss'
+import addStyle from 'addStyle'
 
-import downloadCSS from './styles/download.css'
+import downloadCSS from './styles.css'
 
 export default (function () {
   const ENABLE_ON_PATH = '/forum/viewtopic.php'

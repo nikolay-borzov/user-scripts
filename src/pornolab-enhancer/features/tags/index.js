@@ -1,8 +1,8 @@
-import addStyle from '../common/addStyle'
-import regex from '../common/regex'
-import { $ } from '../libs/bliss'
+import addStyle from 'addStyle'
+import regex from 'regex'
+import { $ } from 'bliss'
 
-import tagsCSS from './styles/tags.css'
+import tagsCSS from './styles.css'
 
 export default (function () {
   const TOPIC_PATH = '/forum/viewtopic.php'
@@ -27,13 +27,14 @@ export default (function () {
   const DIMENSION_ICON_NAME = 'dimension'
 
   const TAG_ICON_MAP = {
-    'eng': 'eng',
-    'jap': 'jap',
-    'rus': 'rus',
-    'chi': 'chi',
-    'spa': 'spa',
-    'por': 'por',
-    'ger': 'ger',
+    'eng': 'en',
+    'jap': 'ja',
+    'rus': 'ru',
+    'chi': 'zh',
+    'spa': 'es',
+    'por': 'pt',
+    'ger': 'de',
+    'fr': 'fr',
     'inprogress': 'in-progress'
   }
 
