@@ -1,0 +1,55 @@
+.config-menu-link {
+  position: relative;
+  font-weight: bold;
+}
+
+.config-form {
+  position: absolute;
+  z-index: -1;
+  top: 20px;
+  left: 0;
+  padding: 14px;
+  transition: all 0.3s ease;
+  border: solid 1px #cacaca;
+  opacity: 0;
+  background-color: #efefef;
+  color: #000;
+  font-weight: normal;
+}
+
+.expanded .config-form {
+  z-index: 1;
+  opacity: 1;
+}
+
+.config-label {
+  display: flex;
+  align-items: center;
+  padding: 7px;
+  transition: all 0.3s ease;
+}
+
+.config-label:hover {
+  background-color: rgba(52, 93, 164, 0.25);
+}
+
+.config-checkbox {
+  margin: 0 7px 0 0;
+}
+
+.config-apply-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 7px;
+  padding: 5px;
+  border: solid 1px #cacaca;
+  background-color: #cacaca;
+  text-decoration: none !important;
+}
+
+.config-apply-button:hover {
+  border-color: #345da4;
+  color: #345da4;
+  color: #000 !important;
+  text-decoration: none !important;
+}

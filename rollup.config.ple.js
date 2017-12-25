@@ -19,6 +19,7 @@ export default {
     alias({
       resolve: ['.js'],
       bliss: path.resolve('src/libs/bliss'),
+      store: path.resolve('src/common/store'),
       addStyle: path.resolve('src/common/addStyle'),
       regex: path.resolve('src/common/regex'),
       request: path.resolve('src/common/request')

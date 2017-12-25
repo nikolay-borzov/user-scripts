@@ -20,6 +20,7 @@ Improves UX
 - Enables on page image view. Supported hosts are Fastpic, ImageBam, ImageVenue, TurboImageHost, PicForAll, imgbum.net, ImageTwist, PicShick, stuffed.ru, PixSense. Press `→`/`←` to see next/previous image
 - Mark images from forbidden hosts
 - Find similar post
+- Config - disable/enable certain features. Available through menu link "PLE"
 
 ## Attributions
 - Flag icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)

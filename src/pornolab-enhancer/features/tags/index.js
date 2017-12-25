@@ -108,7 +108,7 @@ export default (function () {
         tag = tag.trim()
 
         const tagkey = tag.toLowerCase()
-        if (tagkey in TAG_ICON_MAP) {
+        if (TAG_ICON_MAP.hasOwnProperty(tagkey)) {
           className = `${className} tag-with-icon icon-${TAG_ICON_MAP[tagkey]}`
         }
 

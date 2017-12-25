@@ -1,12 +1,19 @@
 # Pornolab Enhancer Changelog
 
+## 1.8.0
+## Added
+- Config - disable/enable certain features. Available through menu link "PLE"
+
+## Changed
+- Icon
+
 ## 1.7.1 - 2017-12-16
+### Added
+- French tag icon
+
 ### Changed
 - Feature based folder structure
 - Remove `&` character from title when searching similar posts
-
-### Added
-- French tag icon
 
 ### Fixed
 - Hide image during loading
@@ -16,11 +23,11 @@
 - New feature - Find similar post
 
 ## 1.6.0 - 2107-12-03
-### Changed
-- Add `+` as tags separator
-
 ### Added
 - Icons for common tags
+
+### Changed
+- Add `+` as tags separator
 
 ### Fixed
 - ImageTwist image url extracting

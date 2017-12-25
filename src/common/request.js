@@ -1,21 +1,14 @@
-/* global GM_xmlhttpRequest GM */
+import gmPolyfill from './gm-polyfill'
+
 export default (function () {
-  // polyfill xmlhttpRequest
-  const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM
-    ? GM.xmlHttpRequest
-    : GM_xmlhttpRequest //  eslint-disable-line camelcase
+  const xmlHttpRequest = gmPolyfill('xmlHttpRequest')
 
   return function (url, { method = 'GET' } = {}) {
-    return new Promise((resolve, reject) => {
-      xmlHttpRequest({
-        url,
-        method,
-        onerror (response) {
-          console.error(response.responseText)
-          reject(response.responseText)
-        },
-        onload: resolve
-      })
+    return xmlHttpRequest({
+      url,
+      method
+    }).catch((e) => {
+      console.error(e)
     })
   }
 })()

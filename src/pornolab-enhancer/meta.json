@@ -17,7 +17,9 @@
   ],
   "grant": [
     "GM_addStyle",
-    "GM_xmlhttpRequest", "GM.xmlHttpRequest"
+    "GM_xmlhttpRequest", "GM.xmlHttpRequest",
+    "GM_setValue", "GM.setValue",
+    "GM_getValue", "GM.getValue"
   ],
   "run-at": "document-start"
 }
