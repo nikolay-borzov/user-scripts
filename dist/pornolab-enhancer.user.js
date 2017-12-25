@@ -2,7 +2,7 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.7.1
+// @version     1.8.0
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
