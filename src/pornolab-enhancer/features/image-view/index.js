@@ -11,7 +11,6 @@ export default (function () {
   const CLASSES = {
     imageLink: 'image-link',
     error: 'error-icon',
-    forbiddenHost: 'forbidden-host',
     loading: 'loading-icon',
     open: 'image-view-open'
   }
@@ -89,7 +88,6 @@ export default (function () {
 
     showImage(imageUrl)
       .catch(() => {
-        // hideImage()
         link.classList.add(CLASSES.error)
       })
   }
@@ -153,10 +151,6 @@ export default (function () {
         // Assign class to image links
         $.set($$(urlExtractor.getLinksSelector(), topic), {
           className: CLASSES.imageLink
-        })
-        // Mark forbidden hosts
-        $.set($$(urlExtractor.getForbiddenHostLinksSelector(), topic), {
-          className: `${CLASSES.forbiddenHost} ${CLASSES.imageLink}`
         })
 
         // Event handlers

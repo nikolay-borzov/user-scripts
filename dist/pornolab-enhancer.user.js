@@ -2,7 +2,7 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.8.0
+// @version     1.8.1
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
@@ -51,7 +51,6 @@
   var gmPolyfill = (function () {
   // based on https://github.com/greasemonkey/gm4-polyfill
     const gmMethodMap = {
-      'xmlHttpRequest': 'GM_xmlhttpRequest',
       'getValue': 'GM_getValue',
       'setValue': 'GM_setValue'
     }
@@ -780,20 +779,6 @@ img.postImg.image-link {
   background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjYzYyODI4IiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ3IDIgMiA2LjQ3IDIgMTJzNC40NyAxMCAxMCAxMCAxMC00LjQ3IDEwLTEwUzE3LjUzIDIgMTIgMnptNSAxMy41OUwxNS41OSAxNyAxMiAxMy40MSA4LjQxIDE3IDcgMTUuNTkgMTAuNTkgMTIgNyA4LjQxIDguNDEgNyAxMiAxMC41OSAxNS41OSA3IDE3IDguNDEgMTMuNDEgMTIgMTcgMTUuNTl6Ii8+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==);
 }
 
-.forbidden-host var::before {
-  content: '';
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-  width: 25px;
-  height: 25px;
-  opacity: 1;
-  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmJjMDJkIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEgMjFoMjJMMTIgMiAxIDIxem0xMi0zaC0ydi0yaDJ2MnptMC00aC0ydi00aDJ2NHoiLz48L3N2Zz4=);
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-}
-
 @keyframes spin {
   from {
     transform: translate(-50%, -50%) rotate(0deg);
@@ -837,20 +822,27 @@ body.image-view-open .image-view-container {
   margin: auto;
 }
 
-.loading-icon .image-view {
+.loading-icon .image-view,
+.error-icon .image-view {
   display: none;
 }
 `
 
+  /* global GM GM_xmlhttpRequest */
+
   var request = (function () {
-    const xmlHttpRequest = gmPolyfill('xmlHttpRequest')
+    const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM
+      ? GM.xmlHttpRequest
+    : GM_xmlhttpRequest; // eslint-disable-line
 
     return function (url, { method = 'GET' } = {}) {
-      return xmlHttpRequest({
-        url,
-        method
-      }).catch((e) => {
-        console.error(e)
+      return new Promise((resolve, reject) => {
+        xmlHttpRequest({
+          url,
+          method,
+          onload: resolve,
+          onerror: reject
+        })
       })
     }
   })()
@@ -1019,14 +1011,6 @@ body.image-view-open .image-view-container {
 
       getLinksSelector () {
         return extractors
-          .filter((e) => e.allowed)
-          .map((e) => `a${e.linkSelector}.postLink`)
-          .join(',')
-      },
-
-      getForbiddenHostLinksSelector () {
-        return extractors
-          .filter((e) => !e.allowed)
           .map((e) => `a${e.linkSelector}.postLink`)
           .join(',')
       }
@@ -1039,7 +1023,6 @@ body.image-view-open .image-view-container {
     const CLASSES = {
       imageLink: 'image-link',
       error: 'error-icon',
-      forbiddenHost: 'forbidden-host',
       loading: 'loading-icon',
       open: 'image-view-open'
     }
@@ -1117,7 +1100,6 @@ body.image-view-open .image-view-container {
 
       showImage(imageUrl)
         .catch(() => {
-        // hideImage()
           link.classList.add(CLASSES.error)
         })
     }
@@ -1181,10 +1163,6 @@ body.image-view-open .image-view-container {
           // Assign class to image links
           $.set($$(urlExtractor.getLinksSelector(), topic), {
             className: CLASSES.imageLink
-          })
-          // Mark forbidden hosts
-          $.set($$(urlExtractor.getForbiddenHostLinksSelector(), topic), {
-            className: `${CLASSES.forbiddenHost} ${CLASSES.imageLink}`
           })
 
           // Event handlers

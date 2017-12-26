@@ -166,14 +166,6 @@ export default (function () {
 
     getLinksSelector () {
       return extractors
-        .filter((e) => e.allowed)
-        .map((e) => `a${e.linkSelector}.postLink`)
-        .join(',')
-    },
-
-    getForbiddenHostLinksSelector () {
-      return extractors
-        .filter((e) => !e.allowed)
         .map((e) => `a${e.linkSelector}.postLink`)
         .join(',')
     }

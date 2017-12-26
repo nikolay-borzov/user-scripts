@@ -1,5 +1,12 @@
 # Pornolab Enhancer Changelog
 
+## 1.8.2
+## Changed
+- Remove forbidden host icon
+
+## Fixed
+- Extracting image URL from image hosting page
+
 ## 1.8.0
 ## Added
 - Config - disable/enable certain features. Available through menu link "PLE"

@@ -18,7 +18,8 @@ module.exports = {
       {
         'CallExpression': {
           arguments: 'first'
-        }
+        },
+        "SwitchCase": 1
       }
     ]
   }

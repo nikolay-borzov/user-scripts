@@ -2,7 +2,6 @@
 export default (function () {
   // based on https://github.com/greasemonkey/gm4-polyfill
   const gmMethodMap = {
-    'xmlHttpRequest': 'GM_xmlhttpRequest',
     'getValue': 'GM_getValue',
     'setValue': 'GM_setValue'
   }
