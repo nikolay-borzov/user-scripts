@@ -2,7 +2,7 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.8.1
+// @version     1.8.2
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
@@ -99,7 +99,7 @@
   z-index: -1;
   top: 20px;
   left: 0;
-  padding: 14px;
+  padding: 7px;
   transition: all 0.3s ease;
   border: solid 1px #cacaca;
   opacity: 0;
@@ -882,7 +882,7 @@ body.image-view-open .image-view-container {
 
           return thumbUrl
             .replace('thumb', 'big')
-            .replace('jpeg', extension)
+            .replace('jpeg', extension) + '?noht=1'
         }
       },
 
@@ -997,6 +997,28 @@ body.image-view-open .image-view-container {
         async getUrl (extractor, link) {
           return getThumbnailUrl(link)
             .replace('small-', '')
+            .replace('/small/', '/big/')
+        }
+      },
+
+      {
+        name: 'nikapic.ru',
+        linkSelector: '[href^="http://nikapic.ru"]',
+        linkRegEx: new RegExp('^http://nikapic.ru'),
+
+        async getUrl (extractor, link) {
+          return getThumbnailUrl(link)
+            .replace('/small/', '/big/')
+        }
+      },
+
+      {
+        name: 'imgtaxi.com',
+        linkSelector: '[href^="https://imgtaxi.com"]',
+        linkRegEx: new RegExp('^https://imgtaxi.com'),
+
+        async getUrl (extractor, link) {
+          return getThumbnailUrl(link)
             .replace('/small/', '/big/')
         }
       }

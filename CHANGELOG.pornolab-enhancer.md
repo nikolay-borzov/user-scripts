@@ -1,6 +1,13 @@
 # Pornolab Enhancer Changelog
 
 ## 1.8.2
+## Added
+- Image hosts support: nikapic.ru, imgtaxi.com
+
+## Fixed
+- Extracting image URL for fastpic for some cases
+
+## 1.8.1
 ## Changed
 - Remove forbidden host icon
 

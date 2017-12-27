@@ -37,7 +37,7 @@ export default (function () {
 
         return thumbUrl
           .replace('thumb', 'big')
-          .replace('jpeg', extension)
+          .replace('jpeg', extension) + '?noht=1'
       }
     },
 
@@ -152,6 +152,28 @@ export default (function () {
       async getUrl (extractor, link) {
         return getThumbnailUrl(link)
           .replace('small-', '')
+          .replace('/small/', '/big/')
+      }
+    },
+
+    {
+      name: 'nikapic.ru',
+      linkSelector: '[href^="http://nikapic.ru"]',
+      linkRegEx: new RegExp('^http://nikapic.ru'),
+
+      async getUrl (extractor, link) {
+        return getThumbnailUrl(link)
+          .replace('/small/', '/big/')
+      }
+    },
+
+    {
+      name: 'imgtaxi.com',
+      linkSelector: '[href^="https://imgtaxi.com"]',
+      linkRegEx: new RegExp('^https://imgtaxi.com'),
+
+      async getUrl (extractor, link) {
+        return getThumbnailUrl(link)
           .replace('/small/', '/big/')
       }
     }
