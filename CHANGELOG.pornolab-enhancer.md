@@ -1,5 +1,9 @@
 # Pornolab Enhancer Changelog
 
+## 1.8.4
+## Added
+- Add cen/uncen icons
+
 ## 1.8.3
 ## Fixed
 - Pointer cursor for PLE config link

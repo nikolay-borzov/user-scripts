@@ -35,6 +35,8 @@ export default (function () {
     'por': 'pt',
     'ger': 'de',
     'fr': 'fr',
+    'cen': 'cen',
+    'uncen': 'uncen',
     'inprogress': 'in-progress'
   }
 

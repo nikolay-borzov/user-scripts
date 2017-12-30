@@ -26,7 +26,7 @@ export default {
     }),
     metablock({
       file: 'src/pornolab-enhancer/meta.json',
-      version: '1.8.3'
+      version: '1.8.4'
     })
   ]
 }
