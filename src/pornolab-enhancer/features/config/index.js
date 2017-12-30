@@ -70,6 +70,7 @@ export default (function () {
     const menuLink = $.create('a', {
       className: 'config-menu-link',
       textContent: 'PLE',
+      href: '#',
       inside: $('#main-nav td'),
       title: 'Click to open/close config',
       events: {

@@ -1,5 +1,10 @@
 # Pornolab Enhancer Changelog
 
+## 1.8.3
+## Fixed
+- Pointer cursor for PLE config link
+- Title extracting for "Find similar" feature: Take into account search term max length
+
 ## 1.8.2
 ## Added
 - Image hosts support: nikapic.ru, imgtaxi.com

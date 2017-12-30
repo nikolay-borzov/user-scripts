@@ -2,7 +2,7 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.8.2
+// @version     1.8.3
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
@@ -212,6 +212,7 @@
       const menuLink = $.create('a', {
         className: 'config-menu-link',
         textContent: 'PLE',
+        href: '#',
         inside: $('#main-nav td'),
         title: 'Click to open/close config',
         events: {
@@ -256,17 +257,11 @@
   })()
 
   var regex = {
-    getAllMatchGroups (regEx, str) {
-      let results = []
-      let match
-
-      while ((match = regEx.exec(str)) !== null) {
-        results.push(match[1])
-      }
-
-      return results
-    },
-
+  /**
+   * @param {RegEx} regEx
+   * @param {string} str
+   * @returns {Array<string>}
+   */
     getMatchGroups (regEx, str) {
       let matches = []
       let match
@@ -285,6 +280,11 @@
       return matches
     },
 
+    /**
+   * @param {RegEx} regEx
+   * @param {string} str
+   * @returns {string}
+   */
     getFirstMatchGroup (regEx, str) {
       let match = regEx.exec(str)
 
@@ -1239,20 +1239,24 @@ body.image-view-open .image-view-container {
 
   var findSimilar = (function () {
     const TOPIC_PATH = '/forum/viewtopic.php'
-    // Match tags
     const TAGS_REGEX = /\[[^\]]+\]/g
-    const REMOVE_CHARS_REGEX = /[&,:()#/\d.]/g
-    const TRIM_SPACES_REGEX = /\s{2,}/g
-    // const SEARCH_TERM_MAX_LENGTH = 60
+    const WORDS_REGEX = /([\w\u0400-\u04FF-']+)/g
+    const REMOVE_CHARS_REGEX = /^[\d-.]+$/
+    const SEARCH_TERM_MAX_LENGTH = 61
 
     function createFindSimilarLink () {
       const titleElement = $('.maintitle')
       const titleLink = titleElement.children[0]
-      const searchTerm = titleLink.textContent
-        .trim()
-        .replace(TAGS_REGEX, '')
-        .replace(REMOVE_CHARS_REGEX, '')
-        .replace(TRIM_SPACES_REGEX, ' ')
+      const rawTitle = titleLink.textContent.replace(TAGS_REGEX, '').trim()
+      const words = regex.getMatchGroups(WORDS_REGEX, rawTitle)
+      let searchTerm = words
+        .filter((word) => !REMOVE_CHARS_REGEX.test(word))
+        .join(' ')
+
+      if (searchTerm.length > SEARCH_TERM_MAX_LENGTH) {
+        searchTerm = searchTerm.slice(0, SEARCH_TERM_MAX_LENGTH - 1)
+        searchTerm = searchTerm.substring(0, searchTerm.lastIndexOf(' '))
+      }
 
       $.create('a', {
         className: 'find-similar-link',

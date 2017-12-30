@@ -1,15 +1,9 @@
 export default {
-  getAllMatchGroups (regEx, str) {
-    let results = []
-    let match
-
-    while ((match = regEx.exec(str)) !== null) {
-      results.push(match[1])
-    }
-
-    return results
-  },
-
+  /**
+   * @param {RegEx} regEx
+   * @param {string} str
+   * @returns {Array<string>}
+   */
   getMatchGroups (regEx, str) {
     let matches = []
     let match
@@ -28,6 +22,11 @@ export default {
     return matches
   },
 
+  /**
+   * @param {RegEx} regEx
+   * @param {string} str
+   * @returns {string}
+   */
   getFirstMatchGroup (regEx, str) {
     let match = regEx.exec(str)
 

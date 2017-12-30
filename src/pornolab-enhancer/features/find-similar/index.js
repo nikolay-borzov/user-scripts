@@ -1,24 +1,29 @@
 import addStyle from 'addStyle'
 import { $ } from 'bliss'
+import regex from 'regex'
 
 import findSimilarCSS from './styles.css'
 
 export default (function () {
   const TOPIC_PATH = '/forum/viewtopic.php'
-  // Match tags
   const TAGS_REGEX = /\[[^\]]+\]/g
-  const REMOVE_CHARS_REGEX = /[&,:()#/\d.]/g
-  const TRIM_SPACES_REGEX = /\s{2,}/g
-  // const SEARCH_TERM_MAX_LENGTH = 60
+  const WORDS_REGEX = /([\w\u0400-\u04FF-']+)/g
+  const REMOVE_CHARS_REGEX = /^[\d-.]+$/
+  const SEARCH_TERM_MAX_LENGTH = 61
 
   function createFindSimilarLink () {
     const titleElement = $('.maintitle')
     const titleLink = titleElement.children[0]
-    const searchTerm = titleLink.textContent
-      .trim()
-      .replace(TAGS_REGEX, '')
-      .replace(REMOVE_CHARS_REGEX, '')
-      .replace(TRIM_SPACES_REGEX, ' ')
+    const rawTitle = titleLink.textContent.replace(TAGS_REGEX, '').trim()
+    const words = regex.getMatchGroups(WORDS_REGEX, rawTitle)
+    let searchTerm = words
+      .filter((word) => !REMOVE_CHARS_REGEX.test(word))
+      .join(' ')
+
+    if (searchTerm.length > SEARCH_TERM_MAX_LENGTH) {
+      searchTerm = searchTerm.slice(0, SEARCH_TERM_MAX_LENGTH - 1)
+      searchTerm = searchTerm.substring(0, searchTerm.lastIndexOf(' '))
+    }
 
     $.create('a', {
       className: 'find-similar-link',
