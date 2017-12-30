@@ -1,8 +1,12 @@
 # Pornolab Enhancer Changelog
 
+## 1.8.5
+## Added
+- ptcen, cn, ko, 640p icons
+
 ## 1.8.4
 ## Added
-- Add cen/uncen icons
+- cen/uncen icons
 
 ## 1.8.3
 ## Fixed

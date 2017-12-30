@@ -18,6 +18,7 @@ export default (function () {
     '480p',
     '540p',
     '576p',
+    '640p',
     '720p',
     '1080p',
     '1080i',
@@ -31,12 +32,15 @@ export default (function () {
     'jap': 'ja',
     'rus': 'ru',
     'chi': 'zh',
+    'cn': 'zh',
     'spa': 'es',
     'por': 'pt',
     'ger': 'de',
     'fr': 'fr',
+    'korean': 'ko',
     'cen': 'cen',
     'uncen': 'uncen',
+    'ptcen': 'ptcen',
     'inprogress': 'in-progress'
   }
 
