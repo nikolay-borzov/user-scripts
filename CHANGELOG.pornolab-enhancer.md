@@ -1,6 +1,6 @@
 # Pornolab Enhancer Changelog
 
-## 1.9.0
+## 1.9.0 - 2018-01-05
 ## Added
 - Image view close, next, previous, toggle full height buttons
 
@@ -11,34 +11,34 @@
 - Wire up postcss
 - Styles refactoring
 
-## 1.8.5
+## 1.8.5 - 2017-12-30
 ## Added
 - ptcen, cn, ko, 640p icons
 
-## 1.8.4
+## 1.8.4 - 2017-12-30
 ## Added
 - cen/uncen icons
 
-## 1.8.3
+## 1.8.3 - 2017-12-30
 ## Fixed
 - Pointer cursor for PLE config link
 - Title extracting for "Find similar" feature: Take into account search term max length
 
-## 1.8.2
+## 1.8.2 - 2017-12-27
 ## Added
 - Image hosts support: nikapic.ru, imgtaxi.com
 
 ## Fixed
 - Extracting image URL for fastpic for some cases
 
-## 1.8.1
+## 1.8.1 - 2017-12-26
 ## Changed
 - Remove forbidden host icon
 
 ## Fixed
 - Extracting image URL from image hosting page
 
-## 1.8.0
+## 1.8.0 - 2017-12-25
 ## Added
 - Config - disable/enable certain features. Available through menu link "PLE"
 

@@ -236,7 +236,6 @@ body.image-view-open {
 }
 
 .loading-icon .image-view,
-.error-icon .image-view,
-.loading-icon .image-view-toolbar {
+.error-icon .image-view {
   display: none;
 }
