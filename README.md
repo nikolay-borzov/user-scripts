@@ -14,13 +14,35 @@ User scripts for Tampermonkey and ~~Greasemonkey~~
 [![PLE file size][ple-size]][ple-url] [![PLE OpenUserJS][open-user-js-image]][ple-open-user-js-url] [![PLE GreasyFork][greasy-fork-image]][ple-greasy-fork-url]
 
 Improves UX
-- Tags as search links: Turns everything inside `[ ]` into search link. Also removes tags from the title
-- Improves pager styles
-- Adds quick download button to the top of the page
-- Enables on page image view. Supported hosts are Fastpic, ImageBam, ImageVenue, TurboImageHost, PicForAll, imgbum.net, ImageTwist, PicShick, stuffed.ru, PixSense. Press `→`/`←` to see next/previous image
-- Mark images from forbidden hosts
-- Find similar post
-- Config - disable/enable certain features. Available through menu link "PLE"
+
+## Tags
+Turns everything inside `[ ]` into search link. Also removes tags from the title
+
+## Find similar
+Searches for similar posts
+
+## Pager
+Improves pager styles
+
+## Download
+Adds quick download button to the top of the page
+
+## Image view
+Allows viewing full size images. 
+
+### Controls
+
+Keyboard:  
+`←` - Previous image  
+`→` - Next image  
+`Esc` - Close image view  
+`Space` - Toggle image full height
+
+Mouse:  
+`double click` - Toggle image full height
+
+### Config menu
+Disable/enable certain features. Available through menu link "PLE"
 
 ## Attributions
 - [Flag](https://www.flaticon.com/packs/countrys-flags) icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)

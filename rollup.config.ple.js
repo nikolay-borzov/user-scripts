@@ -1,7 +1,7 @@
 import path from 'path'
 import resolve from 'rollup-plugin-node-resolve'
 import alias from 'rollup-plugin-alias'
-import stringLiteral from './rollup-plugins/string-literal'
+import cssString from './rollup-plugins/css-string'
 import metablock from 'rollup-plugin-userscript-metablock'
 
 export default {
@@ -12,8 +12,9 @@ export default {
     name: 'ple'
   },
   plugins: [
-    stringLiteral({
-      include: '**/*.css'
+    cssString({
+      include: '**/*.css',
+      imagesPath: path.resolve('src/pornolab-enhancer/icons')
     }),
     resolve(),
     alias({
@@ -26,7 +27,7 @@ export default {
     }),
     metablock({
       file: 'src/pornolab-enhancer/meta.json',
-      version: '1.8.5'
+      version: '1.9.0'
     })
   ]
 }

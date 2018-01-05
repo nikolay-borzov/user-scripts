@@ -1,3 +1,5 @@
+@import 'src/pornolab-enhancer/styles/_theme.css';
+
 .config-menu-link {
   position: relative;
   font-weight: bold;
@@ -10,9 +12,9 @@
   left: 0;
   padding: 7px;
   transition: all 0.3s ease;
-  border: solid 1px #cacaca;
+  border: solid 1px var(--color-border);
   opacity: 0;
-  background-color: #efefef;
+  background-color: var(--color-bkg);
   color: #000;
   font-weight: normal;
 }
@@ -30,7 +32,7 @@
 }
 
 .config-label:hover {
-  background-color: rgba(52, 93, 164, 0.25);
+  background-color: color(var(--color-active) a(25%));
 }
 
 .config-checkbox {
@@ -42,14 +44,14 @@
   justify-content: center;
   margin-top: 7px;
   padding: 5px;
-  border: solid 1px #cacaca;
-  background-color: #cacaca;
+  border: solid 1px var(--color-border);
+  background-color: var(--color-btn-bkg);
   text-decoration: none !important;
 }
 
 .config-apply-button:hover {
-  border-color: #345da4;
-  color: #345da4;
+  border-color: var(--color-active);
+  color: var(--color-active);
   color: #000 !important;
   text-decoration: none !important;
 }

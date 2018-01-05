@@ -1,10 +1,12 @@
+@import 'src/pornolab-enhancer/styles/_theme.css';
+
 .nav .menu-root,
 .small > b > .menu-root,
 a.pg {
   display: inline-block;
   padding: 0.5em 0.7em;
-  border: solid 1px #cacaca;
-  background-color: #efefef;
+  border: solid 1px var(--color-border);
+  background-color: var(--color-bkg);
   text-decoration: none;
 }
 
@@ -22,8 +24,8 @@ a.pg {
 .nav .menu-root:hover,
 .small > b > .menu-root:hover,
 a.pg:hover {
-  border-color: #345da4;
-  color: #345da4;
+  border-color: var(--color-active);
+  color: var(--color-active);
   text-decoration: none !important;
 }
 

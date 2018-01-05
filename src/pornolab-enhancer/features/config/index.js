@@ -72,7 +72,6 @@ export default (function () {
       textContent: 'PLE',
       href: '#',
       inside: $('#main-nav td'),
-      title: 'Click to open/close config',
       events: {
         'click': (e) => {
           e.preventDefault()

@@ -1,5 +1,16 @@
 # Pornolab Enhancer Changelog
 
+## 1.9.0
+## Added
+- Image view close, next, previous, toggle full height buttons
+
+## Fixed
+- Image view image scalling
+
+## Changed
+- Wire up postcss
+- Styles refactoring
+
 ## 1.8.5
 ## Added
 - ptcen, cn, ko, 640p icons
