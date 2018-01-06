@@ -27,7 +27,7 @@ export default (function () {
 
     $.create('a', {
       className: 'find-similar-link',
-      href: `/forum/tracker.php?nm=${searchTerm}`,
+      href: `/forum/tracker.php?nm=${searchTerm}#search_opt`,
       target: '_blank',
       title: 'Find similar',
       after: titleLink

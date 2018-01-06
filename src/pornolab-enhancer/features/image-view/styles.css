@@ -179,7 +179,6 @@ body.image-view-open {
   max-height: 100%;
   margin: auto;
   object-fit: contain;
-  box-shadow: #000 0 0 7px;
 }
 
 .full-height .image-view {
