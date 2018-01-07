@@ -1,6 +1,6 @@
 import path from 'path'
 import resolve from 'rollup-plugin-node-resolve'
-import stringLiteral from './rollup-plugins/string-literal'
+import cssString from './rollup-plugins/css-string'
 import metablock from 'rollup-plugin-userscript-metablock'
 
 export default {
@@ -11,7 +11,7 @@ export default {
     name: 'jrdb'
   },
   plugins: [
-    stringLiteral({
+    cssString({
       include: '**/*.css'
     }),
     resolve(),
