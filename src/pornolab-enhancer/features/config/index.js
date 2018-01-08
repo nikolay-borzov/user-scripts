@@ -14,25 +14,31 @@ export default (function () {
   }
 
   function getRow (label, storeKey, checked) {
-    return $.create('div', {
-      className: 'config-form-row',
-      contents: {
-        tag: 'label',
-        className: 'config-label',
-        contents: [{
-          tag: 'input',
-          type: 'checkbox',
-          className: 'config-checkbox',
-          checked,
-          value: storeKey
-        }, label]
-      }
+    return $.create('label', {
+      className: 'config-label',
+      contents: [{
+        tag: 'input',
+        type: 'checkbox',
+        className: 'config-checkbox',
+        checked,
+        value: storeKey
+      }, label]
     })
   }
 
   function createConfigForm (params) {
+    const button = {
+      tag: 'input',
+      type: 'button',
+      value: 'Apply',
+      events: {
+        'click': (e) => document.location.reload()
+      }
+    }
+
     return $.create('div', {
-      className: 'config-form',
+      id: 'config-form',
+      className: 'config-form menu-sub',
       contents: [
         getRow('Tags', KEYS.tags, params[KEYS.tags]),
         getRow('Find similar', KEYS.similar, params[KEYS.similar]),
@@ -41,19 +47,8 @@ export default (function () {
         getRow('Image view', KEYS.image, params[KEYS.image]),
         {
           tag: 'div',
-          className: 'config-form-row',
-          contents: {
-            tag: 'a',
-            className: 'config-apply-button',
-            href: '#',
-            textContent: 'Apply',
-            events: {
-              'click': (e) => {
-                e.preventDefault()
-                document.location.reload()
-              }
-            }
-          }
+          className: 'config-form-footer',
+          contents: button
         }
       ],
       delegate: {
@@ -65,26 +60,17 @@ export default (function () {
   }
 
   function createMenuLink (params) {
-    let configFormCreated = false
+    document.body.appendChild(createConfigForm(params))
+
+    const container = $('#main-nav td')
 
     const menuLink = $.create('a', {
-      className: 'config-menu-link',
+      className: 'config-menu-link menu-root menu-alt1',
       textContent: 'PLE',
-      href: '#',
-      inside: $('#main-nav td'),
-      events: {
-        'click': (e) => {
-          e.preventDefault()
-
-          if (!configFormCreated) {
-            configFormCreated = true
-            $.inside(createConfigForm(params), menuLink)
-          }
-
-          menuLink.classList.toggle('expanded')
-        }
-      }
+      href: '#config-form'
     })
+
+    $.contents(container, ['· ', menuLink])
   }
 
   function getParams () {

@@ -2,7 +2,7 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.9.1
+// @version     1.9.2
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
@@ -89,7 +89,7 @@
     }
   })()
 
-  var configCSS = `.config-menu-link{position:relative;font-weight:700}.config-form{position:absolute;z-index:-1;top:20px;left:0;padding:7px;transition:all .3s ease;border:1px solid #cacaca;opacity:0;background-color:#efefef;color:#000;font-weight:400}.expanded .config-form{z-index:1;opacity:1}.config-label{display:flex;align-items:center;padding:7px;transition:all .3s ease}.config-label:hover{background-color:rgba(52,93,164,.25)}.config-checkbox{margin:0 7px 0 0}.config-apply-button{display:flex;justify-content:center;margin-top:7px;padding:5px;border:1px solid #cacaca;background-color:#cacaca;text-decoration:none!important}.config-apply-button:hover{border-color:#345da4;color:#345da4;color:#000!important;text-decoration:none!important}`
+  var configCSS = `.config-menu-link{padding-right:12px;background:url("data:image/gif;base64,R0lGODlhCQAJALMAAAAAc////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAAJAAkAAAQQMMhJ6wT44q036GDFiZlVRQA7") no-repeat 100%;font-weight:700}.config-form{padding:1px;border:1px solid #92a3a4;background-color:#fff}.config-form-footer{padding:5px 0;background-color:#b5bec3;text-align:center}.config-label{display:flex!important;align-items:center;padding:7px!important;transition:all .3s ease;background-color:#e7e7e7}.config-checkbox{margin:0 7px 0 0}`
 
   var config = (function () {
     const KEYS = {
@@ -101,25 +101,31 @@
     }
 
     function getRow (label, storeKey, checked) {
-      return $.create('div', {
-        className: 'config-form-row',
-        contents: {
-          tag: 'label',
-          className: 'config-label',
-          contents: [{
-            tag: 'input',
-            type: 'checkbox',
-            className: 'config-checkbox',
-            checked,
-            value: storeKey
-          }, label]
-        }
+      return $.create('label', {
+        className: 'config-label',
+        contents: [{
+          tag: 'input',
+          type: 'checkbox',
+          className: 'config-checkbox',
+          checked,
+          value: storeKey
+        }, label]
       })
     }
 
     function createConfigForm (params) {
+      const button = {
+        tag: 'input',
+        type: 'button',
+        value: 'Apply',
+        events: {
+          'click': (e) => document.location.reload()
+        }
+      }
+
       return $.create('div', {
-        className: 'config-form',
+        id: 'config-form',
+        className: 'config-form menu-sub',
         contents: [
           getRow('Tags', KEYS.tags, params[KEYS.tags]),
           getRow('Find similar', KEYS.similar, params[KEYS.similar]),
@@ -128,19 +134,8 @@
           getRow('Image view', KEYS.image, params[KEYS.image]),
           {
             tag: 'div',
-            className: 'config-form-row',
-            contents: {
-              tag: 'a',
-              className: 'config-apply-button',
-              href: '#',
-              textContent: 'Apply',
-              events: {
-                'click': (e) => {
-                  e.preventDefault()
-                  document.location.reload()
-                }
-              }
-            }
+            className: 'config-form-footer',
+            contents: button
           }
         ],
         delegate: {
@@ -152,26 +147,17 @@
     }
 
     function createMenuLink (params) {
-      let configFormCreated = false
+      document.body.appendChild(createConfigForm(params))
+
+      const container = $('#main-nav td')
 
       const menuLink = $.create('a', {
-        className: 'config-menu-link',
+        className: 'config-menu-link menu-root menu-alt1',
         textContent: 'PLE',
-        href: '#',
-        inside: $('#main-nav td'),
-        events: {
-          'click': (e) => {
-            e.preventDefault()
-
-            if (!configFormCreated) {
-              configFormCreated = true
-              $.inside(createConfigForm(params), menuLink)
-            }
-
-            menuLink.classList.toggle('expanded')
-          }
-        }
+        href: '#config-form'
       })
+
+      $.contents(container, ['· ', menuLink])
     }
 
     function getParams () {

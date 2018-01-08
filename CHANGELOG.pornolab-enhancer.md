@@ -1,11 +1,20 @@
 # Pornolab Enhancer Changelog
 
+## 1.9.2 - 2018-01-08
+## Changed
+- [Config] Align styles with existing menus
+- [Config] Use existing menus behavior
+
+## 1.9.1 - 2018-01-06
+## Changed
+- [Find similar] Scroll to the search options block 
+
 ## 1.9.0 - 2018-01-05
 ## Added
-- Image view close, next, previous, toggle full height buttons
+- [Image view] Image view close, next, previous, toggle full height buttons
 
 ## Fixed
-- Image view image scalling
+- [Image view] Image view image scalling
 
 ## Changed
 - Wire up postcss
@@ -13,83 +22,83 @@
 
 ## 1.8.5 - 2017-12-30
 ## Added
-- ptcen, cn, ko, 640p icons
+- [Tags] ptcen, cn, ko, 640p icons
 
 ## 1.8.4 - 2017-12-30
 ## Added
-- cen/uncen icons
+- [Tags] cen/uncen icons
 
 ## 1.8.3 - 2017-12-30
 ## Fixed
-- Pointer cursor for PLE config link
-- Title extracting for "Find similar" feature: Take into account search term max length
+- [Config] Pointer cursor for PLE config link
+- [Find similar] Take into account search term max length
 
 ## 1.8.2 - 2017-12-27
 ## Added
-- Image hosts support: nikapic.ru, imgtaxi.com
+- [Image view] Image hosts support: nikapic.ru, imgtaxi.com
 
 ## Fixed
-- Extracting image URL for fastpic for some cases
+- [Image view] Extracting image URL for fastpic for some cases
 
 ## 1.8.1 - 2017-12-26
 ## Changed
-- Remove forbidden host icon
+- [Image view] Remove forbidden host icon
 
 ## Fixed
-- Extracting image URL from image hosting page
+- [Image view]  Extracting image URL from image hosting page
 
 ## 1.8.0 - 2017-12-25
 ## Added
-- Config - disable/enable certain features. Available through menu link "PLE"
+- [Config] Disable/enable certain features. Available through menu link "PLE"
 
 ## Changed
 - Icon
 
 ## 1.7.1 - 2017-12-16
 ### Added
-- French tag icon
+- [Tags] French tag icon
 
 ### Changed
 - Feature based folder structure
-- Remove `&` character from title when searching similar posts
+- [Find similar] Remove `&` character from title when searching similar posts
 
 ### Fixed
-- Hide image during loading
+- [Image view] Hide image during loading
 
 ## 1.7.0 - 2017-12-06
 ### Added
-- New feature - Find similar post
+- [Find similar] New feature - Find similar post
 
 ## 1.6.0 - 2107-12-03
 ### Added
-- Icons for common tags
+- [Tags] Icons for common tags
 
 ### Changed
-- Add `+` as tags separator
+- [Tags] Add `+` as tags separator
 
 ### Fixed
-- ImageTwist image url extracting
+- [Image view] ImageTwist image url extracting
 
 ## 1.5.0 - 2017-12-01
 ### Added
-- Image view: TurboImageHost, PicForAll, imgbum.net, ImageTwist, PicShick, picage.ru, PixSense support
-- Mark forbidden hosts' images
-- Handle image loading error
+- [Image view] TurboImageHost, PicForAll, imgbum.net, ImageTwist, PicShick, picage.ru, PixSense support
+- [Image view] Mark forbidden hosts' images
+- [Image view] Handle image loading error
 
 ### Changed
-- Improve URL image extracting logic for FastPic
+- [Image view] Improve URL image extracting logic for FastPic
 
 ## 1.4.0 - 2017-11-28
 ### Changed
-- Place tags before and after title
-- Add `/` as tags separator
+- [Tags] Place tags before and after title
+- [Tags] Add `/` as tags separator
 
 ## 1.3.0 - 2017-11-26
 ### Changed
 - Build with rollup
 
 ### Fixed
-- Remove empty tags
+- [Tags] Remove empty tags
 
 ## 1.2.2 - 2017-11-23
 ### Changed
@@ -104,14 +113,14 @@
 
 ## 1.2.0 - 2017-11-22
 ### Added
-- Fastpic, ImageBam, ImageVenue on page image view
-- View next/previous image in teh set by pressing →/←
+- [Image view] Fastpic, ImageBam, ImageVenue on page image view
+- [Image view] View next/previous image in teh set by pressing →/←
 
 ## 1.1.0 - 2017-11-21
 ### Added
-- Quick download button
+- [Download] Quick download button
 
 ## 1.0.0 - 2017-11-19
 ### Added
-- Tags block (extracted from topic title)
-- Pager styles
+- [Tags] Tags block (extracted from topic title)
+- [Pager] Pager styles
