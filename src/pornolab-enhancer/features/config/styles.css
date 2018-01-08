@@ -7,6 +7,9 @@
 }
 
 .config-form {
+  display: none;
+  position: absolute;
+  z-index: 1000;
   padding: 1px;
   border: 1px solid var(--color-border-1);
   background-color: #fff;
@@ -19,11 +22,16 @@
 }
 
 .config-label {
-  display: flex !important;
+  display: flex;
   align-items: center;
-  padding: 7px !important;
+  padding: 7px;
   transition: all 0.3s ease;
   background-color: var(--color-bkg-1);
+}
+
+.config-label:hover {
+  background-color: var(--color-bkg-3);
+  color: var(--color-active-1);
 }
 
 .config-checkbox {

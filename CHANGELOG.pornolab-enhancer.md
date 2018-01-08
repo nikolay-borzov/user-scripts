@@ -1,5 +1,10 @@
 # Pornolab Enhancer Changelog
 
+## 1.9.3 - 2018-01-08
+## Fixed
+- [Config] Fix for Firefox
+- Update icon
+
 ## 1.9.2 - 2018-01-08
 ## Changed
 - [Config] Align styles with existing menus

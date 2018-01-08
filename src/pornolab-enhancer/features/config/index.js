@@ -1,3 +1,4 @@
+/* global Menu jQuery */
 import addStyle from 'addStyle'
 import { $ } from 'bliss'
 import store from 'store'
@@ -32,13 +33,16 @@ export default (function () {
       type: 'button',
       value: 'Apply',
       events: {
-        'click': (e) => document.location.reload()
+        'click': (e) => {
+          document.location.reload()
+          Menu.hide(e)
+        }
       }
     }
 
     return $.create('div', {
       id: 'config-form',
-      className: 'config-form menu-sub',
+      className: 'config-form',
       contents: [
         getRow('Tags', KEYS.tags, params[KEYS.tags]),
         getRow('Find similar', KEYS.similar, params[KEYS.similar]),
@@ -55,6 +59,9 @@ export default (function () {
         'change': {
           '.config-checkbox': (e) => store.set(e.target.value, e.target.checked)
         }
+      },
+      events: {
+        'mousedown': (e) => e.stopPropagation()
       }
     })
   }
@@ -65,12 +72,21 @@ export default (function () {
     const container = $('#main-nav td')
 
     const menuLink = $.create('a', {
-      className: 'config-menu-link menu-root menu-alt1',
+      className: 'config-menu-link',
       textContent: 'PLE',
       href: '#config-form'
     })
 
     $.contents(container, ['· ', menuLink])
+
+    // Show menu on click
+    const $menuLink = jQuery(menuLink)
+    $menuLink
+      .click((e) => {
+        e.preventDefault()
+        Menu.clicked(jQuery(menuLink))
+      })
+      .hover(() => Menu.hovered($menuLink), () => Menu.unhovered($menuLink))
   }
 
   function getParams () {

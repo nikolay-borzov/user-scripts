@@ -2,7 +2,7 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves UX
-// @version     1.9.2
+// @version     1.9.3
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
@@ -89,8 +89,9 @@
     }
   })()
 
-  var configCSS = `.config-menu-link{padding-right:12px;background:url("data:image/gif;base64,R0lGODlhCQAJALMAAAAAc////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAAJAAkAAAQQMMhJ6wT44q036GDFiZlVRQA7") no-repeat 100%;font-weight:700}.config-form{padding:1px;border:1px solid #92a3a4;background-color:#fff}.config-form-footer{padding:5px 0;background-color:#b5bec3;text-align:center}.config-label{display:flex!important;align-items:center;padding:7px!important;transition:all .3s ease;background-color:#e7e7e7}.config-checkbox{margin:0 7px 0 0}`
+  var configCSS = `.config-menu-link{padding-right:12px;background:url("data:image/gif;base64,R0lGODlhCQAJALMAAAAAc////////////////////////////////////////////////////////////yH5BAEAAAEALAAAAAAJAAkAAAQQMMhJ6wT44q036GDFiZlVRQA7") no-repeat 100%;font-weight:700}.config-form{display:none;position:absolute;z-index:1;padding:1px;border:1px solid #92a3a4;background-color:#fff}.config-form-footer{padding:5px 0;background-color:#b5bec3;text-align:center}.config-label{display:flex;align-items:center;padding:7px;transition:all .3s ease;background-color:#e7e7e7}.config-label:hover{background-color:#d1d7dc;color:#930}.config-checkbox{margin:0 7px 0 0}`
 
+  /* global Menu jQuery */
   var config = (function () {
     const KEYS = {
       tags: 'tags',
@@ -119,13 +120,16 @@
         type: 'button',
         value: 'Apply',
         events: {
-          'click': (e) => document.location.reload()
+          'click': (e) => {
+            document.location.reload()
+            Menu.hide(e)
+          }
         }
       }
 
       return $.create('div', {
         id: 'config-form',
-        className: 'config-form menu-sub',
+        className: 'config-form',
         contents: [
           getRow('Tags', KEYS.tags, params[KEYS.tags]),
           getRow('Find similar', KEYS.similar, params[KEYS.similar]),
@@ -142,6 +146,9 @@
           'change': {
             '.config-checkbox': (e) => store.set(e.target.value, e.target.checked)
           }
+        },
+        events: {
+          'mousedown': (e) => e.stopPropagation()
         }
       })
     }
@@ -152,12 +159,21 @@
       const container = $('#main-nav td')
 
       const menuLink = $.create('a', {
-        className: 'config-menu-link menu-root menu-alt1',
+        className: 'config-menu-link',
         textContent: 'PLE',
         href: '#config-form'
       })
 
       $.contents(container, ['· ', menuLink])
+
+      // Show menu on click
+      const $menuLink = jQuery(menuLink)
+      $menuLink
+        .click((e) => {
+          e.preventDefault()
+          Menu.clicked(jQuery(menuLink))
+        })
+        .hover(() => Menu.hovered($menuLink), () => Menu.unhovered($menuLink))
     }
 
     function getParams () {
