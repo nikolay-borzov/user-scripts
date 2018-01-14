@@ -11,7 +11,7 @@ User scripts for Tampermonkey and ~~Greasemonkey~~
 "Downloadable" means you can download image by clicking (lmb) on the button. Link has [download](https://caniuse.com/#feat=download) attribute
 
 # Pornolab Enhancer 
-[![PLE file size][ple-size]][ple-url] [![PLE OpenUserJS][open-user-js-image]][ple-open-user-js-url] [![PLE GreasyFork][greasy-fork-image]][ple-greasy-fork-url]
+[![PLE file size][ple-size]][ple-url] [![PLE OpenUserJS][open-user-js-image]][ple-open-user-js-url] [![PLE GreasyFork][greasy-fork-image]][ple-greasy-fork-url] [![PLE SleazyFork][sleazy-fork-image]][ple-sleazy-fork-url]
 
 Improves UX
 
@@ -51,6 +51,7 @@ Disable/enable certain features. Available through menu link "PLE"
 ## Tools and Resources
 
 - [Material Design icons](https://material.io/icons)
+- [Material Design icons](https://materialdesignicons.com)
 - [SVGOMG - SVGO's Missing GUI](https://jakearchibald.github.io/svgomg)
 - [b64.io - image optimisation & base64 encode](http://b64.io)
 - [Inkscape](https://inkscape.org/en/)
@@ -75,9 +76,11 @@ Disable/enable certain features. Available through menu link "PLE"
 
 [open-user-js-image]: https://img.shields.io/badge/OpenUserJS-install-304051.svg
 [greasy-fork-image]: https://img.shields.io/badge/Greasy%20Fork-install-690001.svg
+[sleazy-fork-image]: https://img.shields.io/badge/Sleazy%20Fork-install-690001.svg
 
 [jrdb-open-user-js-url]: https://openuserjs.org/scripts/shikiyoku/JoyReactor_Download_Button
 [jrdb-greasy-fork-url]: https://greasyfork.org/en/scripts/35272-joyreactor-download-button
 
 [ple-open-user-js-url]: https://openuserjs.org/scripts/shikiyoku/Pornolab_Enhancer
 [ple-greasy-fork-url]: https://greasyfork.org/en/scripts/35355-pornolab-enhancer
+[ple-sleazy-fork-url]: https://sleazyfork.org/en/scripts/35355-pornolab-enhancer

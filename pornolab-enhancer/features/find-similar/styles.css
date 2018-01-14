@@ -1,4 +1,14 @@
-@import 'src/pornolab-enhancer/styles/_theme.css';
+@import '../../styles/_theme.css';
+
+.find-similar-link {
+  display: inline-block;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  margin-left: 10px;
+  border: 1px solid transparent;
+  vertical-align: middle;
+}
 
 .find-similar-link::before {
   content: '';
@@ -11,16 +21,6 @@
   transform: translate(-50%, -50%);
   background: svg-load('similar.svg', fill=var(--color-active)) no-repeat center center;
   background-size: contain;
-}
-
-.find-similar-link {
-  display: inline-block;
-  position: relative;
-  width: 25px;
-  height: 25px;
-  margin-left: 10px;
-  border: 1px solid transparent;
-  vertical-align: middle;
 }
 
 .find-similar-link:hover {

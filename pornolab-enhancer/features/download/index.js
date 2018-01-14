@@ -10,7 +10,6 @@ export default (function () {
     const link = $.create('a', {
       className: 'quick-download',
       href: '#',
-      textContent: '',
 
       events: {
         'click': (e) => {
@@ -25,12 +24,11 @@ export default (function () {
 
       contents: [{
         tag: 'span',
-        className: 'quick-download-icon'
+        className: 'quick-download__icon'
       }, {
         tag: 'span',
         textContent: document.querySelector('.attach')
-          .querySelector('.row1:nth-child(5)')
-          .querySelector('td:nth-child(2)')
+          .querySelector('.row1:nth-child(5) td:nth-child(2)')
           .textContent
       }]
     })
@@ -44,7 +42,6 @@ export default (function () {
         if (location.pathname !== ENABLE_ON_PATH) { return }
 
         const downloadLink = $('.dl-link')
-
         if (!downloadLink) { return }
 
         addStyle(downloadCSS)

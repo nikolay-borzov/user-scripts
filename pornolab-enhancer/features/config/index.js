@@ -16,11 +16,11 @@ export default (function () {
 
   function getRow (label, storeKey, checked) {
     return $.create('label', {
-      className: 'config-label',
+      className: 'config-form__label',
       contents: [{
         tag: 'input',
         type: 'checkbox',
-        className: 'config-checkbox',
+        className: 'config-form__checkbox',
         checked,
         value: storeKey
       }, label]
@@ -51,13 +51,13 @@ export default (function () {
         getRow('Image view', KEYS.image, params[KEYS.image]),
         {
           tag: 'div',
-          className: 'config-form-footer',
+          className: 'config-form__footer',
           contents: button
         }
       ],
       delegate: {
         'change': {
-          '.config-checkbox': (e) => store.set(e.target.value, e.target.checked)
+          '.js-config-checkbox': (e) => store.set(e.target.value, e.target.checked)
         }
       },
       events: {

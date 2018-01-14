@@ -31,6 +31,7 @@ export default (function () {
     'eng': 'en',
     'jap': 'ja',
     'rus': 'ru',
+    'ru': 'ru',
     'chi': 'zh',
     'cn': 'zh',
     'spa': 'es',

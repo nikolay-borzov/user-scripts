@@ -1,0 +1,289 @@
+@import '../../styles/_theme.css';
+@import '../../styles/_vars.css';
+
+:root {
+  --color-bkg-button-hover: rgba(255, 255, 255, 0.1);
+  --color-bkg-view: rgba(0, 0, 0, 0.8);
+}
+
+/* ----------
+  Animations
+------------ */
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* -----
+  Icons
+------- */
+.icon { position: relative; }
+
+.icon::after,
+.image-link img::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: contain;
+}
+
+/* Icon that is shown on hover */
+.icon_hover::after {
+  transition: opacity var(--transition-duration) ease;
+  opacity: 0;
+}
+
+.icon_hover:hover::after {
+  opacity: 1;
+}
+
+.icon_size_button::after {
+  width: 50px;
+  height: 50px;
+}
+
+.icon_type_expand::after {
+  width: 70%;
+  height: 70%;
+  background-image: svg-load('expand.svg');
+}
+
+.icon_type_loading::after {
+  animation: spin 1s linear infinite;
+  opacity: 1;
+  background-image: svg-load('loading.svg', fill=#fff) !important;
+}
+
+.icon_type_zoom::after { background-image: svg-load('zoom-in.svg', fill=#fff); }
+.icon_type_next::after { background-image: svg-load('next.svg', fill=#fff); }
+.icon_type_previous::after { background-image: svg-load('before.svg', fill=#fff); }
+.icon_type_close::after { background-image: svg-load('close.svg', fill=#fff); }
+
+.icon_type_image_broken::after,
+.image-link img::after {
+  background-image: svg-load('image-broken.svg', fill=var(--color-bkg-5));
+}
+
+/* ----------
+  Image link
+------------ */
+
+.image-link {
+  display: inline-flex;
+  min-width: 50px;
+  min-height: 50px;
+  margin: 3px;
+  padding: 4px;
+  border: solid 1px var(--color-border);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  vertical-align: bottom; /* Fix alignment for short images */
+}
+
+.image-link img.postImg {
+  margin: 0;
+}
+
+.image-link var.postImg {
+  display: flex; /* Remove bottom padding */
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Backdrop */
+.image-link::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  right: 4px;
+  bottom: 4px;
+  left: 4px;
+  transition: opacity var(--transition-duration) ease;
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.image-link:hover::before,
+.image-link.icon_type_loading::before {
+  opacity: 1;
+}
+
+/* ------------
+  Broken image
+-------------- */
+
+.image-link img::before,
+.image-link img::after {
+  content: '';
+  position: absolute;
+}
+
+.image-link img::before {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bkg-6);
+}
+
+.image-link img::after {
+  z-index: 0;
+  width: 35px;
+  height: 35px;
+}
+
+/* ----------
+  Image view
+------------ */
+
+.image-view {
+  display: flex;
+  flex-flow: column;
+  height: 0;
+  transition: opacity var(--transition-duration) ease-out;
+  opacity: 0;
+  background-color: var(--color-bkg-view);
+  color: #fff;
+  user-select: none;
+}
+
+body.image-view_open {
+  overflow: hidden;
+}
+
+.image-view_open .image-view {
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: auto;
+  opacity: 1;
+}
+
+.image-view__body,
+.image-view__header,
+.image-view__footer {
+  display: flex;
+}
+
+.image-view__body {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+}
+
+.image-view__body::-webkit-scrollbar {
+  width: 20px;
+}
+
+.image-view__body::-webkit-scrollbar-thumb {
+  background-color: var(--color-bkg-view);
+}
+
+.image-view__body::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.image-view__header-wrapper,
+.image-view__footer-wrapper {
+  z-index: 1;
+}
+
+.image-view__header-wrapper {
+  box-shadow: rgba(0, 0, 0, 0.7) 0 3px 7px;
+}
+
+.image-view__footer-wrapper {
+  box-shadow: rgba(0, 0, 0, 0.7) 0 -3px 7px;
+}
+
+.image-view__header,
+.image-view__footer {
+  background-color: var(--color-bkg-view);
+}
+
+.image-view__header {
+  justify-content: space-between;
+}
+
+.image-view__footer {
+  justify-content: center;
+}
+
+.image-view__number {
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  font-size: 1.125rem;
+}
+
+.image-view__image {
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  object-fit: contain;
+  transition: opacity var(--transition-duration) ease-out;
+  opacity: 1;
+}
+
+/* Hide image during loading and on error */
+.icon_loading .image-view__image,
+.icon_error .image-view__image {
+  opacity: 0;
+}
+
+/*
+  Cancel height restriction
+  Set cursor to grab hand
+ */
+.image-view_full-height .image-view__image {
+  max-height: none;
+  cursor: grab;
+}
+
+.image-view_full-height .image-view__image_grabbing {
+  cursor: grabbing;
+}
+
+.image-view_full-height .icon_type_expand {
+  background-color: var(--color-bkg-button-hover);
+}
+
+/* -----------
+  Icon button
+------------- */
+
+.icon-button {
+  width: 50px;
+  height: 50px;
+  transition: all 0.35s ease-out;
+}
+
+.icon-button + .icon-button {
+  margin-left: 5px;
+}
+
+.icon-button:hover {
+  background-color: var(--color-bkg-button-hover);
+}
+
+.icon-button:active,
+.icon-button_active {
+  background-color: rgba(255, 255, 255, 0.2);
+}

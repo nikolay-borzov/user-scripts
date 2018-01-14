@@ -2,7 +2,7 @@ import addStyle from 'addStyle'
 import config from './features/config'
 
 import tags from './features/tags'
-import pagerCSS from './styles/pager.css'
+import pagerCSS from './features/pager/styles.css'
 import download from './features/download'
 import imageView from './features/image-view'
 import findSimilar from './features/find-similar'

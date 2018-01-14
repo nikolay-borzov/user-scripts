@@ -1,4 +1,4 @@
-@import 'src/pornolab-enhancer/styles/_theme.css';
+@import '../../styles/_theme.css';
 
 .quick-download {
   position: fixed;
@@ -25,7 +25,26 @@
   text-decoration: none !important;
 }
 
-.quick-download-icon {
+.quick-download::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  transform: scale(1, 1);
+  transform-origin: 50% 50%;
+  border-radius: 100%;
+  opacity: 0;
+  background: rgba(52, 93, 164, 0.25);
+}
+
+.quick-download:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+.quick-download__icon {
   display: block;
   height: 45px;
   background: svg-load('download.svg', fill=var(--color-active)) no-repeat center center;
@@ -47,23 +66,4 @@
     transform: scale(40, 40);
     opacity: 0;
   }
-}
-
-.quick-download::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  transform: scale(1, 1);
-  transform-origin: 50% 50%;
-  border-radius: 100%;
-  opacity: 0;
-  background: rgba(52, 93, 164, 0.25);
-}
-
-.quick-download:focus:not(:active)::after {
-  animation: ripple 1s ease-out;
 }

@@ -2,10 +2,12 @@
   --color-active: #345da4;
   --color-active-1: #930;
   --color-border: #cacaca;
+  --color-border-1: #92a3a4;
   --color-bkg: #efefef;
-  --color-btn-bkg: #cacaca;
   --color-bkg-1: #e7e7e7;
   --color-bkg-2: #b5bec3;
   --color-bkg-3: #d1d7dc;
-  --color-border-1: #92a3a4;
+  --color-bkg-4: #d6d6d6;
+  --color-bkg-5: #ccc;
+  --color-bkg-6: #f5f5f5;
 }

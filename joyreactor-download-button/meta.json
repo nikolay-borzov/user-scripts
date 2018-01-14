@@ -9,7 +9,7 @@
   "icon": "http://joyreactor.cc/favicon.ico",
   "homepageURL": "https://github.com/shikiyoku/user-scripts",
   "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
-  "include": [ "*reactor.cc*" ],
+  "include": [ "http://joyreactor.cc/*" ],
   "grant": [
     "GM_addStyle"
   ],

@@ -1,5 +1,13 @@
 # Pornolab Enhancer Changelog
 
+## 1.10.0
+## Changed
+- Refactoring: BEM (kind of), JS and folders structure
+- [Image view] Replace loading and error icons
+- [Image view] Improve image loading UX
+- [Image view] Add styles for image links
+- Update @include tags. Hope it'll help to find script by site
+
 ## 1.9.3 - 2018-01-08
 ## Fixed
 - [Config] Fix for Firefox
