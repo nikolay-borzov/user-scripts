@@ -4,7 +4,9 @@ module.exports = {
     browser: true
   },
   globals: {
-    'GM_addStyle': true
+    'GM_addStyle': true,
+    'GM_xmlhttpRequest': true,
+    'GM': true
   },
   extends: 'standard',
   'rules': {
@@ -19,7 +21,7 @@ module.exports = {
         'CallExpression': {
           arguments: 'first'
         },
-        "SwitchCase": 1
+        'SwitchCase': 1
       }
     ]
   }

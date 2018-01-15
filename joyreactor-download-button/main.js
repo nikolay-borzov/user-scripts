@@ -1,23 +1,11 @@
 import addStyle from '../common/addStyle'
+import dom from 'dom'
 import css from './styles.css'
 
 addStyle(css)
 
 const CLASSES = {
   processed: 'js-has-download-button'
-}
-
-/**
- * Event delegation
- */
-function on (parent, eventName, childSelector, cb) {
-  parent.addEventListener(eventName, function (event) {
-    const matchingChild = event.target.closest(childSelector)
-
-    if (matchingChild) {
-      cb(matchingChild)
-    }
-  })
 }
 
 function createDownloadLink (imgContainer) {
@@ -57,4 +45,4 @@ function createDownloadLink (imgContainer) {
   imgContainer.appendChild(link)
 }
 
-on(document.body, 'mouseover', `.image:not(.${CLASSES.processed})`, createDownloadLink)
+dom.on(document.body, 'mouseover', `.image:not(.${CLASSES.processed})`, createDownloadLink)

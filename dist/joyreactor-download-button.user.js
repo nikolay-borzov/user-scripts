@@ -2,14 +2,14 @@
 // @name        JoyReactor Download Button
 // @namespace   https://github.com/shikiyoku
 // @description Adds download buttton to images
-// @version     1.1.0
+// @version     1.2.0
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
 // @icon        http://joyreactor.cc/favicon.ico
 // @homepageURL https://github.com/shikiyoku/user-scripts
 // @supportURL  https://github.com/shikiyoku/user-scripts/issues
-// @include     *reactor.cc*
+// @include     http://joyreactor.cc/*
 // @run-at      document-end
 // @grant       GM_addStyle
 // ==/UserScript==
@@ -17,7 +17,6 @@
 (function () {
   'use strict'
 
-  /* global GM_addStyle */
   var addStyle = 'GM_addStyle' in window
     ? GM_addStyle // eslint-disable-line camelcase
     : (css) => {
@@ -31,7 +30,20 @@
       }
     }
 
-  var css = `.image{position:relative;display:inline-block}.image:hover .download-link{opacity:1}.download-link{opacity:0;position:absolute;top:10px;right:60px;width:35px;height:35px;overflow:hidden;border-radius:0 0 7px 7px;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);transition:all .3s cubic-bezier(.25,.8,.25,1);background-size:contain;background-color:#333;background-image:url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTkgOWgtNFYzSDl2Nkg1bDcgNyA3LTd6TTUgMTh2MmgxNHYtMkg1eiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=)}.download-link:hover{box-shadow:0 14px 28px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.22)}.download-link:after{content:"";position:absolute;top:0;left:0;right:0;width:100%;height:5px;background:hsla(0,0%,100%,.3);opacity:0;border-radius:100%;transform:scale(1) translate(-50%);transform-origin:50% 50%}@keyframes ripple{0%{transform:scale(0);opacity:1}20%{transform:scale(25);opacity:1}to{opacity:0;transform:scale(40)}}.download-link:focus:not(:active):after{animation:ripple 1s ease-out}`
+  var dom = {
+
+    on (parent, eventName, selector, callback) {
+      parent.addEventListener(eventName, function (event) {
+        const matchingChild = event.target.closest(selector)
+
+        if (matchingChild) {
+          callback(matchingChild)
+        }
+      })
+    }
+  }
+
+  var css = "@keyframes ripple{0%{transform:scale(0);opacity:1}20%{transform:scale(25);opacity:1}to{transform:scale(40);opacity:0}}.image{display:inline-block;position:relative}.download-link{position:absolute;top:10px;right:60px;width:35px;height:35px;overflow:hidden;transition:all .3s cubic-bezier(.25,.8,.25,1);border-radius:0 0 7px 7px;opacity:0;background:url(\"data:image/svg+xml;charset=utf-8,%3Csvg height='24' width='24' xmlns='http://www.w3.org/2000/svg' fill='%23fff'%3E%3Cpath d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\") #333;background-size:contain;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}.download-link:hover{box-shadow:0 14px 28px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.22)}.download-link:after{content:\"\";position:absolute;top:0;left:0;width:100%;height:5px;transform:scale(1) translate(-50%);transform-origin:50% 50%;border-radius:100%;opacity:0;background:hsla(0,0%,100%,.3)}.download-link:focus:not(:active):after{animation:ripple 1s ease-out}.image:hover .download-link{opacity:1}"
 
   addStyle(css)
 
@@ -39,27 +51,12 @@
     processed: 'js-has-download-button'
   }
 
-  /**
- * Event delegation
- */
-  function on (parent, eventName, childSelector, cb) {
-    parent.addEventListener(eventName, function (event) {
-      const matchingChild = event.target.closest(childSelector)
-
-      if (matchingChild) {
-        cb(matchingChild)
-      }
-    })
-  }
-
   function createDownloadLink (imgContainer) {
-  // Mark as processed
     imgContainer.classList.add(CLASSES.processed)
 
     const gifLink = imgContainer.querySelector('a.video_gif_source')
-    // Image is an animated gif
+
     if (gifLink) {
-    // Make it downloadable
       gifLink.setAttribute('download', '')
       return
     }
@@ -67,7 +64,6 @@
     let imgURL = ''
     const imgLink = imgContainer.querySelector('a')
 
-    // Image has a full link
     if (imgLink) {
       imgURL = imgLink.href
     } else {
@@ -89,5 +85,5 @@
     imgContainer.appendChild(link)
   }
 
-  on(document.body, 'mouseover', `.image:not(.${CLASSES.processed})`, createDownloadLink)
+  dom.on(document.body, 'mouseover', `.image:not(.${CLASSES.processed})`, createDownloadLink)
 }())

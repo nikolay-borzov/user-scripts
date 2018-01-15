@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.2.0
+### Changed
+- Refactoring
+
 ## 1.1.0 - 2017-11-26
 ### Changed
 - Build with rollup

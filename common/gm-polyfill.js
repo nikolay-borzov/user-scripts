@@ -1,4 +1,3 @@
-/* global GM */
 export default (function () {
   // based on https://github.com/greasemonkey/gm4-polyfill
   const gmMethodMap = {

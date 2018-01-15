@@ -1,23 +1,53 @@
 import path from 'path'
-import resolve from 'rollup-plugin-node-resolve'
-import cssString from './rollup-plugins/css-string'
+import alias from 'rollup-plugin-alias'
+import postcss from 'rollup-plugin-postcss'
+import cleanup from 'rollup-plugin-cleanup'
 import metablock from 'rollup-plugin-userscript-metablock'
 
+// postCSS plugins
+import cssnext from 'postcss-cssnext'
+import inlineSvg from 'postcss-inline-svg'
+
 export default {
-  input: path.resolve('src/joyreactor-download-button/main.js'),
+  input: path.resolve(__dirname, 'main.js'),
+
   output: {
     file: path.resolve('dist/joyreactor-download-button.user.js'),
     format: 'iife',
     name: 'jrdb'
   },
+
   plugins: [
-    cssString({
-      include: '**/*.css'
+    postcss({
+      inject: false,
+      config: {
+        from: undefined
+      },
+      minimize: { // cssnano
+        autoprefixer: false,
+        reduceIdents: false // prevent animation breaking
+      },
+      plugins: [
+        cssnext(),
+        inlineSvg({
+          path: path.resolve(__dirname, 'icons')
+        })
+      ]
     }),
-    resolve(),
+
+    alias({
+      resolve: ['.js'],
+      dom: path.resolve('common/dom')
+    }),
+
+    cleanup({
+      comments: ['eslint', /^\*-/],
+      maxEmptyLines: 1
+    }),
+
     metablock({
-      file: path.resolve('src/joyreactor-download-button/meta.json'),
-      version: '1.1.0'
+      file: path.resolve(__dirname, 'meta.json'),
+      version: '1.2.0'
     })
   ]
 }

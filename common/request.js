@@ -1,5 +1,3 @@
-/* global GM GM_xmlhttpRequest */
-
 export default (function () {
   const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM
     ? GM.xmlHttpRequest
