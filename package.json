@@ -43,7 +43,7 @@
     "postcss-custom-properties": "^6.2.0",
     "postcss-import": "^11.0.0",
     "postcss-inline-svg": "^3.0.0",
-    "rollup": "^0.53.3",
+    "rollup": "^0.54.0",
     "rollup-plugin-alias": "^1.4.0",
     "rollup-plugin-cleanup": "^2.0.0",
     "rollup-plugin-eslint": "^4.0.0",
