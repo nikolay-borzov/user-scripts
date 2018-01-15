@@ -3,6 +3,8 @@ import resolve from 'rollup-plugin-node-resolve'
 import alias from 'rollup-plugin-alias'
 import postcss from 'rollup-plugin-postcss'
 import metablock from 'rollup-plugin-userscript-metablock'
+import eslint from 'rollup-plugin-eslint'
+import cleanup from 'rollup-plugin-cleanup'
 
 // postCSS plugins
 import cssnext from 'postcss-cssnext'
@@ -24,7 +26,12 @@ export default {
 
   // Doesn't work https://github.com/Microsoft/vscode/issues/36994
   watch: {
-    include: '**'
+    chokidar: false,
+    include: [
+      'common/**',
+      'pornolab-enhancer/**'
+    ],
+    exclude: 'node_modules/**'
   },
 
   plugins: [
@@ -63,6 +70,15 @@ export default {
       addStyle: path.resolve('common/addStyle'),
       regex: path.resolve('common/regex'),
       request: path.resolve('common/request')
+    }),
+
+    eslint({
+      fix: true
+    }),
+
+    cleanup({
+      comments: ['eslint', /^\*-/],
+      maxEmptyLines: 1
     }),
 
     metablock({

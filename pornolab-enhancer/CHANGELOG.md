@@ -1,6 +1,6 @@
 # Pornolab Enhancer Changelog
 
-## 1.10.0
+## 1.10.0 - 2018-01-16
 ## Changed
 - Refactoring: BEM (kind of), JS and folders structure
 - [Image view] Replace loading and error icons

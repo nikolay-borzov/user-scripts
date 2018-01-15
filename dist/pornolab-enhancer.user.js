@@ -31,7 +31,6 @@
 (function () {
   'use strict'
 
-  /* global GM_addStyle */
   var addStyle = 'GM_addStyle' in window
     ? GM_addStyle // eslint-disable-line camelcase
     : (css) => {
@@ -52,9 +51,7 @@
   const $ = Bliss
   const $$ = Bliss.$
 
-  /* global GM */
   var gmPolyfill = (function () {
-  // based on https://github.com/greasemonkey/gm4-polyfill
     const gmMethodMap = {
       'getValue': 'GM_getValue',
       'setValue': 'GM_setValue'
@@ -81,15 +78,9 @@
 
   var store = (function () {
     return {
-    /**
-     * @param {string} name
-     * @param {any} defaultValue
-     */
+
       get: gmPolyfill('getValue'),
-      /**
-     * @param {string} name
-     * @param {any} value
-     */
+
       set: gmPolyfill('setValue')
     }
   })()
@@ -171,7 +162,6 @@
 
       $.contents(container, ['· ', menuLink])
 
-      // Show menu on click
       const $menuLink = jQuery(menuLink)
       $menuLink
         .click((e) => {
@@ -208,11 +198,7 @@
   })()
 
   var regex = {
-  /**
-   * @param {RegEx} regEx
-   * @param {string} str
-   * @returns {Array<string>}
-   */
+
     getMatchGroups (regEx, str) {
       let matches = []
       let match
@@ -231,11 +217,6 @@
       return matches
     },
 
-    /**
-   * @param {RegEx} regEx
-   * @param {string} str
-   * @returns {string}
-   */
     getFirstMatchGroup (regEx, str) {
       let match = regEx.exec(str)
 
@@ -248,7 +229,6 @@
   var tags = (function () {
     const TOPIC_PATH = '/forum/viewtopic.php'
 
-    // Separates tags from title
     const TITLE_REGEX = /(?:\[([^[\]]+)\]+)?([^[]*)?/g
     const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|\/|\+)/
     const TAGS_GROUP_SEPARATOR = ' | '
@@ -290,10 +270,6 @@
       TAG_ICON_MAP[dim] = DIMENSION_ICON_NAME
     })
 
-    /**
-   * Extracts tags and title from title string
-   * @param {string} titleRaw
-   */
     function tokenizeTitle (titleRaw) {
       let tagGroupsBefore = []
       let titleParts = []
@@ -303,7 +279,6 @@
         .forEach((groups) => {
           let tags = []
 
-          // First group - tags
           if (groups[0]) {
             tags = groups[0].split(TAGS_SEPARATOR_REGEX)
           }
@@ -312,7 +287,6 @@
             (titleParts.length ? tagGroupsAfter : tagGroupsBefore).push(tags)
           }
 
-          // Second group - title part
           if (groups[1]) {
             titleParts.push(groups[1])
           }
@@ -325,9 +299,6 @@
       }
     }
 
-    /**
-   * @param {Array<Array<string>>} tagGroups
-   */
     function createTagsRow (tagGroups) {
       const tags = tagGroups.reduce((tags, tagsGroup, index) => {
         tags.push(...createTagLinks(tagsGroup))
@@ -345,9 +316,6 @@
       })
     }
 
-    /**
-   * @param {Array<string>} tags
-   */
     function createTagLinks (tags) {
       return tags
         .filter((tag) => tag.length)
@@ -369,9 +337,6 @@
         })
     }
 
-    /**
-   * Extracts tags from title for  topic post page
-   */
     function createPostTags () {
       const titleElement = $('.maintitle')
       const titleLink = titleElement.children[0]
@@ -387,7 +352,6 @@
 
       addStyle(css$1)
 
-      // Remove tags from title
       $.set(titleLink, {
         textContent: titleParts.title,
         title: title
@@ -465,8 +429,6 @@
   })()
 
   var css$4 = "@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(1turn)}}.icon{position:relative}.icon:after,.image-link img:after{content:\"\";position:absolute;z-index:2;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-repeat:no-repeat;background-position:50%;background-size:contain}.icon_hover:after{transition:opacity .35s ease;opacity:0}.icon_hover:hover:after{opacity:1}.icon_size_button:after{width:50px;height:50px}.icon_type_expand:after{width:70%;height:70%;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M9.5 13.09l1.41 1.41-4.5 4.5H10v2H3v-7h2v3.59l4.5-4.5m1.41-3.59L9.5 10.91 5 6.41V10H3V3h7v2H6.41l4.5 4.5m3.59 3.59l4.5 4.5V14h2v7h-7v-2h3.59l-4.5-4.5 1.41-1.41M13.09 9.5l4.5-4.5H14V3h7v7h-2V6.41l-4.5 4.5-1.41-1.41z'/%3E%3C/svg%3E\")}.icon_type_loading:after{animation:spin 1s linear infinite;opacity:1;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z'/%3E%3C/svg%3E\")!important}.icon_type_zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.icon_type_next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.icon_type_previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.icon_type_close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.icon_type_image_broken:after,.image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23ccc'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42l3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.image-link{display:inline-flex;min-width:50px;min-height:50px;margin:3px;padding:4px;border:1px solid #cacaca;box-shadow:1px 1px 3px rgba(0,0,0,.5);vertical-align:bottom}.image-link img.postImg{margin:0}.image-link var.postImg{display:flex;align-items:center;justify-content:center;width:100%}.image-link:before{content:\"\";position:absolute;z-index:1;top:4px;right:4px;bottom:4px;left:4px;transition:opacity .35s ease;opacity:0;background-color:rgba(0,0,0,.5)}.image-link.icon_type_loading:before,.image-link:hover:before{opacity:1}.image-link img:after,.image-link img:before{content:\"\";position:absolute}.image-link img:before{top:0;left:0;width:100%;height:100%;background-color:#f5f5f5}.image-link img:after{z-index:0;width:35px;height:35px}.image-view{display:flex;flex-flow:column;height:0;transition:opacity .35s ease-out;opacity:0;background-color:rgba(0,0,0,.8);color:#fff;-moz-user-select:none;user-select:none}body.image-view_open{overflow:hidden}.image-view_open .image-view{position:fixed;z-index:3;top:0;right:0;bottom:0;left:0;height:auto;opacity:1}.image-view__body,.image-view__footer,.image-view__header{display:flex}.image-view__body{position:relative;height:100%;overflow:auto}.image-view__body::-webkit-scrollbar{width:20px}.image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.image-view__footer-wrapper,.image-view__header-wrapper{z-index:1}.image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.image-view__footer,.image-view__header{background-color:rgba(0,0,0,.8)}.image-view__header{justify-content:space-between}.image-view__footer{justify-content:center}.image-view__number{display:flex;align-items:center;padding:0 40px;font-size:1.125rem}.image-view__image{max-width:100%;max-height:100%;margin:auto;object-fit:contain;transition:opacity .35s ease-out;opacity:1}.icon_error .image-view__image,.icon_loading .image-view__image{opacity:0}.image-view_full-height .image-view__image{max-height:none;cursor:-webkit-grab;cursor:grab}.image-view_full-height .image-view__image_grabbing{cursor:-webkit-grabbing;cursor:grabbing}.image-view_full-height .icon_type_expand{background-color:hsla(0,0%,100%,.1)}.icon-button{width:50px;height:50px;transition:all .35s ease-out}.icon-button+.icon-button{margin-left:5px}.icon-button:hover{background-color:hsla(0,0%,100%,.1)}.icon-button:active,.icon-button_active{background-color:hsla(0,0%,100%,.2)}"
-
-  /* global GM GM_xmlhttpRequest */
 
   var request = (function () {
     const xmlHttpRequest = 'GM' in window && 'xmlHttpRequest' in GM
@@ -551,8 +513,6 @@
         imageUrlRegEx: /property="og:image" content="([^"]*)"/,
         getUrl: getUrlFromPage
       },
-
-      // not allowed below
 
       {
         name: 'ImageBam',
@@ -736,12 +696,11 @@
         elements.imageNumber.textContent = state.getCurrentLinkIndex() + 1
 
         if (state.open) {
-        // Clear previous
           img.src = EMPTY_SRC
 
           if (link.classList.contains(CLASSES.brokenImage)) {
             container.classList.add(CLASSES.brokenImage)
-            // Do not try to load broken image
+
             return
           } else {
             container.classList.remove(CLASSES.brokenImage)
@@ -752,7 +711,7 @@
         }
 
         let imageUrl = link.dataset['imgUrl']
-        // Get full image URL
+
         if (!imageUrl) {
           imageUrl = await urlExtractor.getImageUrl(link)
           if (!imageUrl) {
@@ -770,12 +729,11 @@
             container.classList.remove(CLASSES.loading)
           } else {
             link.classList.replace(CLASSES.loading, CLASSES.imageLinkZoom)
-            // Open image view
+
             document.body.classList.add(CLASSES.open)
             state.open = true
           }
         } catch (e) {
-        // Prevent opening failed image again
           link.classList.remove(CLASSES.imageLink)
           image.markAsBroken(link)
         }
@@ -787,7 +745,7 @@
 
           imageObj.onload = resolve
           imageObj.onerror = reject
-          // Load image
+
           imageObj.src = url
         })
       },
@@ -842,9 +800,9 @@
         }
 
         let link = e.target
-        // Collect neighbour links
+
         state.linksSet = $$(SELECTORS.imageLink, link.parentNode)
-        // Set total images count
+
         elements.imageTotal.textContent = state.linksSet.length
 
         events.keyboard.bind()
@@ -1027,7 +985,6 @@
         .then(() => {
           const topic = $('table.topic')
 
-          // Assign class to image links
           const linkClasses = `${CLASSES.imageLink} image-link icon icon_hover ${CLASSES.imageLinkZoom} icon_size_button`
           $.set($$(urlExtractor.getLinksSelector(), topic), {
             className: linkClasses

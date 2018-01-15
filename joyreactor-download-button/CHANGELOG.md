@@ -1,8 +1,6 @@
 # JoyReactor Download Button Changelog
 
-## Unreleased
-
-## 1.2.0
+## 1.2.0 - 2018-01-16
 ### Changed
 - Refactoring
 
