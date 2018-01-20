@@ -1,7 +1,7 @@
 {
   "name": "Pornolab Enhancer",
   "namespace": "https://github.com/shikiyoku",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Improves User Experience",
   "author": "shikiyoku",
   "license": "MIT",
@@ -17,7 +17,8 @@
   "connect": [
     "www.imagebam.com",
     "imagevenue.com",
-    "www.turboimagehost.com"
+    "www.turboimagehost.com",
+    "imgbox.com"
   ],
   "grant": [
     "GM_addStyle",

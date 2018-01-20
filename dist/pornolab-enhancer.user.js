@@ -15,6 +15,7 @@
 // @connect     www.imagebam.com
 // @connect     imagevenue.com
 // @connect     www.turboimagehost.com
+// @connect     imgbox.com
 // @run-at      document-start
 // @compatible  chrome
 // @compatible  firefox
@@ -468,6 +469,7 @@
     }
 
     const extractors = [
+
       {
         name: 'FastPic',
         allowed: true,
@@ -528,6 +530,7 @@
 
         async getUrl (extractor, link) {
           const imageName = link.href.split('/').pop()
+            .replace('.html', '')
           const extension = imageName.split('.').pop()
           const imageUrl = getThumbnailUrl(link)
             .replace('/th/', '/i/')
@@ -617,6 +620,26 @@
         async getUrl (extractor, link) {
           return getThumbnailUrl(link)
             .replace('/small/', '/big/')
+        }
+      },
+
+      {
+        name: 'imgbox.com',
+        linkSelector: '[href^="http://imgbox.com"]',
+        linkRegEx: new RegExp('^http://imgbox.com'),
+        imageUrlRegEx: /href="([^"]*)".*icon-cloud-download/,
+        getUrl: getUrlFromPage
+      },
+
+      {
+        name: 'payforpic.ru',
+        linkSelector: '[href^="http://payforpic.ru"]',
+        linkRegEx: new RegExp('^http://payforpic.ru'),
+
+        async getUrl (extractor, link) {
+          return getThumbnailUrl(link)
+            .replace('payforpic', 'picker-click')
+            .replace('-thumb', '')
         }
       }
     ]

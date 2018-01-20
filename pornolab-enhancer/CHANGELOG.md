@@ -1,5 +1,12 @@
 # Pornolab Enhancer Changelog
 
+## 1.11.1 - 2018-01-20
+## Fixed
+- [Image view] ImageTwist url extracting
+
+## Added
+- [Image view] Support `imgbox.com`, `payforpic.ru`
+
 ## 1.11.0 - 2018-01-20
 ## Fixed
 - Icon path
