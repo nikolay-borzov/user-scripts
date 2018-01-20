@@ -488,6 +488,17 @@
       },
 
       {
+        name: 'FastPic',
+        allowed: true,
+        linkSelector: '[href*="fastpic.ru/big"]',
+        linkRegEx: new RegExp('fastpic.ru/big'),
+
+        async getUrl (extractor, link) {
+          return link.href + '?noht=1'
+        }
+      },
+
+      {
         name: 'ImageVenue',
         allowed: true,
         linkSelector: '[href*=".imagevenue.com/img.php"]',

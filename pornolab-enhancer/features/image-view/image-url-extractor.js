@@ -43,6 +43,17 @@ export default (function () {
           .replace('jpeg', extension) + '?noht=1'
       }
     },
+    // For case when direct link si already provided
+    {
+      name: 'FastPic',
+      allowed: true,
+      linkSelector: '[href*="fastpic.ru/big"]',
+      linkRegEx: new RegExp('fastpic.ru/big'),
+
+      async getUrl (extractor, link) {
+        return link.href + '?noht=1'
+      }
+    },
 
     // link:      http://img45.imagevenue.com/img.php?image=10934_bscap0004_122_1068lo.jpg
     // thumbnail: http://img45.imagevenue.com/loc1068/th_10934_bscap0004_122_1068lo.jpg

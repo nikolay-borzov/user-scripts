@@ -1,5 +1,9 @@
 # Pornolab Enhancer Changelog
 
+## 1.11.2 - 2018-01-20
+## Added
+- [Image view] Direct `fastpic.ru` urls support
+
 ## 1.11.1 - 2018-01-20
 ## Fixed
 - [Image view] ImageTwist url extracting
