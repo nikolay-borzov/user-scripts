@@ -1,5 +1,5 @@
 # user-scripts
-[![JavaScript Style Guide][standard-image]][standard-url] [![Build Status][travis-image]][travis-url] [![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
+[![JavaScript Style Guide][standard-image]][standard-url] [![Build Status][travis-image]][travis-url]
 
 User scripts for Tampermonkey and ~~Greasemonkey~~
 
@@ -70,17 +70,15 @@ Disable/enable certain features. Available through menu link "PLE"
 
 [jrdb-size]: https://img.shields.io/github/size/shikiyoku/user-scripts/dist/joyreactor-download-button.user.js.svg
 [jrdb-url]: https://github.com/shikiyoku/user-scripts/raw/master/dist/joyreactor-download-button.user.js
+[jrdb-open-user-js-url]: https://openuserjs.org/scripts/shikiyoku/JoyReactor_Download_Button
+[jrdb-greasy-fork-url]: https://greasyfork.org/en/scripts/35272-joyreactor-download-button
 
 [ple-size]: https://img.shields.io/github/size/shikiyoku/user-scripts/dist/pornolab-enhancer.user.js.svg
 [ple-url]: https://github.com/shikiyoku/user-scripts/raw/master/dist/pornolab-enhancer.user.js
+[ple-open-user-js-url]: https://openuserjs.org/scripts/shikiyoku/Pornolab_Enhancer
+[ple-greasy-fork-url]: https://greasyfork.org/en/scripts/35355-pornolab-enhancer
+[ple-sleazy-fork-url]: https://sleazyfork.org/en/scripts/35355-pornolab-enhancer
 
 [open-user-js-image]: https://img.shields.io/badge/OpenUserJS-install-304051.svg
 [greasy-fork-image]: https://img.shields.io/badge/Greasy%20Fork-install-690001.svg
 [sleazy-fork-image]: https://img.shields.io/badge/Sleazy%20Fork-install-690001.svg
-
-[jrdb-open-user-js-url]: https://openuserjs.org/scripts/shikiyoku/JoyReactor_Download_Button
-[jrdb-greasy-fork-url]: https://greasyfork.org/en/scripts/35272-joyreactor-download-button
-
-[ple-open-user-js-url]: https://openuserjs.org/scripts/shikiyoku/Pornolab_Enhancer
-[ple-greasy-fork-url]: https://greasyfork.org/en/scripts/35355-pornolab-enhancer
-[ple-sleazy-fork-url]: https://sleazyfork.org/en/scripts/35355-pornolab-enhancer

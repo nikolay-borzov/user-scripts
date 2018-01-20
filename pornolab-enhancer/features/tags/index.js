@@ -9,7 +9,7 @@ export default (function () {
 
   // Separates tags from title
   const TITLE_REGEX = /(?:\[([^[\]]+)\]+)?([^[]*)?/g
-  const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|\/|\+)/
+  const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|•|\/|\+)/
   const TAGS_GROUP_SEPARATOR = ' | '
 
   const DIMENSIONS = [

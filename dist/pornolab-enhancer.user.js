@@ -2,17 +2,16 @@
 // @name        Pornolab Enhancer
 // @namespace   https://github.com/shikiyoku
 // @description Improves User Experience
-// @version     1.10.0
+// @version     1.11.0
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2017+, shikiyoku
-// @icon        https://raw.githubusercontent.com/shikiyoku/user-scripts/master/src/pornolab-enhancer/resources/icon.png
+// @icon        https://raw.githubusercontent.com/shikiyoku/user-scripts/master/pornolab-enhancer/resources/icon.png
 // @homepageURL https://github.com/shikiyoku/user-scripts
 // @supportURL  https://github.com/shikiyoku/user-scripts/issues
 // @include     http*://pornolab.net/*
 // @include     http*://pornolab.lib/*
 // @include     http*://pornolab.cc/*
-// @include     http*://pornolab.*
 // @connect     www.imagebam.com
 // @connect     imagevenue.com
 // @connect     www.turboimagehost.com
@@ -230,7 +229,7 @@
     const TOPIC_PATH = '/forum/viewtopic.php'
 
     const TITLE_REGEX = /(?:\[([^[\]]+)\]+)?([^[]*)?/g
-    const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|\/|\+)/
+    const TAGS_SEPARATOR_REGEX = /(?:,\s?|;|•|\/|\+)/
     const TAGS_GROUP_SEPARATOR = ' | '
 
     const DIMENSIONS = [

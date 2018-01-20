@@ -1,19 +1,18 @@
 {
   "name": "Pornolab Enhancer",
   "namespace": "https://github.com/shikiyoku",
-  "version": "",
+  "version": "1.11.0",
   "description": "Improves User Experience",
   "author": "shikiyoku",
   "license": "MIT",
   "copyright": "2017+, shikiyoku",
-  "icon": "https://raw.githubusercontent.com/shikiyoku/user-scripts/master/src/pornolab-enhancer/resources/icon.png",
+  "icon": "https://raw.githubusercontent.com/shikiyoku/user-scripts/master/pornolab-enhancer/resources/icon.png",
   "homepageURL": "https://github.com/shikiyoku/user-scripts",
   "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
   "include": [ 
     "http*://pornolab.net/*",
     "http*://pornolab.lib/*",
-    "http*://pornolab.cc/*",
-    "http*://pornolab.*"
+    "http*://pornolab.cc/*"
   ],
   "connect": [
     "www.imagebam.com",

@@ -1,12 +1,8 @@
 module.exports = {
   root: true,
   env: {
-    browser: true
-  },
-  globals: {
-    'GM_addStyle': true,
-    'GM_xmlhttpRequest': true,
-    'GM': true
+    browser: true,
+    greasemonkey: true
   },
   extends: 'standard',
   'rules': {

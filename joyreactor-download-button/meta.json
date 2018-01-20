@@ -1,7 +1,7 @@
 {
   "name": "JoyReactor Download Button",
   "namespace": "https://github.com/shikiyoku",
-  "version": "",
+  "version": "1.2.0",
   "description": "Adds download buttton to images",
   "author": "shikiyoku",
   "license": "MIT",

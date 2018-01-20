@@ -1,5 +1,10 @@
 # Pornolab Enhancer Changelog
 
+## 1.11.0 - 2018-01-20
+## Fixed
+- Icon path
+- [Tags] `•` as a tag separator
+
 ## 1.10.0 - 2018-01-16
 ## Changed
 - Refactoring: BEM (kind of), JS and folders structure
