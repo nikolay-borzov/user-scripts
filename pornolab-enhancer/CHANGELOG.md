@@ -1,5 +1,15 @@
 # Pornolab Enhancer Changelog
 
+## 1.11.3 - 2018-04-12
+## Added
+- [Tags] 544p
+- [Image view] Support `imageban.ru`, `picturelol.com`
+
+## Fixed
+- [Image view] Top align image links
+- [Config] Fix `Apply` handling
+- [Download] Fix download button
+
 ## 1.11.2 - 2018-01-20
 ## Added
 - [Image view] Direct `fastpic.ru` urls support

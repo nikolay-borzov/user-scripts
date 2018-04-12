@@ -2,7 +2,8 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    greasemonkey: true
+    greasemonkey: true,
+    jquery: true
   },
   extends: 'standard',
   'rules': {

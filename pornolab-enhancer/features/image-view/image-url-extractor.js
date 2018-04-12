@@ -30,8 +30,8 @@ export default (function () {
     {
       name: 'FastPic',
       allowed: true,
-      linkSelector: '[href^="http://fastpic.ru/view/"]',
-      linkRegEx: new RegExp('^http://fastpic.ru/view/'),
+      linkSelector: '[href*="fastpic.ru/view"]',
+      linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
       extensionRegEx: /\.([^.]+)\.html$/,
 
       async getUrl (extractor, link) {
@@ -43,7 +43,7 @@ export default (function () {
           .replace('jpeg', extension) + '?noht=1'
       }
     },
-    // For case when direct link si already provided
+    // For case when direct link is already provided
     {
       name: 'FastPic',
       allowed: true,
@@ -121,6 +121,26 @@ export default (function () {
         return `${imageUrl}${extension}/${imageName}`
       }
     },
+
+    // ImageTwist based
+    // link:      http://picturelol.com/xmwvipfwjjo8/43037_Kimber.mp4.jpg
+    // thumbnail: http://img161.picturelol.com/th/20575/xmwvipfwjjo8.jpg
+    // image:     http://img161.imagetwist.com/i/20575/xmwvipfwjjo8.jpg/43037_Kimber.mp4.jpg
+    {
+      name: 'picturelol.com',
+      linkSelector: '[href^="http://picturelol.com"]',
+      linkRegEx: new RegExp('^http://picturelol.com'),
+      async getUrl (extractor, link) {
+        const imageName = link.href.split('/').pop()
+        const imageUrl = getThumbnailUrl(link)
+          .replace('/th/', '/i/')
+          .replace('picturelol', 'imagetwist')
+
+        return `${imageUrl}/${imageName}`
+      }
+    },
+
+    // ImageTwist based
     // Remove ?
     {
       name: 'PicShick',
@@ -234,6 +254,22 @@ export default (function () {
         return getThumbnailUrl(link)
           .replace('payforpic', 'picker-click')
           .replace('-thumb', '')
+      }
+    },
+
+    // link:      http://imageban.ru/show/2018/03/17/77634d699922675c8f53d6c12ca6b8a9/jpg
+    // thumbnail: http://i3.imageban.ru/thumbs/2018.03.17/77634d699922675c8f53d6c12ca6b8a9.jpg
+    // image:     http://i3.imageban.ru/out/2018/03/17/77634d699922675c8f53d6c12ca6b8a9.jpg
+    {
+      name: 'imageban.ru',
+      linkSelector: '[href^="http://imageban.ru"]',
+      linkRegEx: new RegExp('^http://imageban.ru'),
+      datePattern: /(\d{4})\.(\d{2})\.(\d{2})/,
+
+      async getUrl (extractor, link) {
+        return getThumbnailUrl(link)
+          .replace('thumbs', 'out')
+          .replace(extractor.datePattern, '$1/$2/$3')
       }
     }
   ]

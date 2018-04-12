@@ -3,7 +3,6 @@ const resolve = require('rollup-plugin-node-resolve')
 const alias = require('rollup-plugin-alias')
 const postcss = require('rollup-plugin-postcss')
 const metablock = require('rollup-plugin-userscript-metablock')
-const eslint = require('rollup-plugin-eslint')
 
 // postCSS plugins
 const cssnext = require('postcss-cssnext')
@@ -29,7 +28,9 @@ module.exports = {
         },
         plugins: [
           atImport(),
-          customProperties(),
+          customProperties({
+            preserve: false
+          }),
           cssnext(),
           assets({
             loadPaths: [imagesPath]
@@ -53,10 +54,6 @@ module.exports = {
         addStyle: path.resolve('common/addStyle'),
         regex: path.resolve('common/regex'),
         request: path.resolve('common/request')
-      }),
-
-      eslint({
-        fix: true
       }),
 
       metablock({

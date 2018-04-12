@@ -20,7 +20,7 @@ export default (function () {
       contents: [{
         tag: 'input',
         type: 'checkbox',
-        className: 'config-form__checkbox',
+        className: 'config-form__checkbox js-config-checkbox',
         checked,
         value: storeKey
       }, label]
@@ -58,6 +58,7 @@ export default (function () {
       delegate: {
         'change': {
           '.js-config-checkbox': (e) => store.set(e.target.value, e.target.checked)
+
         }
       },
       events: {

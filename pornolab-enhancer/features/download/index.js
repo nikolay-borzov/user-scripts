@@ -6,6 +6,15 @@ import downloadCSS from './styles.css'
 export default (function () {
   const ENABLE_ON_PATH = '/forum/viewtopic.php'
 
+  function triggerEvent (element, eventName) {
+    var event = document.createEvent('MouseEvents')
+    event.initEvent(eventName, true, true)
+
+    jQuery(element).trigger('mousedown')
+
+    element.dispatchEvent(event)
+  }
+
   function createDownloadLink (downloadLink) {
     const link = $.create('a', {
       className: 'quick-download',
@@ -15,10 +24,8 @@ export default (function () {
         'click': (e) => {
           e.preventDefault()
 
-          var event = document.createEvent('MouseEvents')
-          event.initEvent('click', true, true)
-
-          downloadLink.dispatchEvent(event)
+          triggerEvent(downloadLink, jQuery.browser.opera ? 'mouseover' : 'mousedown')
+          triggerEvent(downloadLink, 'click')
         }
       },
 

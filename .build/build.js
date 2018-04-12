@@ -17,7 +17,7 @@ async function build () {
     await bundle.write(config.rollupOptions.output)
     log('Building done!')
   } catch(e) {
-    error(e)
+    console.error(e)
   }
 }
 

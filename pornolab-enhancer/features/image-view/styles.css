@@ -89,7 +89,7 @@
   padding: 4px;
   border: solid 1px var(--color-border);
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-  vertical-align: bottom; /* Fix alignment for short images */
+  vertical-align: top; /* Fix alignment for short images */
 }
 
 .image-link img.postImg {
