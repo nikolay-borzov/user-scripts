@@ -9,14 +9,12 @@
 // @icon        https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png
 // @homepageURL https://github.com/shikiyoku/user-scripts
 // @supportURL  https://github.com/shikiyoku/user-scripts/issues
-// @include     *
 // @connect     www.imagebam.com
 // @connect     imagevenue.com
 // @connect     www.turboimagehost.com
 // @connect     imgbox.com
 // @run-at      document-start
-// @compatible  chrome
-// @compatible  firefox
+// @include     *
 // @grant       GM_addStyle
 // @grant       GM_xmlhttpRequest
 // @grant       GM.xmlHttpRequest

@@ -9,7 +9,7 @@
   "icon": "https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png",
   "homepageURL": "https://github.com/shikiyoku/user-scripts",
   "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
-  "include": [ ],
+ 
   "connect": [
     "www.imagebam.com",
     "imagevenue.com",
@@ -25,6 +25,5 @@
     "GM_getValue",
     "GM.getValue"
   ],
-  "run-at": "document-start",
-  "compatible": ["chrome", "firefox"]
+  "run-at": "document-start"
 }
