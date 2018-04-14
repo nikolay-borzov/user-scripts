@@ -1,0 +1,300 @@
+:root {
+  --color-bkg-button-hover: rgba(255, 255, 255, 0.1);
+  --color-bkg-view: rgba(0, 0, 0, 0.8);
+  --transition-duration: 350ms;
+  --color-border: #cacaca;
+  --color-bkg-5: #ccc;
+  --color-bkg-6: #f5f5f5;
+}
+
+/* ----------
+  Animations
+------------ */
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* -----
+  Icons
+------- */
+.iv-icon { position: relative; }
+
+.iv-icon::after,
+.image-link img::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: contain;
+}
+
+/* Icon that is shown on hover */
+.iv-icon_hover::after {
+  transition: opacity var(--transition-duration) ease;
+  opacity: 0;
+}
+
+.iv-icon_hover:hover::after {
+  opacity: 1;
+}
+
+.iv-icon_size_button::after {
+  width: 50px;
+  height: 50px;
+}
+
+.iv-icon_type_expand::after {
+  width: 70%;
+  height: 70%;
+  background-image: svg-load('expand.svg');
+}
+
+.iv-icon_type_loading::after {
+  animation: spin 1s linear infinite;
+  opacity: 1;
+  background-image: svg-load('loading.svg', fill=#fff) !important;
+}
+
+.iv-icon_type_zoom::after { background-image: svg-load('zoom-in.svg', fill=#fff); }
+.iv-icon_type_next::after { background-image: svg-load('next.svg', fill=#fff); }
+.iv-icon_type_previous::after { background-image: svg-load('before.svg', fill=#fff); }
+.iv-icon_type_close::after { background-image: svg-load('close.svg', fill=#fff); }
+
+.iv-icon_type_image_broken::after,
+.image-link img::after {
+  background-image: svg-load('image-broken.svg', fill=var(--color-bkg-5));
+}
+
+/* ----------
+  Image link
+------------ */
+
+.image-link {
+  display: inline-flex;
+  min-width: 50px;
+  min-height: 50px;
+  margin: 3px;
+  padding: 4px;
+  border: solid 1px var(--color-border);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  vertical-align: top; /* Fix alignment for short images */
+}
+
+.image-link img.postImg {
+  margin: 0;
+}
+
+.image-link var.postImg {
+  display: flex; /* Remove bottom padding */
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Backdrop */
+.image-link::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  right: 4px;
+  bottom: 4px;
+  left: 4px;
+  transition: opacity var(--transition-duration) ease;
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.image-link:hover::before,
+.image-link.iv-icon_type_loading::before {
+  opacity: 1;
+}
+
+/* ------------
+  Broken image
+-------------- */
+
+.image-link img::before,
+.image-link img::after {
+  content: '';
+  position: absolute;
+}
+
+.image-link img::before {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bkg-6);
+}
+
+.image-link img::after {
+  z-index: 0;
+  width: 35px;
+  height: 35px;
+}
+
+/* ----------
+  Image view
+------------ */
+
+.iv-image-view {
+  display: flex;
+  flex-direction: column;
+  height: 0;
+  transition: opacity var(--transition-duration) ease-out;
+  opacity: 0;
+  background-color: var(--color-bkg-view);
+  color: #fff;
+  user-select: none;
+}
+
+body.iv-image-view_open {
+  overflow: hidden;
+}
+
+.iv-image-view_open .iv-image-view {
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: auto;
+  opacity: 1;
+}
+
+.iv-image-view__body,
+.iv-image-view__header,
+.iv-image-view__footer {
+  display: flex;
+}
+
+.iv-image-view__body {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+}
+
+.iv-image-view__body::-webkit-scrollbar {
+  width: 20px;
+}
+
+.iv-image-view__body::-webkit-scrollbar-thumb {
+  background-color: var(--color-bkg-view);
+}
+
+.iv-image-view__body::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.iv-image-view__header-wrapper,
+.iv-image-view__footer-wrapper {
+  z-index: 1;
+}
+
+.iv-image-view__header-wrapper {
+  box-shadow: rgba(0, 0, 0, 0.7) 0 3px 7px;
+}
+
+.iv-image-view__footer-wrapper {
+  box-shadow: rgba(0, 0, 0, 0.7) 0 -3px 7px;
+}
+
+.iv-image-view__header,
+.iv-image-view__footer {
+  background-color: var(--color-bkg-view);
+}
+
+.iv-image-view__header {
+  justify-content: space-between;
+}
+
+.iv-image-view__footer {
+  justify-content: center;
+}
+
+.iv-image-view__number {
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  font-size: 1.125rem;
+}
+
+.iv-image-view__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.iv-image-view__image {
+  z-index: 2;
+  flex: 0 1;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  object-fit: contain;
+  transition: opacity var(--transition-duration) ease-out;
+  opacity: 1;
+}
+
+/* Hide image during loading and on error */
+.iv-icon_loading .iv-image-view__image,
+.iv-icon_error .iv-image-view__image {
+  opacity: 0;
+}
+
+/*
+  Cancel height restriction
+  Set cursor to grab hand
+ */
+.iv-image-view_full-height .iv-image-view__image {
+  max-height: none;
+  cursor: grab;
+}
+
+.iv-image-view_full-height .iv-image-view__image_grabbing {
+  cursor: grabbing;
+}
+
+.iv-image-view_full-height .iv-icon_type_expand {
+  background-color: var(--color-bkg-button-hover);
+}
+
+/* -----------
+  Icon button
+------------- */
+
+.iv-icon-button {
+  width: 50px;
+  height: 50px;
+  transition: all 0.35s ease-out;
+}
+
+.iv-icon-button + .iv-icon-button {
+  margin-left: 5px;
+}
+
+.iv-icon-button:hover {
+  background-color: var(--color-bkg-button-hover);
+}
+
+.iv-icon-button:active,
+.iv-icon-button_active {
+  background-color: rgba(255, 255, 255, 0.2);
+}

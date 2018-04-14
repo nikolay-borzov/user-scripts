@@ -1,22 +1,24 @@
 const IDS = {
   ple: 'ple',
   jrdb: 'jrdb',
-  pleng: 'pleng'
+  pleng: 'pleng',
+  iv: 'iv'
 }
 
-const FOLDER_MAP = {
+const NAME_MAP = {
   [IDS.ple]: 'pornolab-enhancer',
   [IDS.jrdb]: 'joyreactor-download-button',
-  [IDS.pleng]: 'pornolab-english'
+  [IDS.pleng]: 'pornolab-english',
+  [IDS.iv]: 'image-viewer'
 }
 
 module.exports = {
-  getFolderName: (scriptId) => {
-    if(!FOLDER_MAP.hasOwnProperty(scriptId)) {
+  getName: scriptId => {
+    if (!NAME_MAP.hasOwnProperty(scriptId)) {
       throw new Error(`No supported script with id=${scriptId}`)
     }
 
-    return FOLDER_MAP[scriptId]
+    return NAME_MAP[scriptId]
   },
 
   getIds: () => Object.values(IDS)

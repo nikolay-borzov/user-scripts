@@ -15,12 +15,12 @@ module.exports = function getConfig() {
       type: 'boolean'
     }).argv
 
-  const scriptFolder = scripts.getFolderName(argv.script)
-  const rollupOptions = require(`../${scriptFolder}/rollup.config`)
+  const scriptName = scripts.getName(argv.script)
+  const rollupOptions = require(`../${scriptName}/rollup.config`)
 
   return {
     watch: argv.watch,
-    scriptFolder,
+    scriptName,
     rollupOptions
   }
 }

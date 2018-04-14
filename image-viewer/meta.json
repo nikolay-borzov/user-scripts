@@ -1,0 +1,30 @@
+{
+  "name": "Image Viewer",
+  "namespace": "https://github.com/shikiyoku",
+  "version": "0.9.0",
+  "description": "Allows viewing full image without leaving the page",
+  "author": "shikiyoku",
+  "license": "MIT",
+  "copyright": "2018+, shikiyoku",
+  "icon": "https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png",
+  "homepageURL": "https://github.com/shikiyoku/user-scripts",
+  "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
+  "include": [ ],
+  "connect": [
+    "www.imagebam.com",
+    "imagevenue.com",
+    "www.turboimagehost.com",
+    "imgbox.com"
+  ],
+  "grant": [
+    "GM_addStyle",
+    "GM_xmlhttpRequest",
+    "GM.xmlHttpRequest",
+    "GM_setValue",
+    "GM.setValue",
+    "GM_getValue",
+    "GM.getValue"
+  ],
+  "run-at": "document-start",
+  "compatible": ["chrome", "firefox"]
+}

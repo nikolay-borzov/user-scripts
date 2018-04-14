@@ -10,6 +10,7 @@
 // @homepageURL https://github.com/shikiyoku/user-scripts
 // @supportURL  https://github.com/shikiyoku/user-scripts/issues
 // @include     http://joyreactor.cc/*
+// @include     http://joyreactor.com/*
 // @run-at      document-end
 // @grant       GM_addStyle
 // ==/UserScript==

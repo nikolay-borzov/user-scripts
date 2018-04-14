@@ -3,14 +3,31 @@
 
 User scripts for Tampermonkey and ~~Greasemonkey~~
 
-# JoyReactor Download Button 
+# Image Viewer
+[![IV file size][iv-size]][iv-url]
+
+Allows viewing full size images w/o leaving the page.
+
+## Controls
+
+Keyboard:  
+`←` - Previous image  
+`→` - Next image  
+`Esc` - Close image view  
+`Space` - Toggle image full height
+
+Mouse:  
+`double click` - Toggle image full height  
+`click` on backdrop - Close image view  
+
+# JoyReactor Download Button
 [![JRDB file size][jrdb-size]][jrdb-url] [![JRDB OpenUserJS][open-user-js-image]][jrdb-open-user-js-url] [![JRDB GreasyFork][greasy-fork-image]][jrdb-greasy-fork-url]
 - Shows image download link on hover
 - Makes gif image link downloadable
 
 "Downloadable" means you can download image by clicking (lmb) on the button. Link has [download](https://caniuse.com/#feat=download) attribute
 
-# Pornolab Enhancer 
+# Pornolab Enhancer
 [![PLE file size][ple-size]][ple-url] [![PLE OpenUserJS][open-user-js-image]][ple-open-user-js-url] [![PLE GreasyFork][greasy-fork-image]][ple-greasy-fork-url] [![PLE SleazyFork][sleazy-fork-image]][ple-sleazy-fork-url]
 
 Improves UX
@@ -27,26 +44,13 @@ Improves pager styles
 ## Download
 Adds quick download button to the top of the page
 
-## Image view
-Allows viewing full size images. 
-
-### Controls
-
-Keyboard:  
-`←` - Previous image  
-`→` - Next image  
-`Esc` - Close image view  
-`Space` - Toggle image full height
-
-Mouse:  
-`double click` - Toggle image full height
-
 ### Config menu
 Disable/enable certain features. Available through menu link "PLE"
 
 ## Attributions
 - [Flag](https://www.flaticon.com/packs/countrys-flags) icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 - [Medical](https://www.flaticon.com/packs/medical-asserts) icons made by [Smashicons](https://www.flaticon.com/authors/smashicons) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
+- Picture icon made by made by [Good Ware](https://www.flaticon.com/authors/good-ware) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Tools and Resources
 
@@ -67,6 +71,9 @@ Disable/enable certain features. Available through menu link "PLE"
 
 [standard-image]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
 [standard-url]: https://standardjs.com
+
+[iv-size]: https://img.shields.io/github/size/shikiyoku/user-scripts/dist/image-viewer.user.js.svg
+[iv-url]: https://github.com/shikiyoku/user-scripts/raw/master/dist/image-viewer.user.js
 
 [jrdb-size]: https://img.shields.io/github/size/shikiyoku/user-scripts/dist/joyreactor-download-button.user.js.svg
 [jrdb-url]: https://github.com/shikiyoku/user-scripts/raw/master/dist/joyreactor-download-button.user.js

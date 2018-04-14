@@ -1,18 +1,12 @@
-const path = require('path')
 const chokidar = require('chokidar')
 
-module.exports = function watch({
-  scriptFolder
-}, callback) {
-  const paths = [
-    'common/**',
-    `${scriptFolder}/**`
-  ]
+module.exports = function watch({ root, scriptFolder }, callback) {
+  const paths = ['common/**', `${scriptFolder}/**`]
 
   const log = console.log.bind(console)
 
   const watcher = chokidar.watch(paths, {
-    cwd: path.resolve(__dirname, '../'),
+    cwd: root,
     ignoreInitial: true,
     usePolling: true,
     interval: 500
