@@ -5,31 +5,30 @@ export default {
     '.catTitle': 'Torrent Info',
     '.pad_8': {
       [TOKENS.textNodeIndexMap]: {
-        0: { 'Размер': 'Size' },
-        1: { 'Зарегистрирован': 'Uploaded' },
+        0: { Размер: 'Size' },
+        1: { Зарегистрирован: 'Uploaded' },
         2: { '.torrent скачан': 'Downloaded' }
       },
       [TOKENS.dateTime]: 'b:nth-child(2)',
       'b:nth-child(3)': {
         [TOKENS.replaceMap]: {
-          'раза': 'times',
-          'раз': 'times'
+          раза: 'times',
+          раз: 'times'
         }
       }
     },
     '.row5': {
       '.seed': {
         [TOKENS.textNodeIndexMap]: {
-          0: { 'Сиды': 'Seeders' }
+          0: { Сиды: 'Seeders' }
         }
       },
       '.leech': {
         [TOKENS.textNodeIndexMap]: {
-          0: { 'Личи': 'Leechers' }
+          0: { Личи: 'Leechers' }
         }
       },
       '.gen': 'Peers statistics'
-
     },
     '.row3': {
       '.med:nth-child(2)': 'Add to "Future Downloads"',
@@ -38,8 +37,8 @@ export default {
     '#full_details': {
       '.floatL b': {
         [TOKENS.replaceMap]: {
-          'Сиды': 'Seeders',
-          'Личи': 'Leechers'
+          Сиды: 'Seeders',
+          Личи: 'Leechers'
         }
       },
       '.tCenter': {

@@ -9,8 +9,8 @@ export default {
    * @param {string} selector
    * @param {function} callback
    */
-  on (parent, eventName, selector, callback) {
-    parent.addEventListener(eventName, function (event) {
+  on(parent, eventName, selector, callback) {
+    parent.addEventListener(eventName, function(event) {
       const matchingChild = event.target.closest(selector)
 
       if (matchingChild) {

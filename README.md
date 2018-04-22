@@ -6,7 +6,7 @@ User scripts for Tampermonkey and ~~Greasemonkey~~
 # Image Viewer
 [![IV file size][iv-size]][iv-url]
 
-Allows viewing full size images w/o leaving the page.
+Allows viewing full size images from image hosts (e.g. Fastpic) w/o leaving the page.
 
 ## Controls
 

@@ -3,8 +3,5 @@ import breadcrumb from '../blocks/breadcrumb'
 
 export default {
   path: '/forum/profile.php',
-  maps: [
-    pageHeader,
-    breadcrumb
-  ]
+  maps: [pageHeader, breadcrumb]
 }

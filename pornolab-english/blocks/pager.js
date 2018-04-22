@@ -10,9 +10,12 @@ const activePager = {
 
 export default {
   '#main_content_wrap': {
-    'table:first p.small:first > b': $.extend({
-      [TOKENS.replaceMap]: { 'Страницы': 'Pages' }
-    }, activePager)
+    'table:first p.small:first > b': $.extend(
+      {
+        [TOKENS.replaceMap]: { Страницы: 'Pages' }
+      },
+      activePager
+    )
   },
   '#pagination, .bottom_info': {
     'p:first': {

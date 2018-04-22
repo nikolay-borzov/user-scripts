@@ -16,7 +16,7 @@
 // @grant       none
 // ==/UserScript==
 
-(function () {
+;(function() {
   'use strict'
 
   var TOKENS = {
@@ -31,30 +31,31 @@
   }
 
   const dateTimeMap = {
-    'день': 'day',
-    'дня': 'days',
-    'дней': 'days',
-    'часа': 'hours',
-    'часов': 'hours',
-    'час': 'hour',
-    'минутa': 'minute',
-    'минуты': 'minutes',
-    'минут': 'minutes',
-    'месяца': 'months',
-    'месяцев': 'months',
-    'года': 'years',
-    'год': 'year',
-    'лет': 'years',
-    'назад': 'ago'
+    день: 'day',
+    дня: 'days',
+    дней: 'days',
+    часа: 'hours',
+    часов: 'hours',
+    час: 'hour',
+    минутa: 'minute',
+    минуты: 'minutes',
+    минут: 'minutes',
+    месяца: 'months',
+    месяцев: 'months',
+    года: 'years',
+    год: 'year',
+    лет: 'years',
+    назад: 'ago'
   }
 
-  function forEach ($elements, callback) {
+  function forEach($elements, callback) {
     $elements.each((index, el) => callback($(el)))
   }
 
-  function replaceTextNodes ($container, indexMap) {
-    const nodes = Array.from($container[0].childNodes)
-      .filter(n => n.nodeType === 3 && n.data.trim().length)
+  function replaceTextNodes($container, indexMap) {
+    const nodes = Array.from($container[0].childNodes).filter(
+      n => n.nodeType === 3 && n.data.trim().length
+    )
 
     Object.entries(indexMap).forEach(([index, translation]) => {
       const node = nodes[index]
@@ -68,7 +69,7 @@
     })
   }
 
-  function replaceText ($container, map) {
+  function replaceText($container, map) {
     if ($container.children().length !== 0) {
       return
     }
@@ -78,14 +79,14 @@
     $container.text(result)
   }
 
-  function replaceTextByMap (text, map) {
+  function replaceTextByMap(text, map) {
     return Object.entries(map).reduce((result, [from, to]) => {
       return result.replace(from, to)
     }, text)
   }
 
   const SUB_FORUM_SEPARATOR = ' / '
-  function replaceSubForum (selector) {
+  function replaceSubForum(selector) {
     $(selector).each((index, node) => {
       let text = node.textContent
       if (text.includes(SUB_FORUM_SEPARATOR)) {
@@ -94,13 +95,13 @@
     })
   }
 
-  function replaceDateTime (selector) {
+  function replaceDateTime(selector) {
     $(selector).each((index, node) => {
       node.textContent = replaceTextByMap(node.textContent, dateTimeMap)
     })
   }
 
-  function translate (token, value, $container) {
+  function translate(token, value, $container) {
     switch (token) {
       case TOKENS.value:
         $container.val(value)
@@ -199,7 +200,8 @@
       '[href="profile.php?mode=sendpassword"]': 'Forgot password?'
     },
     '#ses-short': {
-      [TOKENS.title]: 'Short session (Auto logout after 30 minutes of inactivity)',
+      [TOKENS.title]:
+        'Short session (Auto logout after 30 minutes of inactivity)',
       [TOKENS.textNodeIndexMap]: { 0: 'Do not remember' }
     },
     '#dls-menu': {
@@ -213,9 +215,7 @@
 
   var main = {
     path: '/forum/index.php',
-    maps: [
-      pageHeader
-    ]
+    maps: [pageHeader]
   }
 
   const activePager = {
@@ -228,9 +228,12 @@
 
   var pager = {
     '#main_content_wrap': {
-      'table:first p.small:first > b': $.extend({
-        [TOKENS.replaceMap]: { 'Страницы': 'Pages' }
-      }, activePager)
+      'table:first p.small:first > b': $.extend(
+        {
+          [TOKENS.replaceMap]: { Страницы: 'Pages' }
+        },
+        activePager
+      )
     },
     '#pagination, .bottom_info': {
       'p:first': {
@@ -261,31 +264,30 @@
       '.catTitle': 'Torrent Info',
       '.pad_8': {
         [TOKENS.textNodeIndexMap]: {
-          0: { 'Размер': 'Size' },
-          1: { 'Зарегистрирован': 'Uploaded' },
+          0: { Размер: 'Size' },
+          1: { Зарегистрирован: 'Uploaded' },
           2: { '.torrent скачан': 'Downloaded' }
         },
         [TOKENS.dateTime]: 'b:nth-child(2)',
         'b:nth-child(3)': {
           [TOKENS.replaceMap]: {
-            'раза': 'times',
-            'раз': 'times'
+            раза: 'times',
+            раз: 'times'
           }
         }
       },
       '.row5': {
         '.seed': {
           [TOKENS.textNodeIndexMap]: {
-            0: { 'Сиды': 'Seeders' }
+            0: { Сиды: 'Seeders' }
           }
         },
         '.leech': {
           [TOKENS.textNodeIndexMap]: {
-            0: { 'Личи': 'Leechers' }
+            0: { Личи: 'Leechers' }
           }
         },
         '.gen': 'Peers statistics'
-
       },
       '.row3': {
         '.med:nth-child(2)': 'Add to "Future Downloads"',
@@ -294,8 +296,8 @@
       '#full_details': {
         '.floatL b': {
           [TOKENS.replaceMap]: {
-            'Сиды': 'Seeders',
-            'Личи': 'Leechers'
+            Сиды: 'Seeders',
+            Личи: 'Leechers'
           }
         },
         '.tCenter': {
@@ -316,25 +318,25 @@
       '.menu-root': 'View options'
     },
     '#topic-options': {
-      'th': 'View options',
+      th: 'View options',
       '#show-only': {
-        'legend': 'Hide',
-        'label': {
+        legend: 'Hide',
+        label: {
           [TOKENS.textNodeIndexMap]: {
             0: {
-              'флаги': 'flags',
-              'аватары': 'avatars',
+              флаги: 'flags',
+              аватары: 'avatars',
               'картинки званий': 'badges',
               'картинки в сообщениях': 'images in messages',
-              'смайлики': 'smiles',
-              'подписи': 'signatures'
+              смайлики: 'smiles',
+              подписи: 'signatures'
             }
           }
         }
       },
       '#spoiler-opt': {
-        'legend': 'Show',
-        'label': {
+        legend: 'Show',
+        label: {
           [TOKENS.textNodeIndexMap]: {
             0: {
               'спойлер открытым': 'spolires opened',
@@ -351,56 +353,32 @@
 
   var topic$1 = {
     path: '/forum/viewtopic.php',
-    maps: [
-      pageHeader,
-      pager,
-      breadcrumb,
-      torrentInfo,
-      topicHeader
-    ]
+    maps: [pageHeader, pager, breadcrumb, torrentInfo, topicHeader]
   }
 
   var tracker = {
     path: '/forum/tracker.php',
-    maps: [
-      pageHeader,
-      pager
-    ]
+    maps: [pageHeader, pager]
   }
 
   var search = {
     path: '/forum/search.php',
-    maps: [
-      pageHeader,
-      pager
-    ]
+    maps: [pageHeader, pager]
   }
 
   var privateMessages = {
     path: '/forum/privmsg.php',
-    maps: [
-      pageHeader
-    ]
+    maps: [pageHeader]
   }
 
   var profile = {
     path: '/forum/profile.php',
-    maps: [
-      pageHeader,
-      breadcrumb
-    ]
+    maps: [pageHeader, breadcrumb]
   }
 
-  const pages = [
-    main,
-    topic$1,
-    tracker,
-    search,
-    privateMessages,
-    profile
-  ]
+  const pages = [main, topic$1, tracker, search, privateMessages, profile]
 
-  const pageMath = pages.find((page) => page.path === location.pathname)
+  const pageMath = pages.find(page => page.path === location.pathname)
 
   if (pageMath) {
     pageMath.maps.forEach(map => {
@@ -409,4 +387,4 @@
   } else {
     console.warn(`${location.pathname} is not translated yet`)
   }
-}())
+})()

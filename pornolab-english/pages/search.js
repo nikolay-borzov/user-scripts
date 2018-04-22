@@ -3,8 +3,5 @@ import pager from '../blocks/pager'
 
 export default {
   path: '/forum/search.php',
-  maps: [
-    pageHeader,
-    pager
-  ]
+  maps: [pageHeader, pager]
 }

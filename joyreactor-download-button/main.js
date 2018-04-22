@@ -8,7 +8,7 @@ const CLASSES = {
   processed: 'js-has-download-button'
 }
 
-function createDownloadLink (imgContainer) {
+function createDownloadLink(imgContainer) {
   // Mark as processed
   imgContainer.classList.add(CLASSES.processed)
 
@@ -45,4 +45,9 @@ function createDownloadLink (imgContainer) {
   imgContainer.appendChild(link)
 }
 
-dom.on(document.body, 'mouseover', `.image:not(.${CLASSES.processed})`, createDownloadLink)
+dom.on(
+  document.body,
+  'mouseover',
+  `.image:not(.${CLASSES.processed})`,
+  createDownloadLink
+)

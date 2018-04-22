@@ -5,7 +5,7 @@ import imageViewCSS from './styles.css'
 
 import urlExtractor from './image-url-extractor'
 
-export default (function () {
+export default (function() {
   const ENABLE_ON_PATH = '/forum/viewtopic.php'
 
   const CLASSES = {
@@ -24,7 +24,8 @@ export default (function () {
     imageLink: `.${CLASSES.imageLink}`
   }
 
-  const EMPTY_SRC = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI='
+  const EMPTY_SRC =
+    'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI='
 
   const elements = {
     container: null,
@@ -45,10 +46,10 @@ export default (function () {
     open: false,
     currentLink: null,
     linksSet: [],
-    getCurrentLinkIndex () {
+    getCurrentLinkIndex() {
       return this.linksSet.indexOf(this.currentLink)
     },
-    getLastLinkIndex () {
+    getLastLinkIndex() {
       return this.linksSet.length - 1
     },
     dragPosition: null,
@@ -56,7 +57,7 @@ export default (function () {
   }
 
   const image = {
-    async show (link) {
+    async show(link) {
       const container = elements.container
       const img = elements.image
 
@@ -109,7 +110,7 @@ export default (function () {
       }
     },
 
-    preload (url) {
+    preload(url) {
       return new Promise((resolve, reject) => {
         let imageObj = new Image()
 
@@ -120,7 +121,7 @@ export default (function () {
       })
     },
 
-    hide () {
+    hide() {
       document.body.classList.remove(CLASSES.open)
       state.open = false
       state.currentLink = null
@@ -128,31 +129,32 @@ export default (function () {
       events.keyboard.unbind()
     },
 
-    next () {
+    next() {
       const currentIndex = state.getCurrentLinkIndex()
-      const newIndex = currentIndex < state.getLastLinkIndex()
-        ? currentIndex + 1
-        : 0
+      const newIndex =
+        currentIndex < state.getLastLinkIndex() ? currentIndex + 1 : 0
 
       image.show(state.linksSet[newIndex])
     },
 
-    previous () {
+    previous() {
       const currentIndex = state.getCurrentLinkIndex()
-      const newIndex = currentIndex === 0
-        ? state.getLastLinkIndex()
-        : currentIndex - 1
+      const newIndex =
+        currentIndex === 0 ? state.getLastLinkIndex() : currentIndex - 1
 
       image.show(state.linksSet[newIndex])
     },
 
-    toggleFullHeight () {
+    toggleFullHeight() {
       elements.container.classList.toggle(CLASSES.fullHeight)
     },
 
-    markAsBroken (link) {
+    markAsBroken(link) {
       if (state.open) {
-        elements.container.classList.replace(CLASSES.loading, CLASSES.brokenImage)
+        elements.container.classList.replace(
+          CLASSES.loading,
+          CLASSES.brokenImage
+        )
         link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
       } else {
         link.classList.replace(CLASSES.loading, CLASSES.brokenImage)
@@ -161,7 +163,7 @@ export default (function () {
   }
 
   const events = {
-    linkClick (e) {
+    linkClick(e) {
       e.preventDefault()
 
       if (state.firstClick) {
@@ -181,13 +183,13 @@ export default (function () {
     },
 
     keyboard: {
-      bind () {
+      bind() {
         document.addEventListener('keydown', events.keyboard.handler, true)
       },
-      unbind () {
+      unbind() {
         document.removeEventListener('keydown', events.keyboard.handler, true)
       },
-      handler (e) {
+      handler(e) {
         if (e.defaultPrevented || e.repeat) {
           return
         }
@@ -217,7 +219,7 @@ export default (function () {
       }
     },
 
-    mouse (e) {
+    mouse(e) {
       switch (e.type) {
         case 'mousedown':
           state.dragging = true
@@ -251,7 +253,7 @@ export default (function () {
   }
 
   const create = {
-    viewContainer () {
+    viewContainer() {
       elements.container = $.create('div', {
         className: 'image-view icon icon_size_button',
         contents: [
@@ -264,7 +266,7 @@ export default (function () {
       document.body.appendChild(elements.container)
     },
 
-    viewContainerBody () {
+    viewContainerBody() {
       elements.image = $.create('img', {
         className: 'image-view__image',
         events: {
@@ -280,19 +282,19 @@ export default (function () {
       return elements.imageContainer
     },
 
-    viewContainerHeader () {
+    viewContainerHeader() {
       elements.imageNumber = document.createElement('span')
       elements.imageTotal = document.createElement('span')
       let imageNumber = $.create('div', {
         className: 'image-view__number',
-        contents: [
-          elements.imageNumber,
-          '/',
-          elements.imageTotal
-        ]
+        contents: [elements.imageNumber, '/', elements.imageTotal]
       })
 
-      elements.buttons.close = create.toolbarButton('Close (Esc)', 'close', image.hide)
+      elements.buttons.close = create.toolbarButton(
+        'Close (Esc)',
+        'close',
+        image.hide
+      )
 
       return {
         tag: 'div',
@@ -300,18 +302,23 @@ export default (function () {
         contents: {
           tag: 'div',
           className: 'image-view__header',
-          contents: [
-            imageNumber,
-            elements.buttons.close
-          ]
+          contents: [imageNumber, elements.buttons.close]
         }
       }
     },
 
-    viewContainerFooter () {
+    viewContainerFooter() {
       const buttons = elements.buttons
-      buttons.previous = create.toolbarButton('Previous (←)', 'previous', image.previous)
-      buttons.toggleFullHeight = create.toolbarButton('Toggle full height (Space)', 'expand', image.toggleFullHeight)
+      buttons.previous = create.toolbarButton(
+        'Previous (←)',
+        'previous',
+        image.previous
+      )
+      buttons.toggleFullHeight = create.toolbarButton(
+        'Toggle full height (Space)',
+        'expand',
+        image.toggleFullHeight
+      )
       buttons.next = create.toolbarButton('Next (→)', 'next', image.next)
 
       return {
@@ -320,22 +327,18 @@ export default (function () {
         contents: {
           tag: 'div',
           className: 'image-view__footer',
-          contents: [
-            buttons.previous,
-            buttons.toggleFullHeight,
-            buttons.next
-          ]
+          contents: [buttons.previous, buttons.toggleFullHeight, buttons.next]
         }
       }
     },
 
-    toolbarButton (title, icon, handler) {
+    toolbarButton(title, icon, handler) {
       return $.create('a', {
         href: '#',
         title: title,
         className: `icon-button icon icon_type_${icon}`,
         events: {
-          'click': (e) => {
+          click: e => {
             e.preventDefault()
             handler()
           }
@@ -344,24 +347,25 @@ export default (function () {
     }
   }
 
-  return function () {
+  return function() {
     if (location.pathname !== ENABLE_ON_PATH) {
       return
     }
 
     addStyle(imageViewCSS)
 
-    $.ready()
-      .then(() => {
-        const topic = $('table.topic')
+    $.ready().then(() => {
+      const topic = $('table.topic')
 
-        // Assign class to image links
-        const linkClasses = `${CLASSES.imageLink} image-link icon icon_hover ${CLASSES.imageLinkZoom} icon_size_button`
-        $.set($$(urlExtractor.getLinksSelector(), topic), {
-          className: linkClasses
-        })
-
-        $.delegate(topic, 'click', SELECTORS.imageLink, events.linkClick)
+      // Assign class to image links
+      const linkClasses = `${CLASSES.imageLink} image-link icon icon_hover ${
+        CLASSES.imageLinkZoom
+      } icon_size_button`
+      $.set($$(urlExtractor.getLinksSelector(), topic), {
+        className: linkClasses
       })
+
+      $.delegate(topic, 'click', SELECTORS.imageLink, events.linkClick)
+    })
   }
 })()

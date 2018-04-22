@@ -1,6 +1,6 @@
 import gmPolyfill from './gm-polyfill'
 
-export default (function () {
+export default (function() {
   return {
     /**
      * @param {string} name

@@ -4,7 +4,7 @@ export default {
    * @param {string} str
    * @returns {Array<string>}
    */
-  getMatchGroups (regEx, str) {
+  getMatchGroups(regEx, str) {
     let matches = []
     let match
 
@@ -14,7 +14,7 @@ export default {
       }
 
       let groups = match.slice(1)
-      if (groups.some((group) => group)) {
+      if (groups.some(group => group)) {
         matches.push(groups)
       }
     }
@@ -27,7 +27,7 @@ export default {
    * @param {string} str
    * @returns {string}
    */
-  getFirstMatchGroup (regEx, str) {
+  getFirstMatchGroup(regEx, str) {
     let match = regEx.exec(str)
 
     return match ? match[1] : null

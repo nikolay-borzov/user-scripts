@@ -50,7 +50,8 @@ export default {
     '[href="profile.php?mode=sendpassword"]': 'Forgot password?'
   },
   '#ses-short': {
-    [TOKENS.title]: 'Short session (Auto logout after 30 minutes of inactivity)',
+    [TOKENS.title]:
+      'Short session (Auto logout after 30 minutes of inactivity)',
     [TOKENS.textNodeIndexMap]: { 0: 'Do not remember' }
   },
   '#dls-menu': {

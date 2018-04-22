@@ -1,30 +1,31 @@
 import TOKENS from '../core/tokenTypes'
 
 const dateTimeMap = {
-  'день': 'day',
-  'дня': 'days',
-  'дней': 'days',
-  'часа': 'hours',
-  'часов': 'hours',
-  'час': 'hour',
-  'минутa': 'minute',
-  'минуты': 'minutes',
-  'минут': 'minutes',
-  'месяца': 'months',
-  'месяцев': 'months',
-  'года': 'years',
-  'год': 'year',
-  'лет': 'years',
-  'назад': 'ago'
+  день: 'day',
+  дня: 'days',
+  дней: 'days',
+  часа: 'hours',
+  часов: 'hours',
+  час: 'hour',
+  минутa: 'minute',
+  минуты: 'minutes',
+  минут: 'minutes',
+  месяца: 'months',
+  месяцев: 'months',
+  года: 'years',
+  год: 'year',
+  лет: 'years',
+  назад: 'ago'
 }
 
-function forEach ($elements, callback) {
+function forEach($elements, callback) {
   $elements.each((index, el) => callback($(el)))
 }
 
-function replaceTextNodes ($container, indexMap) {
-  const nodes = Array.from($container[0].childNodes)
-    .filter(n => n.nodeType === 3 && n.data.trim().length)
+function replaceTextNodes($container, indexMap) {
+  const nodes = Array.from($container[0].childNodes).filter(
+    n => n.nodeType === 3 && n.data.trim().length
+  )
   // Replace text node(s) at index
   Object.entries(indexMap).forEach(([index, translation]) => {
     const node = nodes[index]
@@ -38,7 +39,7 @@ function replaceTextNodes ($container, indexMap) {
   })
 }
 
-function replaceText ($container, map) {
+function replaceText($container, map) {
   // Only nodes with textNode children
   if ($container.children().length !== 0) {
     return
@@ -49,14 +50,14 @@ function replaceText ($container, map) {
   $container.text(result)
 }
 
-function replaceTextByMap (text, map) {
+function replaceTextByMap(text, map) {
   return Object.entries(map).reduce((result, [from, to]) => {
     return result.replace(from, to)
   }, text)
 }
 
 const SUB_FORUM_SEPARATOR = ' / '
-function replaceSubForum (selector) {
+function replaceSubForum(selector) {
   $(selector).each((index, node) => {
     let text = node.textContent
     if (text.includes(SUB_FORUM_SEPARATOR)) {
@@ -65,13 +66,13 @@ function replaceSubForum (selector) {
   })
 }
 
-function replaceDateTime (selector) {
+function replaceDateTime(selector) {
   $(selector).each((index, node) => {
     node.textContent = replaceTextByMap(node.textContent, dateTimeMap)
   })
 }
 
-export function translate (token, value, $container) {
+export function translate(token, value, $container) {
   switch (token) {
     case TOKENS.value:
       $container.val(value)

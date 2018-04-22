@@ -4,7 +4,7 @@ import { $ } from 'bliss'
 
 import tagsCSS from './styles.css'
 
-export default (function () {
+export default (function() {
   const TOPIC_PATH = '/forum/viewtopic.php'
 
   // Separates tags from title
@@ -29,26 +29,26 @@ export default (function () {
   const DIMENSION_ICON_NAME = 'dimension'
 
   const TAG_ICON_MAP = {
-    'eng': 'en',
-    'jap': 'ja',
-    'rus': 'ru',
-    'ru': 'ru',
-    'chi': 'zh',
-    'cn': 'zh',
-    'spa': 'es',
-    'es': 'es',
-    'por': 'pt',
-    'ger': 'de',
-    'de': 'de',
-    'fr': 'fr',
-    'korean': 'ko',
-    'cen': 'cen',
-    'uncen': 'uncen',
-    'ptcen': 'ptcen',
-    'inprogress': 'in-progress'
+    eng: 'en',
+    jap: 'ja',
+    rus: 'ru',
+    ru: 'ru',
+    chi: 'zh',
+    cn: 'zh',
+    spa: 'es',
+    es: 'es',
+    por: 'pt',
+    ger: 'de',
+    de: 'de',
+    fr: 'fr',
+    korean: 'ko',
+    cen: 'cen',
+    uncen: 'uncen',
+    ptcen: 'ptcen',
+    inprogress: 'in-progress'
   }
 
-  DIMENSIONS.forEach((dim) => {
+  DIMENSIONS.forEach(dim => {
     TAG_ICON_MAP[dim] = DIMENSION_ICON_NAME
   })
 
@@ -56,29 +56,28 @@ export default (function () {
    * Extracts tags and title from title string
    * @param {string} titleRaw
    */
-  function tokenizeTitle (titleRaw) {
+  function tokenizeTitle(titleRaw) {
     let tagGroupsBefore = []
     let titleParts = []
     let tagGroupsAfter = []
 
-    regex.getMatchGroups(TITLE_REGEX, titleRaw)
-      .forEach((groups) => {
-        let tags = []
+    regex.getMatchGroups(TITLE_REGEX, titleRaw).forEach(groups => {
+      let tags = []
 
-        // First group - tags
-        if (groups[0]) {
-          tags = groups[0].split(TAGS_SEPARATOR_REGEX)
-        }
+      // First group - tags
+      if (groups[0]) {
+        tags = groups[0].split(TAGS_SEPARATOR_REGEX)
+      }
 
-        if (tags.length) {
-          (titleParts.length ? tagGroupsAfter : tagGroupsBefore).push(tags)
-        }
+      if (tags.length) {
+        ;(titleParts.length ? tagGroupsAfter : tagGroupsBefore).push(tags)
+      }
 
-        // Second group - title part
-        if (groups[1]) {
-          titleParts.push(groups[1])
-        }
-      })
+      // Second group - title part
+      if (groups[1]) {
+        titleParts.push(groups[1])
+      }
+    })
 
     return {
       tagGroupsBefore,
@@ -90,7 +89,7 @@ export default (function () {
   /**
    * @param {Array<Array<string>>} tagGroups
    */
-  function createTagsRow (tagGroups) {
+  function createTagsRow(tagGroups) {
     const tags = tagGroups.reduce((tags, tagsGroup, index) => {
       tags.push(...createTagLinks(tagsGroup))
 
@@ -110,31 +109,29 @@ export default (function () {
   /**
    * @param {Array<string>} tags
    */
-  function createTagLinks (tags) {
-    return tags
-      .filter((tag) => tag.length)
-      .map((tag) => {
-        let className = 'tags-row-tag'
-        tag = tag.trim()
+  function createTagLinks(tags) {
+    return tags.filter(tag => tag.length).map(tag => {
+      let className = 'tags-row-tag'
+      tag = tag.trim()
 
-        const tagkey = tag.toLowerCase()
-        if (TAG_ICON_MAP.hasOwnProperty(tagkey)) {
-          className = `${className} tag-with-icon icon-${TAG_ICON_MAP[tagkey]}`
-        }
+      const tagkey = tag.toLowerCase()
+      if (TAG_ICON_MAP.hasOwnProperty(tagkey)) {
+        className = `${className} tag-with-icon icon-${TAG_ICON_MAP[tagkey]}`
+      }
 
-        return $.create('a', {
-          className,
-          textContent: tag,
-          href: `/forum/tracker.php?nm=${tag}`,
-          target: '_blank'
-        })
+      return $.create('a', {
+        className,
+        textContent: tag,
+        href: `/forum/tracker.php?nm=${tag}`,
+        target: '_blank'
       })
+    })
   }
 
   /**
    * Extracts tags from title for  topic post page
    */
-  function createPostTags () {
+  function createPostTags() {
     const titleElement = $('.maintitle')
     const titleLink = titleElement.children[0]
     const title = titleLink.textContent
@@ -164,12 +161,11 @@ export default (function () {
     }
   }
 
-  return function () {
-    $.ready()
-      .then(() => {
-        if (location.pathname === TOPIC_PATH) {
-          createPostTags()
-        }
-      })
+  return function() {
+    $.ready().then(() => {
+      if (location.pathname === TOPIC_PATH) {
+        createPostTags()
+      }
+    })
   }
 })()
