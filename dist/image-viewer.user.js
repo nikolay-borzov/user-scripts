@@ -14,6 +14,8 @@
 // @connect     www.turboimagehost.com
 // @connect     imgbox.com
 // @run-at      document-start
+// @compatible  chrome
+// @compatible  firefox
 // @include     *
 // @grant       GM_addStyle
 // @grant       GM_xmlhttpRequest
@@ -22,6 +24,8 @@
 // @grant       GM.setValue
 // @grant       GM_getValue
 // @grant       GM.getValue
+// @grant       GM_openInTab
+// @grant       GM_registerMenuCommand
 // ==/UserScript==
 
 ;(function() {
@@ -34,28 +38,44 @@
   const $ = Bliss
   const $$ = Bliss.$
 
-  var addStyle =
-    'GM_addStyle' in window
-      ? GM_addStyle // eslint-disable-line camelcase
-      : css => {
-          var head = document.getElementsByTagName('head')[0]
-          if (head) {
-            var style = document.createElement('style')
-            style.type = 'text/css'
-            style.innerHTML = css
-            head.appendChild(style)
-            return css
-          }
-        }
+  var gmPolyfill = (function() {
+    const gmMethodMap = {
+      getValue: 'GM_getValue',
+      setValue: 'GM_setValue'
+    }
 
-  var css =
-    "@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(1turn)}}.iv-icon{position:relative}.image-link img:after,.iv-icon:after{content:\"\";position:absolute;z-index:2;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-repeat:no-repeat;background-position:50%;background-size:contain}.iv-icon_hover:after{transition:opacity .35s ease;opacity:0}.iv-icon_hover:hover:after{opacity:1}.iv-icon_size_button:after{width:50px;height:50px}.iv-icon_type_expand:after{width:70%;height:70%;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M9.5 13.09l1.41 1.41-4.5 4.5H10v2H3v-7h2v3.59l4.5-4.5m1.41-3.59L9.5 10.91 5 6.41V10H3V3h7v2H6.41l4.5 4.5m3.59 3.59l4.5 4.5V14h2v7h-7v-2h3.59l-4.5-4.5 1.41-1.41M13.09 9.5l4.5-4.5H14V3h7v7h-2V6.41l-4.5 4.5-1.41-1.41z'/%3E%3C/svg%3E\")}.iv-icon_type_loading:after{animation:spin 1s linear infinite;opacity:1;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z'/%3E%3C/svg%3E\")!important}.iv-icon_type_zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.iv-icon_type_next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon_type_previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon_type_close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.image-link img:after,.iv-icon_type_image_broken:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23ccc'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42l3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.image-link{display:inline-flex;min-width:50px;min-height:50px;margin:3px;padding:4px;border:1px solid #cacaca;box-shadow:1px 1px 3px rgba(0,0,0,.5);vertical-align:top}.image-link img.postImg{margin:0}.image-link var.postImg{display:flex;align-items:center;justify-content:center;width:100%}.image-link:before{content:\"\";position:absolute;z-index:1;top:4px;right:4px;bottom:4px;left:4px;transition:opacity .35s ease;opacity:0;background-color:rgba(0,0,0,.5)}.image-link.iv-icon_type_loading:before,.image-link:hover:before{opacity:1}.image-link img:after,.image-link img:before{content:\"\";position:absolute}.image-link img:before{top:0;left:0;width:100%;height:100%;background-color:#f5f5f5}.image-link img:after{z-index:0;width:35px;height:35px}.iv-image-view{display:flex;flex-direction:column;height:0;transition:opacity .35s ease-out;opacity:0;background-color:rgba(0,0,0,.8);color:#fff;-moz-user-select:none;user-select:none}body.iv-image-view_open{overflow:hidden}.iv-image-view_open .iv-image-view{position:fixed;z-index:3;top:0;right:0;bottom:0;left:0;height:auto;opacity:1}.iv-image-view__body,.iv-image-view__footer,.iv-image-view__header{display:flex}.iv-image-view__body{position:relative;height:100%;overflow:auto}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:1}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__footer,.iv-image-view__header{background-color:rgba(0,0,0,.8)}.iv-image-view__header{justify-content:space-between}.iv-image-view__footer{justify-content:center}.iv-image-view__number{display:flex;align-items:center;padding:0 40px;font-size:1.125rem}.iv-image-view__backdrop{position:absolute;top:0;left:0;width:100%;height:100%}.iv-image-view__image{z-index:2;flex:0 1;max-width:100%;max-height:100%;margin:auto;object-fit:contain;transition:opacity .35s ease-out;opacity:1}.iv-icon_error .iv-image-view__image,.iv-icon_loading .iv-image-view__image{opacity:0}.iv-image-view_full-height .iv-image-view__image{max-height:none;cursor:-webkit-grab;cursor:grab}.iv-image-view_full-height .iv-image-view__image_grabbing{cursor:-webkit-grabbing;cursor:grabbing}.iv-image-view_full-height .iv-icon_type_expand{background-color:hsla(0,0%,100%,.1)}.iv-icon-button{width:50px;height:50px;transition:all .35s ease-out}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button:active,.iv-icon-button_active{background-color:hsla(0,0%,100%,.2)}"
+    return function polyfill(methodName) {
+      if (gmMethodMap.hasOwnProperty(methodName)) {
+        return 'GM' in window && methodName in GM
+          ? GM[methodName]
+          : function(...args) {
+              return new Promise((resolve, reject) => {
+                try {
+                  resolve(window[gmMethodMap[methodName]](...args))
+                } catch (e) {
+                  reject(e)
+                }
+              })
+            }
+      }
+
+      return null
+    }
+  })()
+
+  var store = (function() {
+    return {
+      get: gmPolyfill('getValue'),
+
+      set: gmPolyfill('setValue')
+    }
+  })()
 
   var request = (function() {
     const xmlHttpRequest =
       'GM' in window && 'xmlHttpRequest' in GM
         ? GM.xmlHttpRequest
-      : GM_xmlhttpRequest; // eslint-disable-line
+        : GM_xmlhttpRequest; // eslint-disable-line
 
     return function(url, { method = 'GET' } = {}) {
       return new Promise((resolve, reject) => {
@@ -113,7 +133,22 @@
     }
 
     function getThumbnailUrl(link) {
-      return $('img.postImg', link).src
+      return $('img', link).src
+    }
+
+    function sortCaseInsensitive(array) {
+      return array
+        .map((value, index) => ({ index, value: value.toLowerCase() }))
+        .sort((a, b) => {
+          if (a.value > b.value) {
+            return 1
+          }
+          if (a.value < b.value) {
+            return -1
+          }
+          return 0
+        })
+        .map(m => array[m.index])
     }
 
     const extractors = [
@@ -334,29 +369,180 @@
     ]
 
     return {
+      getImageHostNames() {
+        const result = extractors
+          .map(e => e.name)
+          .filter((name, index, array) => array.indexOf(name) === index)
+
+        return sortCaseInsensitive(result)
+      },
+
       getImageUrl(link) {
         const extractor = getExtractor(link.href)
 
         return extractor.getUrl(extractor, link)
       },
 
-      getLinksSelector() {
-        return extractors.map(e => `a${e.linkSelector}.postLink`).join(',')
+      getLinksSelector(enabledHosts) {
+        return extractors
+          .filter(e => enabledHosts.includes(e.name))
+          .map(e => `a${e.linkSelector}.postLink`)
+          .join(',')
       }
     }
   })()
 
-  var viewer = (function() {
+  var config = (function() {
+    const CLASSES = {
+      open: 'iv-config-form--open'
+    }
+
+    let configMenu = null
+    const currentHost = unsafeWindow.location.host
+
+    function showMenu(config) {
+      createMenuElement(config).classList.add(CLASSES.open)
+    }
+
+    function createMenuElement(config) {
+      if (!configMenu) {
+        const rows = Object.keys(config.hosts).map(hostName =>
+          createConfigMenuRow(hostName, config.hosts[hostName])
+        )
+
+        configMenu = $.create('div', {
+          id: 'iv-config-form',
+          className: 'iv-config-form',
+          contents: [
+            createMenuHeader(),
+            {
+              tag: 'div',
+              className: 'iv-config-form__options',
+              contents: rows
+            }
+          ],
+          delegate: {
+            change: {
+              '.js-iv-config-checkbox': e =>
+                updateHostConfig(config, e.target.value, e.target.checked)
+            }
+          }
+        })
+
+        document.body.appendChild(configMenu)
+      }
+
+      return configMenu
+    }
+
+    function createMenuHeader() {
+      const closeButton = $.create('a', {
+        href: '#',
+        title: 'Close',
+        className: `iv-icon-button iv-icon-button--small iv-icon iv-icon--type-close`,
+        events: {
+          click: e => {
+            e.preventDefault()
+            configMenu.classList.remove(CLASSES.open)
+          }
+        }
+      })
+
+      return {
+        tag: 'div',
+        className: 'iv-config-form__header',
+        contents: [
+          {
+            tag: 'span',
+            className: 'iv-config-form__header-title',
+            contents: `Settings for ${currentHost}`
+          },
+          closeButton
+        ]
+      }
+    }
+
+    function createConfigMenuRow(hostName, isEnabled) {
+      return $.create('label', {
+        className: 'iv-config-form__label',
+        contents: [
+          {
+            tag: 'input',
+            type: 'checkbox',
+            className: 'iv-config-form__checkbox js-iv-config-checkbox',
+            checked: isEnabled,
+            value: hostName
+          },
+          hostName
+        ]
+      })
+    }
+
+    function updateHostConfig(config, hostName, isEnabled) {
+      config.hosts[hostName] = isEnabled
+      store.set(currentHost, config)
+    }
+
+    return {
+      async getHostConfig() {
+        const hostNames = urlExtractor.getImageHostNames()
+        const config = await store.get(currentHost, { hosts: {} })
+
+        const hosts = hostNames.reduce((result, host) => {
+          result[host] = host in config.hosts ? config.hosts[host] : true
+          return result
+        }, {})
+
+        return {
+          hosts
+        }
+      },
+
+      init(config) {
+        const handler = () => {
+          showMenu(config)
+        }
+
+        // eslint-disable-next-line
+        if (GM_registerMenuCommand) {
+          GM_registerMenuCommand('Image Viewer Settings', handler)
+        } else {
+          unsafeWindow.imageViewer = {
+            settings: handler
+          }
+        }
+      }
+    }
+  })()
+
+  var addStyle =
+    'GM_addStyle' in window
+      ? GM_addStyle // eslint-disable-line camelcase
+      : css => {
+          var head = document.getElementsByTagName('head')[0]
+          if (head) {
+            var style = document.createElement('style')
+            style.type = 'text/css'
+            style.innerHTML = css
+            head.appendChild(style)
+            return css
+          }
+        }
+
+  var css =
+    "@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(1turn)}}.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{content:\"\";position:absolute;z-index:2;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-repeat:no-repeat;background-position:50%;background-size:contain}.iv-icon--hover:after{transition:opacity .35s ease;opacity:0}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{width:50px;height:50px}.iv-icon--type-expand:after{width:70%;height:70%;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M9.5 13.09l1.41 1.41-4.5 4.5H10v2H3v-7h2v3.59l4.5-4.5m1.41-3.59L9.5 10.91 5 6.41V10H3V3h7v2H6.41l4.5 4.5m3.59 3.59l4.5 4.5V14h2v7h-7v-2h3.59l-4.5-4.5 1.41-1.41M13.09 9.5l4.5-4.5H14V3h7v7h-2V6.41l-4.5 4.5-1.41-1.41z'/%3E%3C/svg%3E\")}.iv-icon--type-loading:after{animation:spin 1s linear infinite;opacity:1;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z'/%3E%3C/svg%3E\")!important}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42l3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.iv-image-link{display:inline-flex;min-width:50px;min-height:50px;margin:3px;padding:4px;border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);vertical-align:top}.iv-image-link img{margin:0}.iv-image-link var.postImg{display:flex;align-items:center;justify-content:center;width:100%}.iv-image-link:before{content:\"\";position:absolute;z-index:1;top:4px;right:4px;bottom:4px;left:4px;transition:opacity .35s ease;opacity:0;background-color:rgba(0,0,0,.5)}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.2)}.iv-image-link img:after{z-index:0;width:35px;height:35px}.iv-image-view{display:flex;flex-direction:column;height:0;transition:opacity .35s ease-out;opacity:0;background-color:rgba(0,0,0,.8);color:#fff;-moz-user-select:none;user-select:none}body.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{position:fixed;z-index:3;top:0;right:0;bottom:0;left:0;height:auto;opacity:1}.iv-image-view__body,.iv-image-view__footer,.iv-image-view__header{display:flex}.iv-image-view__body{position:relative;height:100%;overflow:auto}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:1}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__footer,.iv-image-view__header{background-color:rgba(0,0,0,.8)}.iv-image-view__header{justify-content:space-between}.iv-image-view__footer{justify-content:center}.iv-image-view__number{display:flex;align-items:center;padding:0 40px;font-size:1.125rem}.iv-image-view__backdrop{position:absolute;top:0;left:0;width:100%;height:100%}.iv-image-view__image{z-index:2;flex:0 1;max-width:100%;max-height:100%;margin:auto;object-fit:contain;transition:opacity .35s ease-out;opacity:1}.iv-icon--error .iv-image-view__image,.iv-icon--loading .iv-image-view__image{opacity:0}.iv-image-view--full-height .iv-image-view__image{max-height:none;cursor:-webkit-grab;cursor:grab}.iv-image-view--full-height .iv-image-view__image--grabbing{cursor:-webkit-grabbing;cursor:grabbing}.iv-image-view--full-height .iv-icon--type-expand{background-color:hsla(0,0%,100%,.1)}.iv-icon-button{width:50px;height:50px;transition:all .35s ease-out}.iv-icon-button--small{width:25px;height:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}.iv-config-form{display:none;top:10px;left:10px;flex-direction:column;width:50%;max-width:500px;height:50%;padding:10px;background-color:rgba(0,0,0,.85);color:#fff}.iv-config-form--open{display:flex;position:fixed}.iv-config-form__header{display:flex;align-items:center;padding:10px}.iv-config-form__header-title{flex-grow:1}.iv-config-form__options{display:flex;flex-flow:column wrap;flex-grow:1;overflow:auto}.iv-config-form__label{display:flex;flex:0 0 auto;align-items:center;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0}"
+
+  var initViewer = (function() {
     const CLASSES = {
       imageLink: 'js-image-link',
-      imageLinkZoom: 'iv-icon_type_zoom',
-      imageLinkHover: 'iv-icon_hover',
-      brokenImage: 'iv-icon_type_image_broken',
-      loading: 'iv-icon_type_loading',
-      open: 'iv-image-view_open',
-      fullHeight: 'iv-image-view_full-height',
-      grabbing: 'iv-image-view__image_grabbing',
-      buttonActive: 'iv-icon-button_active'
+      imageLinkZoom: 'iv-icon--type-zoom',
+      imageLinkHover: 'iv-icon--hover',
+      brokenImage: 'iv-icon--type-image-broken',
+      loading: 'iv-icon--type-loading',
+      open: 'iv-image-view--open',
+      fullHeight: 'iv-image-view--full-height',
+      grabbing: 'iv-image-view__image--grabbing',
+      buttonActive: 'iv-icon-button--active'
     }
 
     const SELECTORS = {
@@ -442,8 +628,16 @@
             state.open = true
           }
         } catch (e) {
+          // eslint-disable-next-line
+          if (GM_openInTab) {
+
+            GM_openInTab(imageUrl)
+          }
+
           link.classList.remove(CLASSES.imageLink)
           image.markAsBroken(link)
+
+          $.attributes(link, { target: '_blank' })
         }
       },
 
@@ -593,7 +787,7 @@
     const create = {
       viewContainer() {
         elements.container = $.create('div', {
-          className: 'iv-image-view iv-icon iv-icon_size_button',
+          className: 'iv-image-view iv-icon iv-icon--size-button',
           contents: [
             create.viewContainerHeader(),
             create.viewContainerBody(),
@@ -683,7 +877,7 @@
         return $.create('a', {
           href: '#',
           title: title,
-          className: `iv-icon-button iv-icon iv-icon_type_${icon}`,
+          className: `iv-icon-button iv-icon iv-icon--type-${icon}`,
           events: {
             click: e => {
               e.preventDefault()
@@ -694,25 +888,34 @@
       }
     }
 
-    return function() {
+    return function(hosts) {
       addStyle(css)
 
-      $.ready().then(() => {
-        const container = $('body')
+      const container = $('body')
 
-        const linkClasses = `${
-          CLASSES.imageLink
-        } image-link iv-icon iv-icon_hover ${
-          CLASSES.imageLinkZoom
-        } iv-icon_size_button`
-        $.set($$(urlExtractor.getLinksSelector(), container), {
-          className: linkClasses
-        })
+      const linkClasses = `${
+        CLASSES.imageLink
+      } iv-image-link iv-icon iv-icon--hover ${
+        CLASSES.imageLinkZoom
+      } iv-icon--size-button`
 
-        $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
+      const enabledHosts = Object.keys(hosts).filter(
+        hostName => hosts[hostName]
+      )
+      const linkSelector = urlExtractor.getLinksSelector(enabledHosts)
+      $.set($$(linkSelector, container), {
+        className: linkClasses
       })
+
+      $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
     }
   })()
 
-  viewer()
+  $.ready().then(async () => {
+    const hostConfig = await config.getHostConfig()
+
+    initViewer(hostConfig.hosts)
+
+    config.init(hostConfig)
+  })
 })()

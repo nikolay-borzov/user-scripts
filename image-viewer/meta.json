@@ -9,7 +9,6 @@
   "icon": "https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png",
   "homepageURL": "https://github.com/shikiyoku/user-scripts",
   "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
- 
   "connect": [
     "www.imagebam.com",
     "imagevenue.com",
@@ -23,7 +22,13 @@
     "GM_setValue",
     "GM.setValue",
     "GM_getValue",
-    "GM.getValue"
+    "GM.getValue",
+    "GM_openInTab",
+    "GM_registerMenuCommand"
   ],
-  "run-at": "document-start"
+  "run-at": "document-start",
+  "compatible": [
+    "chrome",
+    "firefox"
+  ]
 }

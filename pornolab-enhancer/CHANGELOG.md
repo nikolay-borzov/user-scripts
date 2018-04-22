@@ -1,5 +1,9 @@
 # Pornolab Enhancer Changelog
 
+## 1.12.0 - 2018-04-22
+## Removed
+- Move `Image view` to a separate user script
+
 ## 1.11.3 - 2018-04-12
 ## Added
 - [Tags] 544p

@@ -2,9 +2,8 @@
   --color-bkg-button-hover: rgba(255, 255, 255, 0.1);
   --color-bkg-view: rgba(0, 0, 0, 0.8);
   --transition-duration: 350ms;
-  --color-border: #cacaca;
-  --color-bkg-5: #ccc;
-  --color-bkg-6: #f5f5f5;
+  --color-text: #fff;
+  --color-border: rgba(0, 0, 0, 0.2);
 }
 
 /* ----------
@@ -27,7 +26,7 @@
 .iv-icon { position: relative; }
 
 .iv-icon::after,
-.image-link img::after {
+.iv-image-link img::after {
   content: '';
   position: absolute;
   z-index: 2;
@@ -42,47 +41,47 @@
 }
 
 /* Icon that is shown on hover */
-.iv-icon_hover::after {
+.iv-icon--hover::after {
   transition: opacity var(--transition-duration) ease;
   opacity: 0;
 }
 
-.iv-icon_hover:hover::after {
+.iv-icon--hover:hover::after {
   opacity: 1;
 }
 
-.iv-icon_size_button::after {
+.iv-icon--size-button::after {
   width: 50px;
   height: 50px;
 }
 
-.iv-icon_type_expand::after {
+.iv-icon--type-expand::after {
   width: 70%;
   height: 70%;
   background-image: svg-load('expand.svg');
 }
 
-.iv-icon_type_loading::after {
+.iv-icon--type-loading::after {
   animation: spin 1s linear infinite;
   opacity: 1;
-  background-image: svg-load('loading.svg', fill=#fff) !important;
+  background-image: svg-load('loading.svg', fill=var(--color-text)) !important;
 }
 
-.iv-icon_type_zoom::after { background-image: svg-load('zoom-in.svg', fill=#fff); }
-.iv-icon_type_next::after { background-image: svg-load('next.svg', fill=#fff); }
-.iv-icon_type_previous::after { background-image: svg-load('before.svg', fill=#fff); }
-.iv-icon_type_close::after { background-image: svg-load('close.svg', fill=#fff); }
+.iv-icon--type-zoom::after { background-image: svg-load('zoom-in.svg', fill=var(--color-text)); }
+.iv-icon--type-next::after { background-image: svg-load('next.svg', fill=var(--color-text)); }
+.iv-icon--type-previous::after { background-image: svg-load('before.svg', fill=var(--color-text)); }
+.iv-icon--type-close::after { background-image: svg-load('close.svg', fill=var(--color-text)); }
 
-.iv-icon_type_image_broken::after,
-.image-link img::after {
-  background-image: svg-load('image-broken.svg', fill=var(--color-bkg-5));
+.iv-icon--type-image-broken::after,
+.iv-image-link img::after {
+  background-image: svg-load('image-broken.svg', fill=var(--color-text));
 }
 
 /* ----------
   Image link
 ------------ */
 
-.image-link {
+.iv-image-link {
   display: inline-flex;
   min-width: 50px;
   min-height: 50px;
@@ -93,11 +92,12 @@
   vertical-align: top; /* Fix alignment for short images */
 }
 
-.image-link img.postImg {
+.iv-image-link img {
   margin: 0;
 }
 
-.image-link var.postImg {
+/* TODO: Unify. Not every site has this class name */
+.iv-image-link var.postImg {
   display: flex; /* Remove bottom padding */
   align-items: center;
   justify-content: center;
@@ -105,7 +105,7 @@
 }
 
 /* Backdrop */
-.image-link::before {
+.iv-image-link::before {
   content: '';
   position: absolute;
   z-index: 1;
@@ -118,8 +118,8 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.image-link:hover::before,
-.image-link.iv-icon_type_loading::before {
+.iv-image-link:hover::before,
+.iv-image-link.iv-icon--type-loading::before {
   opacity: 1;
 }
 
@@ -127,21 +127,21 @@
   Broken image
 -------------- */
 
-.image-link img::before,
-.image-link img::after {
+.iv-image-link img::before,
+.iv-image-link img::after {
   content: '';
   position: absolute;
 }
 
-.image-link img::before {
+.iv-image-link img::before {
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--color-bkg-6);
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
-.image-link img::after {
+.iv-image-link img::after {
   z-index: 0;
   width: 35px;
   height: 35px;
@@ -158,15 +158,15 @@
   transition: opacity var(--transition-duration) ease-out;
   opacity: 0;
   background-color: var(--color-bkg-view);
-  color: #fff;
+  color: var(--color-text);
   user-select: none;
 }
 
-body.iv-image-view_open {
+body.iv-image-view--open {
   overflow: hidden;
 }
 
-.iv-image-view_open .iv-image-view {
+.iv-image-view--open .iv-image-view {
   position: fixed;
   z-index: 3;
   top: 0;
@@ -254,8 +254,8 @@ body.iv-image-view_open {
 }
 
 /* Hide image during loading and on error */
-.iv-icon_loading .iv-image-view__image,
-.iv-icon_error .iv-image-view__image {
+.iv-icon--loading .iv-image-view__image,
+.iv-icon--error .iv-image-view__image {
   opacity: 0;
 }
 
@@ -263,17 +263,19 @@ body.iv-image-view_open {
   Cancel height restriction
   Set cursor to grab hand
  */
-.iv-image-view_full-height .iv-image-view__image {
-  max-height: none;
-  cursor: grab;
-}
+.iv-image-view--full-height {
+  & .iv-image-view__image {
+    max-height: none;
+    cursor: grab;
+  }
 
-.iv-image-view_full-height .iv-image-view__image_grabbing {
-  cursor: grabbing;
-}
+  & .iv-image-view__image--grabbing {
+    cursor: grabbing;
+  }
 
-.iv-image-view_full-height .iv-icon_type_expand {
-  background-color: var(--color-bkg-button-hover);
+  & .iv-icon--type-expand {
+    background-color: var(--color-bkg-button-hover);
+  }
 }
 
 /* -----------
@@ -283,7 +285,12 @@ body.iv-image-view_open {
 .iv-icon-button {
   width: 50px;
   height: 50px;
-  transition: all 0.35s ease-out;
+  transition: all var(--transition-duration) ease-out;
+}
+
+.iv-icon-button--small {
+  width: 25px;
+  height: 25px;
 }
 
 .iv-icon-button + .iv-icon-button {
@@ -295,6 +302,61 @@ body.iv-image-view_open {
 }
 
 .iv-icon-button:active,
-.iv-icon-button_active {
+.iv-icon-button--active {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* -----------
+  Config menu
+------------- */
+
+.iv-config-form {
+  display: none;
+  top: 10px;
+  left: 10px;
+  flex-direction: column;
+  width: 50%;
+  max-width: 500px;
+  height: 50%;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: var(--color-text);
+}
+
+.iv-config-form--open {
+  display: flex;
+  position: fixed;
+}
+
+.iv-config-form__header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.iv-config-form__header-title {
+  flex-grow: 1;
+}
+
+.iv-config-form__options {
+  display: flex;
+  flex-flow: column wrap;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.iv-config-form__label {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 10px;
+  transition: all var(--transition-duration) ease-out;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.iv-config-form__checkbox {
+  margin: 0 5px 0 0;
 }

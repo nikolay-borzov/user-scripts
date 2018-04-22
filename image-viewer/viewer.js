@@ -8,14 +8,14 @@ import urlExtractor from './url-extractor'
 export default (function() {
   const CLASSES = {
     imageLink: 'js-image-link',
-    imageLinkZoom: 'iv-icon_type_zoom',
-    imageLinkHover: 'iv-icon_hover',
-    brokenImage: 'iv-icon_type_image_broken',
-    loading: 'iv-icon_type_loading',
-    open: 'iv-image-view_open',
-    fullHeight: 'iv-image-view_full-height',
-    grabbing: 'iv-image-view__image_grabbing',
-    buttonActive: 'iv-icon-button_active'
+    imageLinkZoom: 'iv-icon--type-zoom',
+    imageLinkHover: 'iv-icon--hover',
+    brokenImage: 'iv-icon--type-image-broken',
+    loading: 'iv-icon--type-loading',
+    open: 'iv-image-view--open',
+    fullHeight: 'iv-image-view--full-height',
+    grabbing: 'iv-image-view__image--grabbing',
+    buttonActive: 'iv-icon-button--active'
   }
 
   const SELECTORS = {
@@ -102,9 +102,16 @@ export default (function() {
           state.open = true
         }
       } catch (e) {
+        // eslint-disable-next-line
+        if (GM_openInTab) {
+          // If image cannot be loaded, open it in new tab
+          GM_openInTab(imageUrl)
+        }
         // Prevent opening failed image again
         link.classList.remove(CLASSES.imageLink)
         image.markAsBroken(link)
+        // Open link in new tab on next click
+        $.attributes(link, { target: '_blank' })
       }
     },
 
@@ -253,7 +260,7 @@ export default (function() {
   const create = {
     viewContainer() {
       elements.container = $.create('div', {
-        className: 'iv-image-view iv-icon iv-icon_size_button',
+        className: 'iv-image-view iv-icon iv-icon--size-button',
         contents: [
           create.viewContainerHeader(),
           create.viewContainerBody(),
@@ -343,7 +350,7 @@ export default (function() {
       return $.create('a', {
         href: '#',
         title: title,
-        className: `iv-icon-button iv-icon iv-icon_type_${icon}`,
+        className: `iv-icon-button iv-icon iv-icon--type-${icon}`,
         events: {
           click: e => {
             e.preventDefault()
@@ -354,23 +361,28 @@ export default (function() {
     }
   }
 
-  return function() {
+  /**
+   * Initializes image viewer
+   * @param {Object} hosts - { hostName: isEnabled } map
+   */
+  return function(hosts) {
     addStyle(imageViewCSS)
 
-    $.ready().then(() => {
-      const container = $('body')
+    const container = $('body')
 
-      // Assign class to image links
-      const linkClasses = `${
-        CLASSES.imageLink
-      } image-link iv-icon iv-icon_hover ${
-        CLASSES.imageLinkZoom
-      } iv-icon_size_button`
-      $.set($$(urlExtractor.getLinksSelector(), container), {
-        className: linkClasses
-      })
+    // Assign class to image links
+    const linkClasses = `${
+      CLASSES.imageLink
+    } iv-image-link iv-icon iv-icon--hover ${
+      CLASSES.imageLinkZoom
+    } iv-icon--size-button`
 
-      $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
+    const enabledHosts = Object.keys(hosts).filter(hostName => hosts[hostName])
+    const linkSelector = urlExtractor.getLinksSelector(enabledHosts)
+    $.set($$(linkSelector, container), {
+      className: linkClasses
     })
+
+    $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
   }
 })()

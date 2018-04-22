@@ -20,7 +20,24 @@ export default (function() {
   }
 
   function getThumbnailUrl(link) {
-    return $('img.postImg', link).src
+    // TODO: Avoid cases when link doesn't contain img
+    return $('img', link).src
+  }
+
+  function sortCaseInsensitive(array) {
+    // Sorting with map
+    return array
+      .map((value, index) => ({ index, value: value.toLowerCase() }))
+      .sort((a, b) => {
+        if (a.value > b.value) {
+          return 1
+        }
+        if (a.value < b.value) {
+          return -1
+        }
+        return 0
+      })
+      .map(m => array[m.index])
   }
 
   const extractors = [
@@ -93,8 +110,7 @@ export default (function() {
       getUrl: getUrlFromPage
     },
 
-    // not allowed below
-
+    // TODO: Doesn't work anymore because imagebam block image request outside it's domain
     // link:      http://www.imagebam.com/image/4a9c52356295333
     // thumbnail: http://thumbnails112.imagebam.com/35630/4a9c52356295333.jpg
     // image:     http://112.imagebam.com/download/FllgT6YgLpm0PUEDQ9ISag/35630/356295333/%20%282%29.jpg
@@ -284,14 +300,29 @@ export default (function() {
   ]
 
   return {
+    getImageHostNames() {
+      const result = extractors
+        .map(e => e.name)
+        .filter((name, index, array) => array.indexOf(name) === index)
+
+      return sortCaseInsensitive(result)
+    },
+
     getImageUrl(link) {
       const extractor = getExtractor(link.href)
 
       return extractor.getUrl(extractor, link)
     },
 
-    getLinksSelector() {
-      return extractors.map(e => `a${e.linkSelector}.postLink`).join(',')
+    /**
+     * Returns selector for image links
+     * @param {Array<string>} enabledHosts - Enabled host names
+     */
+    getLinksSelector(enabledHosts) {
+      return extractors
+        .filter(e => enabledHosts.includes(e.name))
+        .map(e => `a${e.linkSelector}.postLink`)
+        .join(',')
     }
   }
 })()

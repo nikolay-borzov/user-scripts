@@ -20,6 +20,10 @@ Mouse:
 `double click` - Toggle image full height  
 `click` on backdrop - Close image view  
 
+## Config
+
+Available through Tampermonkey menu or via `imageViewer.settings()` console command.
+
 # JoyReactor Download Button
 [![JRDB file size][jrdb-size]][jrdb-url] [![JRDB OpenUserJS][open-user-js-image]][jrdb-open-user-js-url] [![JRDB GreasyFork][greasy-fork-image]][jrdb-greasy-fork-url]
 - Shows image download link on hover
