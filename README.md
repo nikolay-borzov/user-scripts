@@ -4,9 +4,10 @@
 User scripts for Tampermonkey and ~~Greasemonkey~~
 
 # Image Viewer
-[![IV file size][iv-size]][iv-url]
+[![IV file size][iv-size]][iv-url] [![IV OpenUserJS][open-user-js-image]][iv-open-user-js-url] [![IV GreasyFork][greasy-fork-image]][iv-greasy-fork-url]
 
-Allows viewing full size images from image hosts (e.g. Fastpic) w/o leaving the page.
+Allows viewing full-size images from image hosts (e.g. Fastpic) w/o leaving the page.  
+:bulb: By default, script applies to all sites. I recommend enabling it only for specific sites. In Tampermonkey on script's settings tab uncheck `Original includes` and add your host's masks in `User includes` (e.g. \*.myforum.\*)
 
 ## Controls
 
@@ -78,6 +79,8 @@ Disable/enable certain features. Available through menu link "PLE"
 
 [iv-size]: https://img.shields.io/github/size/shikiyoku/user-scripts/dist/image-viewer.user.js.svg
 [iv-url]: https://github.com/shikiyoku/user-scripts/raw/master/dist/image-viewer.user.js
+[iv-open-user-js-url]: https://openuserjs.org/scripts/shikiyoku/Image_Viewer
+[iv-greasy-fork-url]: https://greasyfork.org/en/scripts/40936-image-viewer
 
 [jrdb-size]: https://img.shields.io/github/size/shikiyoku/user-scripts/dist/joyreactor-download-button.user.js.svg
 [jrdb-url]: https://github.com/shikiyoku/user-scripts/raw/master/dist/joyreactor-download-button.user.js
