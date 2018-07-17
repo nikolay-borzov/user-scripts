@@ -2,7 +2,7 @@ language: node_js
 
 node_js:
   - "8"
-  - "9"
+  - "10"
 
 cache:
   directories:
@@ -11,7 +11,7 @@ cache:
 env:
   - SCRIPT_ID=ple
   - SCRIPT_ID=jrdb
-#  - SCRIPT_ID=pleng
+  - SCRIPT_ID=iv
 
 script:
   - npm run build -- --script=$SCRIPT_ID

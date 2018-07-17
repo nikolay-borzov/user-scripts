@@ -3,31 +3,26 @@ import regex from 'regex'
 import { $ } from 'bliss'
 
 export default (function() {
-  function getExtractor(pageUrl) {
-    return extractors.find(ext => ext.linkRegEx.test(pageUrl))
-  }
-
   async function getPageHtml(pageUrl) {
     let response = await request(pageUrl)
 
     return response.responseText
   }
 
-  async function getUrlFromPage(extractor, link) {
+  async function getUrlFromPage(link, extractor) {
     const html = await getPageHtml(link.href)
 
     return regex.getFirstMatchGroup(extractor.imageUrlRegEx, html)
   }
 
   function getThumbnailUrl(link) {
-    // TODO: Avoid cases when link doesn't contain img
     return $('img', link).src
   }
 
-  function sortCaseInsensitive(array) {
+  function sortCaseInsensitive(array, getValue) {
     // Sorting with map
     return array
-      .map((value, index) => ({ index, value: value.toLowerCase() }))
+      .map((value, index) => ({ index, value: getValue(value).toLowerCase() }))
       .sort((a, b) => {
         if (a.value > b.value) {
           return 1
@@ -40,53 +35,52 @@ export default (function() {
       .map(m => array[m.index])
   }
 
+  let extractorsActive = []
+
   const extractors = [
-    // link:      http://fastpic.ru/view/90/2017/0206/1f4072e748ac53657de2056ef8498adb.png.html
-    // thumbnail: http://i90.fastpic.ru/thumb/2017/0206/db/1f4072e748ac53657de2056ef8498adb.jpeg
-    // image:     http://i90.fastpic.ru/big/2017/0206/db/1f4072e748ac53657de2056ef8498adb.png?noht=1
+    /*
+      link:       http://fastpic.ru/view/104/2018/0429/f1a539f2e9edd3e0d70cac3dcf316466.jpg.html
+      thumbnail:  http://i104.fastpic.ru/thumb/2018/0429/66/f1a539f2e9edd3e0d70cac3dcf316466.jpeg
+      image:      https://i104.fastpic.ru/big/2018/0429/66/f1a539f2e9edd3e0d70cac3dcf316466.jpg
+    */
     {
       name: 'FastPic',
-      allowed: true,
-      linkSelector: '[href*="fastpic.ru/view"]',
       linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
       extensionRegEx: /\.([^.]+)\.html$/,
 
-      async getUrl(extractor, link) {
+      async getUrl(link, extractor) {
         const extension = regex.getFirstMatchGroup(
           extractor.extensionRegEx,
           link.href
         )
         const thumbUrl = getThumbnailUrl(link)
 
-        return (
-          thumbUrl.replace('thumb', 'big').replace('jpeg', extension) +
-          '?noht=1'
-        )
+        return `${thumbUrl
+          .replace('thumb', 'big')
+          .replace('jpeg', extension)}?noht=1`
       }
     },
-    // For case when direct link is already provided
+    // Direct link
     {
-      name: 'FastPic',
-      allowed: true,
-      linkSelector: '[href*="fastpic.ru/big"]',
+      name: 'FastPic (direct link)',
       linkRegEx: new RegExp('fastpic.ru/big'),
 
-      async getUrl(extractor, link) {
-        return link.href + '?noht=1'
+      async getUrl(link) {
+        return `${link.href}?noht=1`
       }
     },
 
-    // link:      http://img45.imagevenue.com/img.php?image=10934_bscap0004_122_1068lo.jpg
-    // thumbnail: http://img45.imagevenue.com/loc1068/th_10934_bscap0004_122_1068lo.jpg
-    // image:     http://img45.imagevenue.com/aAfkjfp01fo1i-3071/loc1068/10934_bscap0004_122_1068lo.jpg
+    /*
+      link:       http://img192.imagevenue.com/img.php?image=978556715_horrorvillian_122_117lo.jpg
+      thumbnail:  http://img192.imagevenue.com/loc117/th_978556715_horrorvillian_122_117lo.jpg
+      image:      http://img192.imagevenue.com/aAfkjfp01fo1i-19032/loc117/978556715_horrorvillian_122_117lo.jpg
+    */
     {
-      name: 'ImageVenue',
-      allowed: true,
-      linkSelector: '[href*=".imagevenue.com/img.php"]',
+      name: 'ImageVenue.com',
       linkRegEx: new RegExp('imagevenue.com/img.php'),
       imageUrlRegEx: /id="thepic".*src="([^"]*)"/i,
 
-      async getUrl(extractor, link) {
+      async getUrl(link, extractor) {
         const imageUrl = await getUrlFromPage(extractor, link)
         const pageUrl = link.href
 
@@ -98,39 +92,36 @@ export default (function() {
       }
     },
 
-    // link:      https://www.turboimagehost.com/p/36160085/1.jpg.html
-    // thumbnail: https://s7d8.turboimg.net/t1/36160085_1.jpg
-    // image:     https://s7d8.turboimg.net/sp/a5ce6305fca205a76c6b23a7f33262ec/1.jpg
+    /*
+      link:       https://www.turboimagehost.com/p/38487267/horrorvillian.jpg.html
+      thumbnail:  https://s7d1.turboimg.net/t1/38487267_horrorvillian.jpg
+      image:      https://s7d1.turboimg.net/sp/444009b30201bb2432d005ee9c0e648c/horrorvillian.jpg
+    */
     {
       name: 'TurboImageHost',
-      allowed: true,
-      linkSelector: '[href^="https://www.turboimagehost.com/p"]',
       linkRegEx: new RegExp('^https://www.turboimagehost.com/p'),
       imageUrlRegEx: /property="og:image" content="([^"]*)"/,
       getUrl: getUrlFromPage
     },
 
-    // TODO: Doesn't work anymore because imagebam block image request outside it's domain
-    // link:      http://www.imagebam.com/image/4a9c52356295333
-    // thumbnail: http://thumbnails112.imagebam.com/35630/4a9c52356295333.jpg
-    // image:     http://112.imagebam.com/download/FllgT6YgLpm0PUEDQ9ISag/35630/356295333/%20%282%29.jpg
+    // TODO: Doesn't work anymore because imagebam block image request outside its domain
     {
       name: 'ImageBam',
-      linkSelector: '[href^="http://www.imagebam.com/image"]',
       linkRegEx: new RegExp('^http://www.imagebam.com/image'),
       imageUrlRegEx: /property="og:image" content="([^"]*)"/,
       getUrl: getUrlFromPage
     },
 
-    // link:      http://imagetwist.com/awxdf3ez7gdg/cc_Barbara_Zatler__pbsi_PM200909__04XL.jpg.html
-    // thumbnail: http://img8.imagetwist.com/th/01318/awxdf3ez7gdg.jpg
-    // image:     http://img8.imagetwist.com/i/01318/awxdf3ez7gdg.jpg/cc_Barbara_Zatler__pbsi_PM200909__04XL.jpg
+    /*
+      link:       http://imagetwist.com/ge417tzfzr6b/horrorvillian.jpg
+      thumbnail:  http://img67.imagetwist.com/th/23132/ge417tzfzr6b.jpg
+      image:      http://img67.imagetwist.com/i/23132/ge417tzfzr6b.jpg/horrorvillian.jpg
+    */
     {
       name: 'ImageTwist',
-      linkSelector: '[href^="http://imagetwist.com"]',
       linkRegEx: new RegExp('^http://imagetwist.com'),
 
-      async getUrl(extractor, link) {
+      async getUrl(link) {
         const imageName = link.href
           .split('/')
           .pop()
@@ -144,15 +135,14 @@ export default (function() {
       }
     },
 
-    // ImageTwist based
-    // link:      http://picturelol.com/xmwvipfwjjo8/43037_Kimber.mp4.jpg
-    // thumbnail: http://img161.picturelol.com/th/20575/xmwvipfwjjo8.jpg
-    // image:     http://img161.imagetwist.com/i/20575/xmwvipfwjjo8.jpg/43037_Kimber.mp4.jpg
+    /*
+      ImageTwist based. Currently generates the same link as ImageTwist.
+      Keep this rule for old links
+    */
     {
-      name: 'picturelol.com',
-      linkSelector: '[href^="http://picturelol.com"]',
+      name: 'Picturelol.com',
       linkRegEx: new RegExp('^http://picturelol.com'),
-      async getUrl(extractor, link) {
+      async getUrl(link) {
         const imageName = link.href.split('/').pop()
         const imageUrl = getThumbnailUrl(link)
           .replace('/th/', '/i/')
@@ -162,14 +152,15 @@ export default (function() {
       }
     },
 
-    // ImageTwist based
-    // Remove ?
+    /*
+      ImageTwist based. Currently generates the same link as ImageTwist.
+      Keep this rule for old links
+    */
     {
-      name: 'PicShick',
-      linkSelector: '[href^="http://picshick.com"]',
+      name: 'PicShick.com',
       linkRegEx: new RegExp('^http://picshick.com'),
 
-      async getUrl(extractor, link) {
+      async getUrl(link) {
         const imageName = link.href.split('/').pop()
         const imageUrl = getThumbnailUrl(link)
           .replace('/th/', '/i/')
@@ -178,151 +169,310 @@ export default (function() {
         return `${imageUrl}/${imageName}`
       }
     },
-    // Remove ?
+
+    /*
+      A lot of ads
+      link:       http://imgbum.net/426/13242/
+      thumbnail:  http://imgbum.net/allimage/4/13242-thumb.jpeg
+      image:      http://imgbum.net/allimage/4/13242.jpeg
+    */
     {
-      name: 'imgbum',
-      linkSelector: '[href^="http://imgbum.net"]',
+      name: 'imgbum.net',
       linkRegEx: new RegExp('^http://imgbum.net'),
 
-      async getUrl(extractor, link) {
+      async getUrl(link) {
         return getThumbnailUrl(link).replace('-thumb', '')
       }
     },
 
-    // link:      http://picforall.ru/348/206637/
-    // thumbnail: http://picforall.ru/allimage/10/206637-thumb.jpeg
-    // image:     http://p0xpicmoney.ru/allimage/10/206637.jpeg
+    /*
+      A lot of ads
+      link:       http://freescreens.ru/1892/532639/
+                         imgclick.ru
+                         picclick.ru
+                         payforpic.ru
+                         picforall.ru
+      thumbnail:  http://freescreens.ru/allimage/4/532639-thumb.jpeg
+      image:      http://picpic.online/allimage/4/532639.jpeg
+    */
     {
-      name: 'PicForAll',
-      linkSelector: '[href^="http://picforall.ru"]',
-      linkRegEx: new RegExp('^http://picforall.ru'),
+      name: 'PicForAll.ru',
+      hosts: [
+        'freescreens.ru',
+        'imgclick.ru',
+        'picclick.ru',
+        'payforpic.ru',
+        'picforall.ru'
+      ],
+      linkRegEx: new RegExp(
+        '^http://(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
+      ),
+      hostReplaceRegEx: new RegExp(
+        '(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
+      ),
 
-      async getUrl(extractor, link) {
+      async getUrl(link, extractor) {
         return getThumbnailUrl(link)
-          .replace('picforall', 'p0xpicmoney')
+          .replace(
+            extractor.hostReplaceRegEx,
+            'picpic.online' /* or 'p0xpicmoney.ru' */
+          )
           .replace('-thumb', '')
       }
     },
 
-    // link:      http://picage.ru/10887/5456787/
-    // thumbnail: http://s4.picage.ru/y2016/01-24/10887/5456787-thumb.jpeg
-    // image:     http://s4.pic4you.ru/y2016/01-24/10887/5456787.jpeg
+    /*
+      link:       http://stuffed.ru/filmy/596773-horrorvillian.html
+      thumbnail:  http://s1.stuffed.ru/y2018/04-29/0/596773-thumb.jpeg
+      image:      http://s1.stuffed.ru/y2018/04-29/0/596773.jpeg
+    */
     {
-      name: 'picage',
-      linkSelector: '[href^="http://picage.ru"]',
+      name: 'stuffed.ru',
+      linkRegEx: new RegExp('^http://stuffed.ru'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link).replace('-thumb', '')
+      }
+    },
+    /*
+      Obsolete. Replaced by stuffed.ru
+    */
+    {
+      name: 'picage.ru',
       linkRegEx: new RegExp('^http://picage.ru'),
 
-      async getUrl(extractor, link) {
+      async getUrl(link) {
         return getThumbnailUrl(link)
           .replace('picage', 'pic4you')
           .replace('-thumb', '')
       }
     },
-    // Remove ?
+
+    /*
+      link:       http://www.iceimg.net/site/v/5586250#3108&5586250
+                             pixsense.net
+                             vestimage.site
+                             chaosimg.site
+      thumbnail:  http://www.iceimg.net/themes/latest/ssd/small/3108/small-horrorvillian.jpg
+      image:      http://www.iceimg.net/themes/latest/ssd/big/3108/horrorvillian.jpg
+                  ...
+                  https://www.fortstore.net/themes/latest/ssd/big/3108/horrorvillian.jpg
+    */
     {
       name: 'PixSense',
-      linkSelector: '[href^="http://www.pixsense.net"]',
-      linkRegEx: new RegExp('^http://www.pixsense.net'),
+      hosts: [
+        'www.iceimg.net',
+        'www.pixsense.net',
+        'www.vestimage.site',
+        'www.chaosimg.site'
+      ],
+      linkRegEx: new RegExp(
+        '^http://www.(iceimg.net|pixsense.net|vestimage.site|chaosimg.site)'
+      ),
+      hostReplaceRegEx: new RegExp(
+        '(iceimg.net|pixsense.net|vestimage.site|chaosimg.site)'
+      ),
 
-      async getUrl(extractor, link) {
+      async getUrl(link, extractor) {
         return getThumbnailUrl(link)
+          .replace(extractor.hostReplaceRegEx, 'fortstore.net')
           .replace('small-', '')
           .replace('/small/', '/big/')
       }
     },
-    // Remove ?
+
     {
       name: 'nikapic.ru',
-      linkSelector: '[href^="http://nikapic.ru"]',
       linkRegEx: new RegExp('^http://nikapic.ru'),
 
-      async getUrl(extractor, link) {
+      async getUrl(link) {
         return getThumbnailUrl(link).replace('/small/', '/big/')
       }
     },
-    // Remove ?
+
+    /*
+      link:       https://imgtaxi.com/img-5ae5cb94811e7.html
+      thumbnail:  https://imgtaxi.com/images/small-medium/2018/04/29/5ae5cb94811ac.jpg
+                  https://imgtaxi.com/images/small/2018/04/29/5ae5cb94811ac.jpg
+      image:      https://imgtaxi.com/images/big/2018/04/29/5ae5cb94811ac.jpg
+    */
     {
       name: 'imgtaxi.com',
-      linkSelector: '[href^="https://imgtaxi.com"]',
       linkRegEx: new RegExp('^https://imgtaxi.com'),
 
-      async getUrl(extractor, link) {
-        return getThumbnailUrl(link).replace('/small/', '/big/')
+      async getUrl(link) {
+        return getThumbnailUrl(link)
+          .replace('/small/', '/big/')
+          .replace('/small-medium/', '/big/')
       }
     },
 
-    // link:      http://imgbox.com/Hn0YZvqQ
-    // thumbnail: http://t.imgbox.com/Hn0YZvqQ.jpg
-    // image:     https://images3.imgbox.com/56/b6/Hn0YZvqQ_o.jpg
+    /*
+      link:       http://imgbox.com/k0zeyDLQ
+      thumbnail:  https://thumbs2.imgbox.com/b3/8d/k0zeyDLQ_t.jpg
+      image:      https://images2.imgbox.com/b3/8d/k0zeyDLQ_o.jpg
+    */
     {
       name: 'imgbox.com',
-      linkSelector: '[href^="http://imgbox.com"]',
       linkRegEx: new RegExp('^http://imgbox.com'),
-      imageUrlRegEx: /href="([^"]*)".*icon-cloud-download/,
-      getUrl: getUrlFromPage
-    },
 
-    // link:      http://payforpic.ru/49/253590/
-    // thumbnail: http://payforpic.ru/allimage/3/253590-thumb.jpeg
-    // image:     http://picker-click.ru/allimage/3/253590.jpeg
-    {
-      name: 'payforpic.ru',
-      linkSelector: '[href^="http://payforpic.ru"]',
-      linkRegEx: new RegExp('^http://payforpic.ru'),
-
-      async getUrl(extractor, link) {
+      async getUrl(link) {
         return getThumbnailUrl(link)
-          .replace('payforpic', 'picker-click')
-          .replace('-thumb', '')
+          .replace('/thumbs', '/images')
+          .replace('_t', '_o')
       }
     },
 
-    // link:      http://imageban.ru/show/2018/03/17/77634d699922675c8f53d6c12ca6b8a9/jpg
-    // thumbnail: http://i3.imageban.ru/thumbs/2018.03.17/77634d699922675c8f53d6c12ca6b8a9.jpg
-    // image:     http://i3.imageban.ru/out/2018/03/17/77634d699922675c8f53d6c12ca6b8a9.jpg
+    /*
+      link:       https://imageban.ru/show/2018/04/29/6174c1e6c0381b2511ec221970ff6550/jpg
+      thumbnail:  http://i5.imageban.ru/thumbs/2018.04.29/6174c1e6c0381b2511ec221970ff6550.jpg
+      image:      http://i5.imageban.ru/out/2018/04/29/6174c1e6c0381b2511ec221970ff6550.jpg
+    */
     {
-      name: 'imageban.ru',
-      linkSelector: '[href^="http://imageban.ru"]',
-      linkRegEx: new RegExp('^http://imageban.ru'),
+      name: 'ImageBan.ru',
+      linkRegEx: new RegExp('//imageban.ru/show'),
       datePattern: /(\d{4})\.(\d{2})\.(\d{2})/,
 
-      async getUrl(extractor, link) {
+      async getUrl(link, extractor) {
         return getThumbnailUrl(link)
           .replace('thumbs', 'out')
           .replace(extractor.datePattern, '$1/$2/$3')
       }
-    }
+    },
+    // Direct link
+    {
+      name: 'ImageBan.ru (direct link)',
+      linkRegEx: new RegExp('imageban.ru/out'),
 
-    // link:      http://www.iceimg.net/site/v/4350436#2776&4350436
-    // thumbnail: http://www.iceimg.net/themes/latest/ssd/small/2776/small-4-1598.JPG
-    // image:     http://www.fortstore.net/themes/latest/uploads4/pixsense/big/2776/4-1598.JPG
-    // {}
+      async getUrl(link) {
+        return link.href
+      }
+    },
+
+    /*
+      link:       https://c.radikal.ru/c07/1804/0d/ae78f7fe7106.jpg
+      thumbnail:  https://c.radikal.ru/c07/1804/0d/ae78f7fe7106t.jpg
+      image:      https://c.radikal.ru/c07/1804/0d/ae78f7fe7106.jpg
+    */
+    {
+      name: 'Radikal.ru',
+      linkRegEx: new RegExp('^https?://.+.radikal.ru/'),
+
+      async getUrl(link) {
+        return link.href
+      }
+    },
+
+    /*
+      link:       http://piccash.net/53489/845533/
+      thumbnail:  http://piccash.net/allimage/2018/7-15/img_thumb/845533-thumb.jpeg
+      image:      http://piccash.net/allimage/2018/7-15/img_full/845533.jpeg
+    */
+    {
+      name: 'PicCash.net',
+      linkRegEx: new RegExp('^http://piccash.net/'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link)
+          .replace('_thumb', '_full')
+          .replace('-thumb', '')
+      }
+    },
+
+    /*
+      link:       https://imgdrive.net/img-5b4b4ac468dd6.html
+      thumbnail:  https://imgdrive.net/images/small/2018/07/15/5b4b4ac468d9b.jpg
+      image:      https://imgdrive.net/images/big/2018/07/15/5b4b4ac468d9b.jpg
+    */
+    {
+      name: 'ImgDrive.net',
+      linkRegEx: new RegExp('^https://imgdrive.net'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link).replace('small', 'big')
+      }
+    },
+
+    /*
+      link:       http://imgchilibum.ru/v.php?id=1b931abd5b281da99daa3b20cafd3534
+      thumbnail:  http://imgchilibum.ru/pic_s/1b931abd5b281da99daa3b20cafd3534.jpg
+      image:      http://imgchilibum.ru/pic_b/1b931abd5b281da99daa3b20cafd3534.jpg
+    */
+    {
+      name: 'imgchilibum.ru',
+      linkRegEx: new RegExp('^http://imgchilibum.ru/v'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link).replace('_s/', '_b/')
+      }
+    },
+
+    /*
+      upload doesn't work at the moment
+    */
+    {
+      name: 'XXXScreens.com',
+      linkRegEx: new RegExp('^http://xxxscreens.com'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link).replace('small/', 'big/')
+      }
+    },
+
+    /*
+      link:       http://money-pic.ru/64/5384/
+      thumbnail:  http://money-pic.ru/allimage/7/5384-thumb.jpeg
+      image:      http://money-pic.ru/allimage/7/5384.jpeg
+    */
+    {
+      name: 'money-pic.ru',
+      linkRegEx: new RegExp('^http://money-pic.ru'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link).replace('-thumb', '')
+      }
+    }
   ]
 
+  const extractorsByName = extractors.reduce((result, extractor) => {
+    result[extractor.name] = extractor
+    return result
+  }, {})
+
   return {
-    getImageHostNames() {
-      const result = extractors
-        .map(e => e.name)
-        .filter((name, index, array) => array.indexOf(name) === index)
+    getImageHostsInfo() {
+      const result = extractors.map(e => ({
+        name: e.name,
+        description: e.hosts ? e.hosts.join(', ') : ''
+      }))
 
-      return sortCaseInsensitive(result)
+      return sortCaseInsensitive(result, value => value.name)
     },
 
-    getImageUrl(link) {
-      const extractor = getExtractor(link.href)
+    getImageUrl(link, hostName) {
+      const extractor = extractorsByName[hostName]
 
-      return extractor.getUrl(extractor, link)
+      return extractor.getUrl(link, extractor)
     },
 
-    /**
-     * Returns selector for image links
-     * @param {Array<string>} enabledHosts - Enabled host names
-     */
-    getLinksSelector(enabledHosts) {
-      return extractors
-        .filter(e => enabledHosts.includes(e.name))
-        .map(e => `a${e.linkSelector}.postLink`)
-        .join(',')
+    getHostNameMatcher(enabledHosts) {
+      // Keep enabled extractors
+      extractorsActive = extractors.filter(e => enabledHosts.includes(e.name))
+
+      // It is often case when neighbor links are from the same image host. Therefore
+      // we can improve search by checking link URL with the previous extractor
+      // linkRegEx
+      let prevExtractor = null
+
+      return url => {
+        if (prevExtractor && prevExtractor.linkRegEx.test(url)) {
+          return prevExtractor.name
+        }
+
+        const extractor = extractorsActive.find(e => e.linkRegEx.test(url))
+
+        return extractor ? extractor.name : null
+      }
     }
   }
 })()

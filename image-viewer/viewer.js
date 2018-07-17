@@ -14,6 +14,8 @@ export default (function() {
     loading: 'iv-icon--type-loading',
     open: 'iv-image-view--open',
     fullHeight: 'iv-image-view--full-height',
+    iconExpand: 'iv-icon--type-expand',
+    iconShrink: 'iv-icon--type-shrink',
     grabbing: 'iv-image-view__image--grabbing',
     buttonActive: 'iv-icon-button--active'
   }
@@ -54,6 +56,9 @@ export default (function() {
     dragging: false
   }
 
+  /**
+   * Actions
+   */
   const image = {
     async show(link) {
       const container = elements.container
@@ -78,15 +83,15 @@ export default (function() {
         link.classList.replace(CLASSES.imageLinkZoom, CLASSES.loading)
       }
 
-      let imageUrl = link.dataset['imgUrl']
+      let imageUrl = link.dataset.ivImgUrl
       // Get full image URL
       if (!imageUrl) {
-        imageUrl = await urlExtractor.getImageUrl(link)
+        imageUrl = await urlExtractor.getImageUrl(link, link.dataset.ivHost)
         if (!imageUrl) {
           image.markAsBroken(link)
           return
         }
-        link.dataset['imgUrl'] = imageUrl
+        link.dataset.ivImgUrl = imageUrl
       }
 
       try {
@@ -98,7 +103,7 @@ export default (function() {
         } else {
           link.classList.replace(CLASSES.loading, CLASSES.imageLinkZoom)
           // Open image view
-          document.body.classList.add(CLASSES.open)
+          document.documentElement.classList.add(CLASSES.open)
           state.open = true
         }
       } catch (e) {
@@ -127,7 +132,7 @@ export default (function() {
     },
 
     hide() {
-      document.body.classList.remove(CLASSES.open)
+      document.documentElement.classList.remove(CLASSES.open)
       state.open = false
       state.currentLink = null
       elements.image.src = EMPTY_SRC
@@ -152,6 +157,8 @@ export default (function() {
 
     toggleFullHeight() {
       elements.container.classList.toggle(CLASSES.fullHeight)
+      elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconExpand)
+      elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconShrink)
     },
 
     markAsBroken(link) {
@@ -167,6 +174,9 @@ export default (function() {
     }
   }
 
+  /**
+   * Event handlers
+   */
   const events = {
     linkClick(e) {
       e.preventDefault()
@@ -177,7 +187,7 @@ export default (function() {
       }
 
       let link = e.target
-      // Collect neighbour links
+      // Collect neighbor links
       state.linksSet = $$(SELECTORS.imageLink, link.parentNode)
       // Set total images count
       elements.imageTotal.textContent = state.linksSet.length
@@ -257,6 +267,9 @@ export default (function() {
     }
   }
 
+  /**
+   * Element builders
+   */
   const create = {
     viewContainer() {
       elements.container = $.create('div', {
@@ -363,25 +376,39 @@ export default (function() {
 
   /**
    * Initializes image viewer
-   * @param {Object} hosts - { hostName: isEnabled } map
+   * @param {Array<string>} enabledHosts
    */
-  return function(hosts) {
+  return function(enabledHosts) {
     addStyle(imageViewCSS)
 
     const container = $('body')
 
     // Assign class to image links
-    const linkClasses = `${
-      CLASSES.imageLink
-    } iv-image-link iv-icon iv-icon--hover ${
-      CLASSES.imageLinkZoom
-    } iv-icon--size-button`
 
-    const enabledHosts = Object.keys(hosts).filter(hostName => hosts[hostName])
-    const linkSelector = urlExtractor.getLinksSelector(enabledHosts)
-    $.set($$(linkSelector, container), {
-      className: linkClasses
-    })
+    const linkClasses = [
+      CLASSES.imageLink,
+      'iv-image-link',
+      'iv-icon',
+      'iv-icon--hover',
+      CLASSES.imageLinkZoom,
+      'iv-icon--size-button'
+    ]
+
+    const getHostName = urlExtractor.getHostNameMatcher(enabledHosts)
+
+    const imagesWithLinks = $$('a > img, a > var', container)
+
+    imagesWithLinks
+      .map(img => img.parentNode)
+      .filter(link => link.href)
+      .forEach(link => {
+        const hostName = getHostName(link.href)
+
+        if (hostName) {
+          link.dataset.ivHost = hostName
+          link.classList.add(...linkClasses)
+        }
+      })
 
     $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
   }

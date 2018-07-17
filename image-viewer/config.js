@@ -16,9 +16,7 @@ export default (function() {
 
   function createMenuElement(config) {
     if (!configMenu) {
-      const rows = Object.keys(config.hosts).map(hostName =>
-        createConfigMenuRow(hostName, config.hosts[hostName])
-      )
+      const rows = config.hosts.map(createConfigMenuRow)
 
       configMenu = $.create('div', {
         id: 'iv-config-form',
@@ -34,7 +32,11 @@ export default (function() {
         delegate: {
           change: {
             '.js-iv-config-checkbox': e =>
-              updateHostConfig(config, e.target.value, e.target.checked)
+              updateHostConfig(
+                config.storedConfig,
+                e.target.value,
+                e.target.checked
+              )
           }
         }
       })
@@ -72,18 +74,19 @@ export default (function() {
     }
   }
 
-  function createConfigMenuRow(hostName, isEnabled) {
+  function createConfigMenuRow(host) {
     return $.create('label', {
       className: 'iv-config-form__label',
+      title: host.description,
       contents: [
         {
           tag: 'input',
           type: 'checkbox',
           className: 'iv-config-form__checkbox js-iv-config-checkbox',
-          checked: isEnabled,
-          value: hostName
+          checked: host.enabled,
+          value: host.name
         },
-        hostName
+        host.name
       ]
     })
   }
@@ -93,33 +96,47 @@ export default (function() {
     store.set(currentHost, config)
   }
 
-  return {
-    /**
-     * Receives per domain settings
-     */
-    async getHostConfig() {
-      const hostNames = urlExtractor.getImageHostNames()
-      const config = await store.get(currentHost, { hosts: {} })
+  /**
+   * Receives per domain settings
+   */
+  async function getHostConfig() {
+    const hosts = urlExtractor.getImageHostsInfo()
+    const storedConfig = await store.get(currentHost, { hosts: {} })
+    const enabledHosts = []
 
-      // Merge with supported hosts
-      const hosts = hostNames.reduce((result, host) => {
-        result[host] = host in config.hosts ? config.hosts[host] : true
-        return result
-      }, {})
+    hosts.forEach(host => {
+      const id = host.name
+      const isEnabled = id in storedConfig.hosts ? storedConfig.hosts[id] : true
 
-      return {
-        hosts
+      host.enabled = isEnabled
+      storedConfig.hosts[id] = isEnabled
+
+      if (isEnabled) {
+        enabledHosts.push(id)
       }
-    },
+    })
 
+    storedConfig.hosts = hosts.reduce((result, host) => {
+      result[host.name] = host.enabled
+      return result
+    }, {})
+
+    return {
+      hosts,
+      storedConfig,
+      enabledHosts
+    }
+  }
+
+  return {
     /**
      * Adds menu command or global function to open settings menu
      * @param {object} config
      */
-    init(config) {
-      const handler = () => {
-        showMenu(config)
-      }
+    async init() {
+      const config = await getHostConfig()
+
+      const handler = () => showMenu(config)
 
       // eslint-disable-next-line
       if (GM_registerMenuCommand) {
@@ -129,6 +146,8 @@ export default (function() {
           settings: handler
         }
       }
+
+      return config
     }
   }
 })()

@@ -55,12 +55,6 @@
   height: 50px;
 }
 
-.iv-icon--type-expand::after {
-  width: 70%;
-  height: 70%;
-  background-image: svg-load('expand.svg');
-}
-
 .iv-icon--type-loading::after {
   animation: spin 1s linear infinite;
   opacity: 1;
@@ -71,6 +65,8 @@
 .iv-icon--type-next::after { background-image: svg-load('next.svg', fill=var(--color-text)); }
 .iv-icon--type-previous::after { background-image: svg-load('before.svg', fill=var(--color-text)); }
 .iv-icon--type-close::after { background-image: svg-load('close.svg', fill=var(--color-text)); }
+.iv-icon--type-expand::after { background-image: svg-load('expand.svg', fill=var(--color-text)); }
+.iv-icon--type-shrink::after { background-image: svg-load('shrink.svg', fill=var(--color-text)); }
 
 .iv-icon--type-image-broken::after,
 .iv-image-link img::after {
@@ -96,8 +92,7 @@
   margin: 0;
 }
 
-/* TODO: Unify. Not every site has this class name */
-.iv-image-link var.postImg {
+.iv-image-link > :not(img) {
   display: flex; /* Remove bottom padding */
   align-items: center;
   justify-content: center;
@@ -152,7 +147,7 @@
 ------------ */
 
 .iv-image-view {
-  display: flex;
+  display: none;
   flex-direction: column;
   height: 0;
   transition: opacity var(--transition-duration) ease-out;
@@ -162,11 +157,13 @@
   user-select: none;
 }
 
-body.iv-image-view--open {
+html.iv-image-view--open,
+.iv-image-view--open body {
   overflow: hidden;
 }
 
 .iv-image-view--open .iv-image-view {
+  display: flex;
   position: fixed;
   z-index: 3;
   top: 0;
@@ -231,11 +228,12 @@ body.iv-image-view--open {
   display: flex;
   align-items: center;
   padding: 0 40px;
-  font-size: 1.125rem;
+  font-size: 18px;
 }
 
 .iv-image-view__backdrop {
-  position: absolute;
+  /* fixed keeps backdrop while scrolled down */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -271,10 +269,6 @@ body.iv-image-view--open {
 
   & .iv-image-view__image--grabbing {
     cursor: grabbing;
-  }
-
-  & .iv-icon--type-expand {
-    background-color: var(--color-bkg-button-hover);
   }
 }
 
@@ -326,6 +320,7 @@ body.iv-image-view--open {
 .iv-config-form--open {
   display: flex;
   position: fixed;
+  z-index: 3;
 }
 
 .iv-config-form__header {
@@ -349,6 +344,7 @@ body.iv-image-view--open {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
+  margin: 0;
   padding: 10px;
   transition: all var(--transition-duration) ease-out;
 
@@ -358,5 +354,5 @@ body.iv-image-view--open {
 }
 
 .iv-config-form__checkbox {
-  margin: 0 5px 0 0;
+  margin: 0 5px 0 0 !important;
 }

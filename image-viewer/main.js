@@ -3,9 +3,7 @@ import config from './config'
 import initViewer from './viewer'
 
 $.ready().then(async () => {
-  const hostConfig = await config.getHostConfig()
+  const hostConfig = await config.init()
 
-  initViewer(hostConfig.hosts)
-
-  config.init(hostConfig)
+  initViewer(hostConfig.enabledHosts)
 })
