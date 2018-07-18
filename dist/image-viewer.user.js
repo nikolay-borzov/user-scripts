@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @namespace   https://github.com/shikiyoku
 // @description Allows viewing full image without leaving the page
-// @version     1.0.0
+// @version     1.0.1
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2018+, shikiyoku
@@ -12,8 +12,6 @@
 // @connect     www.imagebam.com
 // @connect     imagevenue.com
 // @connect     www.turboimagehost.com
-// @connect     imgbox.com
-// @connect     radikal.ru
 // @run-at      document-start
 // @compatible  chrome
 // @compatible  firefox
@@ -187,7 +185,7 @@
         imageUrlRegEx: /id="thepic".*src="([^"]*)"/i,
 
         async getUrl(link, extractor) {
-          const imageUrl = await getUrlFromPage(extractor, link)
+          const imageUrl = await getUrlFromPage(link, extractor)
           const pageUrl = link.href
 
           const url = new URL(pageUrl)

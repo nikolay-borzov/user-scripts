@@ -1,5 +1,9 @@
 # Image Viewer Changelog
 
+## 1.0.1 - 2018-07-18
+## Fixed
+- Url extraction from image host page
+
 ## 1.0.0 - 2018-07-18
 ## Change
 - Image links detection redone

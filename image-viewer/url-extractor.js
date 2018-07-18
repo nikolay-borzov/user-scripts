@@ -81,7 +81,7 @@ export default (function() {
       imageUrlRegEx: /id="thepic".*src="([^"]*)"/i,
 
       async getUrl(link, extractor) {
-        const imageUrl = await getUrlFromPage(extractor, link)
+        const imageUrl = await getUrlFromPage(link, extractor)
         const pageUrl = link.href
 
         const url = new URL(pageUrl)
