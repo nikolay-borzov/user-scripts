@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @namespace   https://github.com/shikiyoku
 // @description Allows viewing full image without leaving the page
-// @version     1.0.1
+// @version     1.0.2
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2018+, shikiyoku
@@ -435,6 +435,44 @@
 
         async getUrl(link) {
           return getThumbnailUrl(link).replace('-thumb', '')
+        }
+      },
+
+      {
+        name: 'VFL.ru',
+        linkRegEx: new RegExp('^http://vfl.ru'),
+
+        async getUrl(link) {
+          return getThumbnailUrl(link).replace('_s', '')
+        }
+      },
+
+      {
+        name: 'Lostpic.net',
+        linkRegEx: new RegExp('^http://lostpic.net'),
+
+        async getUrl(link) {
+          return getThumbnailUrl(link)
+            .replace('.th', '')
+            .replace('http:', 'https:')
+        }
+      },
+
+      {
+        name: 'ImgAdult.com',
+        linkRegEx: new RegExp('^https://imgadult.com'),
+
+        async getUrl(link) {
+          return getThumbnailUrl(link).replace('/small/', '/big/')
+        }
+      },
+
+      {
+        name: 'imgbb.com',
+        linkRegEx: new RegExp('^https://ibb.co'),
+
+        async getUrl(link) {
+          return getThumbnailUrl(link).replace('//thumb', '//image')
         }
       }
     ]

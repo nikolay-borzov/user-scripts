@@ -431,6 +431,64 @@ export default (function() {
       async getUrl(link) {
         return getThumbnailUrl(link).replace('-thumb', '')
       }
+    },
+
+    /*
+      link:       http://vfl.ru/fotos/e720f58222754036.html
+      thumbnail:  http://images.vfl.ru/ii/1533382125/e720f582/22754036_s.jpg
+      image:      http://images.vfl.ru/ii/1533382125/e720f582/22754036.jpg
+    */
+    {
+      name: 'VFL.ru',
+      linkRegEx: new RegExp('^http://vfl.ru'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link).replace('_s', '')
+      }
+    },
+
+    /*
+      link:       http://lostpic.net/image/nQRT
+      thumbnail:  http://img11.lostpic.net/2018/08/04/e96797434cb6b6a4df60b3e77c293226.th.jpg
+      image:      https://img11.lostpic.net/2018/08/04/e96797434cb6b6a4df60b3e77c293226.jpg
+    */
+    {
+      name: 'Lostpic.net',
+      linkRegEx: new RegExp('^http://lostpic.net'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link)
+          .replace('.th', '')
+          .replace('http:', 'https:')
+      }
+    },
+
+    /*
+      link:       https://imgadult.com/img-5b65bba9a6e5d.html
+      thumbnail:  https://imgadult.com/upload/small/2018/08/04/5b65bba9a6e23.jpg
+      image:      https://imgadult.com/upload/big/2018/08/04/5b65bba9a6e23.jpg
+    */
+    {
+      name: 'ImgAdult.com',
+      linkRegEx: new RegExp('^https://imgadult.com'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link).replace('/small/', '/big/')
+      }
+    },
+
+    /*
+      link:       https://ibb.co/cx4HBK
+      thumbnail:  https://thumb.ibb.co/cx4HBK/horrorvillian.jpg
+      image:      https://image.ibb.co/fAyNdz/horrorvillian.jpg or https://image.ibb.co/cx4HBK/horrorvillian.jpg 
+    */
+    {
+      name: 'imgbb.com',
+      linkRegEx: new RegExp('^https://ibb.co'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link).replace('//thumb', '//image')
+      }
     }
   ]
 

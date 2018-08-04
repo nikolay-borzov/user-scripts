@@ -1,5 +1,9 @@
 # Image Viewer Changelog
 
+## 1.0.2 - 2018-08-04
+## Added
+- Image host support: `VFL.ru`, `Lostpic.net`, `ImgAdult.com`, `imgbb.com`
+
 ## 1.0.1 - 2018-07-18
 ## Fixed
 - Url extraction from image host page
