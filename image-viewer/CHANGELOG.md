@@ -1,5 +1,15 @@
 # Image Viewer Changelog
 
+## 1.0.3 - 2018-08-14
+## Added
+- Image host support: `IMX.to`, `Imageshimage.com`
+
+## Changed
+- Hide images count, previous and next buttons when there is only one image in container
+
+## Fixed
+- `var` as `img` placeholder support
+
 ## 1.0.2 - 2018-08-04
 ## Added
 - Image host support: `VFL.ru`, `Lostpic.net`, `ImgAdult.com`, `imgbb.com`
@@ -9,7 +19,7 @@
 - Url extraction from image host page
 
 ## 1.0.0 - 2018-07-18
-## Change
+## Changed
 - Image links detection redone
 - Update expand/shrink icons
 

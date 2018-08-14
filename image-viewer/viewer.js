@@ -13,6 +13,7 @@ export default (function() {
     brokenImage: 'iv-icon--type-image-broken',
     loading: 'iv-icon--type-loading',
     open: 'iv-image-view--open',
+    single: 'iv-image-view--single',
     fullHeight: 'iv-image-view--full-height',
     iconExpand: 'iv-icon--type-expand',
     iconShrink: 'iv-icon--type-shrink',
@@ -46,6 +47,7 @@ export default (function() {
     open: false,
     currentLink: null,
     linksSet: [],
+    isSingle: false,
     getCurrentLinkIndex() {
       return this.linksSet.indexOf(this.currentLink)
     },
@@ -65,7 +67,13 @@ export default (function() {
       const img = elements.image
 
       state.currentLink = link
-      elements.imageNumber.textContent = state.getCurrentLinkIndex() + 1
+
+      if (state.isSingle) {
+        container.classList.add(CLASSES.single)
+      } else {
+        container.classList.remove(CLASSES.single)
+        elements.imageNumber.textContent = state.getCurrentLinkIndex() + 1
+      }
 
       if (state.open) {
         // Clear previous
@@ -189,8 +197,12 @@ export default (function() {
       let link = e.target
       // Collect neighbor links
       state.linksSet = $$(SELECTORS.imageLink, link.parentNode)
-      // Set total images count
-      elements.imageTotal.textContent = state.linksSet.length
+      state.isSingle = state.linksSet.length === 1
+
+      if (!state.isSingle) {
+        // Set total images count
+        elements.imageTotal.textContent = state.linksSet.length
+      }
 
       events.keyboard.bind()
 
@@ -313,7 +325,7 @@ export default (function() {
       elements.imageNumber = document.createElement('span')
       elements.imageTotal = document.createElement('span')
       let imageNumber = $.create('div', {
-        className: 'iv-image-view__number',
+        className: 'iv-image-view__number single-hide',
         contents: [elements.imageNumber, '/', elements.imageTotal]
       })
 
@@ -339,14 +351,20 @@ export default (function() {
       buttons.previous = create.toolbarButton(
         'Previous (←)',
         'previous',
-        image.previous
+        image.previous,
+        'single-hide'
       )
       buttons.toggleFullHeight = create.toolbarButton(
         'Toggle full height (Space)',
         'expand',
         image.toggleFullHeight
       )
-      buttons.next = create.toolbarButton('Next (→)', 'next', image.next)
+      buttons.next = create.toolbarButton(
+        'Next (→)',
+        'next',
+        image.next,
+        'single-hide'
+      )
 
       return {
         tag: 'div',
@@ -359,11 +377,11 @@ export default (function() {
       }
     },
 
-    toolbarButton(title, icon, handler) {
+    toolbarButton(title, icon, handler, className = '') {
       return $.create('a', {
         href: '#',
         title: title,
-        className: `iv-icon-button iv-icon iv-icon--type-${icon}`,
+        className: `iv-icon-button iv-icon iv-icon--type-${icon} ${className}`,
         events: {
           click: e => {
             e.preventDefault()

@@ -16,7 +16,17 @@ export default (function() {
   }
 
   function getThumbnailUrl(link) {
-    return $('img', link).src
+    let img = $('img', link)
+    if (img) {
+      return img.src
+    }
+
+    img = $('var', link)
+    if (img) {
+      return img.title
+    }
+
+    return ''
   }
 
   function sortCaseInsensitive(array, getValue) {
@@ -140,31 +150,16 @@ export default (function() {
       Keep this rule for old links
     */
     {
-      name: 'Picturelol.com',
-      linkRegEx: new RegExp('^http://picturelol.com'),
-      async getUrl(link) {
+      name: 'ImageTwist based',
+      hosts: ['Picturelol.com', 'PicShick.com', 'Imageshimage.com'],
+      linkRegEx: new RegExp('^https?://(picturelol|picshick|imageshimage).com'),
+      hostReplaceRegEx: new RegExp('(picturelol|picshick|imageshimage)'),
+
+      async getUrl(link, extractor) {
         const imageName = link.href.split('/').pop()
         const imageUrl = getThumbnailUrl(link)
           .replace('/th/', '/i/')
-          .replace('picturelol', 'imagetwist')
-
-        return `${imageUrl}/${imageName}`
-      }
-    },
-
-    /*
-      ImageTwist based. Currently generates the same link as ImageTwist.
-      Keep this rule for old links
-    */
-    {
-      name: 'PicShick.com',
-      linkRegEx: new RegExp('^http://picshick.com'),
-
-      async getUrl(link) {
-        const imageName = link.href.split('/').pop()
-        const imageUrl = getThumbnailUrl(link)
-          .replace('/th/', '/i/')
-          .replace('picshick', 'imagetwist')
+          .replace(extractor.hostReplaceRegEx, 'imagetwist')
 
         return `${imageUrl}/${imageName}`
       }
@@ -488,6 +483,22 @@ export default (function() {
 
       async getUrl(link) {
         return getThumbnailUrl(link).replace('//thumb', '//image')
+      }
+    },
+
+    /*
+      link:       https://imx.to/i/1tr970
+      thumbnail:  https://imx.to/u/t/2018/08/14/1tr970.jpg
+      image:      https://i.imx.to/i/2018/08/14/1tr970.jpg
+    */
+    {
+      name: 'IMX.to',
+      linkRegEx: new RegExp('^https://imx.to'),
+
+      async getUrl(link) {
+        return getThumbnailUrl(link)
+          .replace('/imx', '/i.imx')
+          .replace('/u/t/', '/i/')
       }
     }
   ]
