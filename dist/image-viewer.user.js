@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @namespace   https://github.com/shikiyoku
 // @description Allows viewing full image without leaving the page
-// @version     1.0.2
+// @version     1.1.0
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2018+, shikiyoku
@@ -45,7 +45,7 @@
 
     return function polyfill(methodName) {
       if (gmMethodMap.hasOwnProperty(methodName)) {
-        return 'GM' in window && methodName in GM
+        return typeof GM !== 'undefined' && methodName in GM
           ? GM[methodName]
           : function(...args) {
               return new Promise((resolve, reject) => {
@@ -72,7 +72,7 @@
 
   var request = (function() {
     const xmlHttpRequest =
-      'GM' in window && 'xmlHttpRequest' in GM
+      typeof GM !== 'undefined' && 'xmlHttpRequest' in GM
         ? GM.xmlHttpRequest
         : GM_xmlhttpRequest; // eslint-disable-line
 
@@ -122,23 +122,9 @@
     }
 
     async function getUrlFromPage(link, extractor) {
-      const html = await getPageHtml(link.href)
+      const html = await getPageHtml(link.url)
 
       return regex.getFirstMatchGroup(extractor.imageUrlRegEx, html)
-    }
-
-    function getThumbnailUrl(link) {
-      let img = $('img', link)
-      if (img) {
-        return img.src
-      }
-
-      img = $('var', link)
-      if (img) {
-        return img.title
-      }
-
-      return ''
     }
 
     function sortCaseInsensitive(array, getValue) {
@@ -165,16 +151,11 @@
       {
         name: 'FastPic',
         linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
-        extensionRegEx: /\.([^.]+)\.html$/,
 
-        async getUrl(link, extractor) {
-          const extension = regex.getFirstMatchGroup(
-            extractor.extensionRegEx,
-            link.href
-          )
-          const thumbUrl = getThumbnailUrl(link)
+        async getUrl(link) {
+          const extension = link.url.split('.').slice(-2)[0]
 
-          return `${thumbUrl
+          return `${link.thumbnailUrl
             .replace('thumb', 'big')
             .replace('jpeg', extension)}?noht=1`
         }
@@ -185,7 +166,7 @@
         linkRegEx: new RegExp('fastpic.ru/big'),
 
         async getUrl(link) {
-          return `${link.href}?noht=1`
+          return `${link.url}?noht=1`
         }
       },
 
@@ -196,7 +177,7 @@
 
         async getUrl(link, extractor) {
           const imageUrl = await getUrlFromPage(link, extractor)
-          const pageUrl = link.href
+          const pageUrl = link.url
 
           const url = new URL(pageUrl)
           url.search = ''
@@ -225,12 +206,12 @@
         linkRegEx: new RegExp('^http://imagetwist.com'),
 
         async getUrl(link) {
-          const imageName = link.href
+          const imageName = link.url
             .split('/')
             .pop()
             .replace('.html', '')
           const extension = imageName.split('.').pop()
-          const imageUrl = getThumbnailUrl(link)
+          const imageUrl = link.thumbnailUrl
             .replace('/th/', '/i/')
             .slice(0, -extension.length)
 
@@ -247,8 +228,8 @@
         hostReplaceRegEx: new RegExp('(picturelol|picshick|imageshimage)'),
 
         async getUrl(link, extractor) {
-          const imageName = link.href.split('/').pop()
-          const imageUrl = getThumbnailUrl(link)
+          const imageName = link.url.split('/').pop()
+          const imageUrl = link.thumbnailUrl
             .replace('/th/', '/i/')
             .replace(extractor.hostReplaceRegEx, 'imagetwist')
 
@@ -261,7 +242,7 @@
         linkRegEx: new RegExp('^http://imgbum.net'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('-thumb', '')
+          return link.thumbnailUrl.replace('-thumb', '')
         }
       },
 
@@ -282,7 +263,7 @@
         ),
 
         async getUrl(link, extractor) {
-          return getThumbnailUrl(link)
+          return link.thumbnailUrl
             .replace(extractor.hostReplaceRegEx, 'picpic.online')
             .replace('-thumb', '')
         }
@@ -293,7 +274,7 @@
         linkRegEx: new RegExp('^http://stuffed.ru'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('-thumb', '')
+          return link.thumbnailUrl.replace('-thumb', '')
         }
       },
 
@@ -302,7 +283,7 @@
         linkRegEx: new RegExp('^http://picage.ru'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link)
+          return link.thumbnailUrl
             .replace('picage', 'pic4you')
             .replace('-thumb', '')
         }
@@ -324,7 +305,7 @@
         ),
 
         async getUrl(link, extractor) {
-          return getThumbnailUrl(link)
+          return link.thumbnailUrl
             .replace(extractor.hostReplaceRegEx, 'fortstore.net')
             .replace('small-', '')
             .replace('/small/', '/big/')
@@ -336,7 +317,7 @@
         linkRegEx: new RegExp('^http://nikapic.ru'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('/small/', '/big/')
+          return link.thumbnailUrl.replace('/small/', '/big/')
         }
       },
 
@@ -345,7 +326,7 @@
         linkRegEx: new RegExp('^https://imgtaxi.com'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link)
+          return link.thumbnailUrl
             .replace('/small/', '/big/')
             .replace('/small-medium/', '/big/')
         }
@@ -356,7 +337,7 @@
         linkRegEx: new RegExp('^http://imgbox.com'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link)
+          return link.thumbnailUrl
             .replace('/thumbs', '/images')
             .replace('_t', '_o')
         }
@@ -368,7 +349,7 @@
         datePattern: /(\d{4})\.(\d{2})\.(\d{2})/,
 
         async getUrl(link, extractor) {
-          return getThumbnailUrl(link)
+          return link.thumbnailUrl
             .replace('thumbs', 'out')
             .replace(extractor.datePattern, '$1/$2/$3')
         }
@@ -379,16 +360,16 @@
         linkRegEx: new RegExp('imageban.ru/out'),
 
         async getUrl(link) {
-          return link.href
+          return link.url
         }
       },
 
       {
         name: 'Radikal.ru',
-        linkRegEx: new RegExp('^https?://.+.radikal.ru/'),
+        linkRegEx: /https?:\/\/.\.radikal\.ru\//,
 
         async getUrl(link) {
-          return link.href
+          return link.url
         }
       },
 
@@ -397,7 +378,7 @@
         linkRegEx: new RegExp('^http://piccash.net/'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link)
+          return link.thumbnailUrl
             .replace('_thumb', '_full')
             .replace('-thumb', '')
         }
@@ -408,7 +389,7 @@
         linkRegEx: new RegExp('^https://imgdrive.net'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('small', 'big')
+          return link.thumbnailUrl.replace('small', 'big')
         }
       },
 
@@ -417,7 +398,7 @@
         linkRegEx: new RegExp('^http://imgchilibum.ru/v'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('_s/', '_b/')
+          return link.thumbnailUrl.replace('_s/', '_b/')
         }
       },
 
@@ -426,7 +407,7 @@
         linkRegEx: new RegExp('^http://xxxscreens.com'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('small/', 'big/')
+          return link.thumbnailUrl.replace('small/', 'big/')
         }
       },
 
@@ -435,7 +416,7 @@
         linkRegEx: new RegExp('^http://money-pic.ru'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('-thumb', '')
+          return link.thumbnailUrl.replace('-thumb', '')
         }
       },
 
@@ -444,7 +425,7 @@
         linkRegEx: new RegExp('^http://vfl.ru'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('_s', '')
+          return link.thumbnailUrl.replace('_s', '')
         }
       },
 
@@ -453,9 +434,7 @@
         linkRegEx: new RegExp('^http://lostpic.net'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link)
-            .replace('.th', '')
-            .replace('http:', 'https:')
+          return link.thumbnailUrl.replace('.th', '').replace('http:', 'https:')
         }
       },
 
@@ -464,7 +443,7 @@
         linkRegEx: new RegExp('^https://imgadult.com'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('/small/', '/big/')
+          return link.thumbnailUrl.replace('/small/', '/big/')
         }
       },
 
@@ -473,7 +452,7 @@
         linkRegEx: new RegExp('^https://ibb.co'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link).replace('//thumb', '//image')
+          return link.thumbnailUrl.replace('//thumb', '//image')
         }
       },
 
@@ -482,7 +461,7 @@
         linkRegEx: new RegExp('^https://imx.to'),
 
         async getUrl(link) {
-          return getThumbnailUrl(link)
+          return link.thumbnailUrl
             .replace('/imx', '/i.imx')
             .replace('/u/t/', '/i/')
         }
@@ -504,8 +483,8 @@
         return sortCaseInsensitive(result, value => value.name)
       },
 
-      getImageUrl(link, hostName) {
-        const extractor = extractorsByName[hostName]
+      getImageUrl(link) {
+        const extractor = extractorsByName[link.host]
 
         return extractor.getUrl(link, extractor)
       },
@@ -513,10 +492,21 @@
       getHostNameMatcher(enabledHosts) {
         extractorsActive = extractors.filter(e => enabledHosts.includes(e.name))
 
+        let prevExtractor = null
+
         return url => {
+          if (prevExtractor && prevExtractor.linkRegEx.test(url)) {
+            return prevExtractor.name
+          }
+
           const extractor = extractorsActive.find(e => e.linkRegEx.test(url))
 
-          return extractor ? extractor.name : null
+          if (extractor) {
+            prevExtractor = extractor
+            return extractor.name
+          }
+
+          return null
         }
       }
     }
@@ -653,7 +643,7 @@
         const handler = () => showMenu(config)
 
         // eslint-disable-next-line
-        if (GM_registerMenuCommand) {
+        if (typeof GM_registerMenuCommand !== 'undefined') {
           GM_registerMenuCommand('Image Viewer Settings', handler)
         } else {
           unsafeWindow.imageViewer = {
@@ -681,7 +671,7 @@
         }
 
   var css =
-    "@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(1turn)}}.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{content:\"\";position:absolute;z-index:2;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-repeat:no-repeat;background-position:50%;background-size:contain}.iv-icon--hover:after{transition:opacity .35s ease;opacity:0}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{width:50px;height:50px}.iv-icon--type-loading:after{animation:spin 1s linear infinite;opacity:1;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z'/%3E%3C/svg%3E\")!important}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-expand:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5m3 9h2v5h-5v-2h3v-3m-7 3v2H5v-5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-shrink:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M14 14h5v2h-3v3h-2v-5m-9 0h5v5H8v-3H5v-2m3-9h2v5H5V8h3V5m11 3v2h-5V5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42l3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.iv-image-link{display:inline-flex;min-width:50px;min-height:50px;margin:3px;padding:4px;border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);vertical-align:top}.iv-image-link img{margin:0}.iv-image-link>:not(img){display:flex;align-items:center;justify-content:center;width:100%}.iv-image-link:before{content:\"\";position:absolute;z-index:1;top:4px;right:4px;bottom:4px;left:4px;transition:opacity .35s ease;opacity:0;background-color:rgba(0,0,0,.5)}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.2)}.iv-image-link img:after{z-index:0;width:35px;height:35px}.iv-image-view{display:none;flex-direction:column;height:0;transition:opacity .35s ease-out;opacity:0;background-color:rgba(0,0,0,.8);color:#fff;-moz-user-select:none;user-select:none}.iv-image-view--open body,html.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{display:flex;position:fixed;z-index:3;top:0;right:0;bottom:0;left:0;height:auto;opacity:1}.iv-image-view--single .single-hide{visibility:hidden}.iv-image-view__body,.iv-image-view__footer,.iv-image-view__header{display:flex}.iv-image-view__body{position:relative;height:100%;overflow:auto}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:1}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__footer,.iv-image-view__header{background-color:rgba(0,0,0,.8)}.iv-image-view__header{justify-content:space-between}.iv-image-view__footer{justify-content:center}.iv-image-view__number{display:flex;align-items:center;padding:0 40px;font-size:18px}.iv-image-view__backdrop{position:fixed;top:0;left:0;width:100%;height:100%}.iv-image-view__image{z-index:2;flex:0 1;max-width:100%;max-height:100%;margin:auto;object-fit:contain;transition:opacity .35s ease-out;opacity:1}.iv-icon--error .iv-image-view__image,.iv-icon--loading .iv-image-view__image{opacity:0}.iv-image-view--full-height .iv-image-view__image{max-height:none;cursor:-webkit-grab;cursor:grab}.iv-image-view--full-height .iv-image-view__image--grabbing{cursor:-webkit-grabbing;cursor:grabbing}.iv-icon-button{width:50px;height:50px;transition:all .35s ease-out}.iv-icon-button--small{width:25px;height:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}.iv-config-form{display:none;top:10px;left:10px;flex-direction:column;width:50%;max-width:500px;height:50%;padding:10px;background-color:rgba(0,0,0,.85);color:#fff}.iv-config-form--open{display:flex;position:fixed;z-index:3}.iv-config-form__header{display:flex;align-items:center;padding:10px}.iv-config-form__header-title{flex-grow:1}.iv-config-form__options{display:flex;flex-flow:column wrap;flex-grow:1;overflow:auto}.iv-config-form__label{display:flex;flex:0 0 auto;align-items:center;margin:0;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0!important}"
+    "@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(1turn)}}.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{content:\"\";position:absolute;z-index:2;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-repeat:no-repeat;background-position:50%;background-size:contain}.iv-icon--hover:after{transition:opacity .35s ease;opacity:0}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{width:50px;height:50px}.iv-icon--type-loading:after{animation:spin 1s linear infinite;opacity:1;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z'/%3E%3C/svg%3E\")!important}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-expand:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5m3 9h2v5h-5v-2h3v-3m-7 3v2H5v-5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-shrink:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M14 14h5v2h-3v3h-2v-5m-9 0h5v5H8v-3H5v-2m3-9h2v5H5V8h3V5m11 3v2h-5V5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42l3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.iv-image-link{display:inline-flex;min-width:50px;min-height:50px;margin:3px;padding:4px;border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);vertical-align:top}.iv-image-link img{margin:0}.iv-image-link>:not(img){display:flex;align-items:center;justify-content:center;width:100%}.iv-image-link:before{content:\"\";position:absolute;z-index:1;top:4px;right:4px;bottom:4px;left:4px;transition:opacity .35s ease;opacity:0;background-color:rgba(0,0,0,.5)}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.2)}.iv-image-link img:after{z-index:0;width:35px;height:35px}.iv-image-view{display:none;flex-direction:column;height:0;transition:opacity .35s ease-out;opacity:0;background-color:rgba(0,0,0,.8);color:#fff;-moz-user-select:none;user-select:none}.iv-image-view--open body,html.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{display:flex;position:fixed;z-index:3;top:0;right:0;bottom:0;left:0;height:auto;opacity:1}.iv-image-view--single .single-hide{visibility:hidden}.iv-image-view__footer,.iv-image-view__header{display:flex}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:2}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__footer,.iv-image-view__header{background-color:rgba(0,0,0,.8)}.iv-image-view__header{justify-content:space-between}.iv-image-view__footer{justify-content:center}.iv-image-view__body{display:flex;position:relative;height:100%;overflow:auto}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-thumbnail-wrapper{display:flex;position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}.iv-image-view__number{display:flex;align-items:center;padding:0 40px;font-size:18px}.iv-image-view__backdrop{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}.iv-image,.iv-thumbnail{max-width:100%;max-height:100%;object-fit:contain;margin:auto}.iv-image{transition:opacity .35s ease-out;opacity:1;z-index:2}@supports (-webkit-appearance:none){.iv-image{flex:0 1}}.iv-thumbnail{filter:blur(5px)}.iv-icon--type-error .iv-image,.iv-image-view__image--loading .iv-image,.iv-image-view__image--thumbnail .iv-image{opacity:0}.iv-image-view__image--thumbnail .iv-thumbnail-wrapper{z-index:2}.iv-image-view--full-height .iv-image,.iv-image-view--full-height .iv-thumbnail{max-height:none;cursor:-webkit-grab;cursor:grab}.iv-image-view--full-height .iv-image--grabbing{cursor:-webkit-grabbing;cursor:grabbing}.iv-icon-button{width:50px;height:50px;transition:all .35s ease-out}.iv-icon-button--small{width:25px;height:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}.iv-config-form{display:none;top:10px;left:10px;flex-direction:column;width:50%;max-width:500px;height:50%;padding:10px;background-color:rgba(0,0,0,.85);color:#fff}.iv-config-form--open{display:flex;position:fixed;z-index:3}.iv-config-form__header{display:flex;align-items:center;padding:10px}.iv-config-form__header-title{flex-grow:1}.iv-config-form__options{display:flex;flex-flow:column wrap;flex-grow:1;overflow:auto}.iv-config-form__label{display:flex;flex:0 0 auto;align-items:center;margin:0;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0!important}"
 
   var initViewer = (function() {
     const CLASSES = {
@@ -689,13 +679,15 @@
       imageLinkZoom: 'iv-icon--type-zoom',
       imageLinkHover: 'iv-icon--hover',
       brokenImage: 'iv-icon--type-image-broken',
-      loading: 'iv-icon--type-loading',
+      loadingIcon: 'iv-icon--type-loading',
+      loading: 'iv-image-view__image--loading',
+      thumbnail: 'iv-image-view__image--thumbnail',
       open: 'iv-image-view--open',
       single: 'iv-image-view--single',
       fullHeight: 'iv-image-view--full-height',
       iconExpand: 'iv-icon--type-expand',
       iconShrink: 'iv-icon--type-shrink',
-      grabbing: 'iv-image-view__image--grabbing',
+      grabbing: 'iv-image--grabbing',
       buttonActive: 'iv-icon-button--active'
     }
 
@@ -706,9 +698,14 @@
     const EMPTY_SRC =
       'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI='
 
+    const TRANSITION_DURATION = 350
+    // eslint-disable-next-line
+    const canOpenInTab = typeof GM_openInTab !== 'undefined';
+
     const elements = {
       container: null,
       image: null,
+      imageThumbnail: null,
       imageContainer: null,
       imageNumber: null,
       imageTotal: null,
@@ -740,6 +737,7 @@
       async show(link) {
         const container = elements.container
         const img = elements.image
+        const thumbnail = elements.imageThumbnail
 
         state.currentLink = link
 
@@ -750,48 +748,69 @@
           elements.imageNumber.textContent = state.getCurrentLinkIndex() + 1
         }
 
-        if (state.open) {
-          img.src = EMPTY_SRC
+        if (!state.open) {
+          document.documentElement.classList.add(CLASSES.open)
+          state.open = true
+        }
 
-          if (link.classList.contains(CLASSES.brokenImage)) {
-            container.classList.add(CLASSES.brokenImage)
+        img.src = EMPTY_SRC
 
-            return
-          } else {
-            container.classList.remove(CLASSES.brokenImage)
-            container.classList.add(CLASSES.loading)
-          }
-        } else {
-          link.classList.replace(CLASSES.imageLinkZoom, CLASSES.loading)
+        if (link.classList.contains(CLASSES.brokenImage)) {
+          container.classList.add(CLASSES.brokenImage)
+
+          return
+        }
+
+        container.classList.remove(CLASSES.brokenImage)
+
+        container.classList.add(CLASSES.loading, CLASSES.loadingIcon)
+
+        const isSizeKnown = !!link.dataset.ivWidth
+        const thumbnailUrl = link.dataset.ivThumbnail
+
+        if (isSizeKnown) {
+          thumbnail.width = link.dataset.ivWidth
+          thumbnail.src = thumbnailUrl
+
+          container.classList.add(CLASSES.thumbnail)
         }
 
         let imageUrl = link.dataset.ivImgUrl
 
         if (!imageUrl) {
-          imageUrl = await urlExtractor.getImageUrl(link, link.dataset.ivHost)
+          imageUrl = await urlExtractor.getImageUrl({
+            url: link.href,
+            thumbnailUrl,
+            host: link.dataset.ivHost
+          })
+
           if (!imageUrl) {
             image.markAsBroken(link)
             return
           }
+
           link.dataset.ivImgUrl = imageUrl
         }
 
         try {
-          await image.preload(imageUrl)
+          await image.preload(
+            imageUrl,
+            isSizeKnown ? null : image.setThumbnailSize
+          )
+
           img.src = imageUrl
 
-          if (state.open) {
-            container.classList.remove(CLASSES.loading)
-          } else {
-            link.classList.replace(CLASSES.loading, CLASSES.imageLinkZoom)
+          container.classList.remove(
+            CLASSES.thumbnail,
+            CLASSES.loading,
+            CLASSES.loadingIcon
+          )
 
-            document.documentElement.classList.add(CLASSES.open)
-            state.open = true
-          }
+          setTimeout(image.hideThumbnail, TRANSITION_DURATION)
         } catch (e) {
-          // eslint-disable-next-line
-          if (GM_openInTab) {
-            GM_openInTab(imageUrl)
+          if (canOpenInTab) {
+            // eslint-disable-next-line
+            GM_openInTab(imageUrl);
           }
 
           link.classList.remove(CLASSES.imageLink)
@@ -801,15 +820,46 @@
         }
       },
 
-      preload(url) {
+      preload(url, onSizeGet) {
         return new Promise((resolve, reject) => {
-          let imageObj = new Image()
+          const imageObject = new Image()
 
-          imageObj.onload = resolve
-          imageObj.onerror = reject
+          imageObject.onload = resolve
+          imageObject.onerror = reject
 
-          imageObj.src = url
+          imageObject.src = url
+
+          if (onSizeGet) {
+            image.getSize(imageObject).then(onSizeGet)
+          }
         })
+      },
+
+      getSize(img) {
+        return new Promise(resolve => {
+          const intervalId = setInterval(() => {
+            if (img.naturalWidth) {
+              clearInterval(intervalId)
+              resolve({ width: img.naturalWidth, complete: img.complete })
+            }
+          }, 10)
+        })
+      },
+
+      setThumbnailSize({ width, complete }) {
+        elements.imageThumbnail.width = width
+        elements.imageThumbnail.src = state.currentLink.dataset.ivThumbnail
+
+        if (!complete) {
+          elements.container.classList.add(CLASSES.thumbnail)
+        }
+
+        state.currentLink.dataset.ivWidth = width
+      },
+
+      hideThumbnail() {
+        elements.imageThumbnail.removeAttribute('width')
+        elements.imageThumbnail.src = EMPTY_SRC
       },
 
       hide() {
@@ -843,15 +893,12 @@
       },
 
       markAsBroken(link) {
-        if (state.open) {
-          elements.container.classList.replace(
-            CLASSES.loading,
-            CLASSES.brokenImage
-          )
-          link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
-        } else {
-          link.classList.replace(CLASSES.loading, CLASSES.brokenImage)
-        }
+        elements.container.classList.replace(
+          CLASSES.loadingIcon,
+          CLASSES.brokenImage
+        )
+        elements.container.classList.remove(CLASSES.loading)
+        link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
       }
     }
 
@@ -965,10 +1012,14 @@
 
       viewContainerBody() {
         elements.image = $.create('img', {
-          className: 'iv-image-view__image',
+          className: 'iv-image',
           events: {
             'mousedown mouseup mousemove mouseout dblclick': events.mouse
           }
+        })
+
+        elements.imageThumbnail = $.create('img', {
+          className: 'iv-thumbnail'
         })
 
         elements.imageContainer = $.create('div', {
@@ -980,6 +1031,11 @@
               events: {
                 click: image.hide
               }
+            },
+            {
+              tag: 'div',
+              className: 'iv-thumbnail-wrapper',
+              contents: elements.imageThumbnail
             },
             elements.image
           ]
@@ -1078,13 +1134,16 @@
       const imagesWithLinks = $$('a > img, a > var', container)
 
       imagesWithLinks
-        .map(img => img.parentNode)
-        .filter(link => link.href)
-        .forEach(link => {
+        .map(img => {
+          return { link: img.parentNode, thumbnailUrl: img.src || img.title }
+        })
+        .filter(({ link }) => link.href)
+        .forEach(({ link, thumbnailUrl }) => {
           const hostName = getHostName(link.href)
 
           if (hostName) {
             link.dataset.ivHost = hostName
+            link.dataset.ivThumbnail = thumbnailUrl
             link.classList.add(...linkClasses)
           }
         })

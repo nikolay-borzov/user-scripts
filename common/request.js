@@ -1,6 +1,6 @@
 export default (function() {
   const xmlHttpRequest =
-    'GM' in window && 'xmlHttpRequest' in GM
+    typeof GM !== 'undefined' && 'xmlHttpRequest' in GM
       ? GM.xmlHttpRequest
       : GM_xmlhttpRequest // eslint-disable-line
 

@@ -10,23 +10,9 @@ export default (function() {
   }
 
   async function getUrlFromPage(link, extractor) {
-    const html = await getPageHtml(link.href)
+    const html = await getPageHtml(link.url)
 
     return regex.getFirstMatchGroup(extractor.imageUrlRegEx, html)
-  }
-
-  function getThumbnailUrl(link) {
-    let img = $('img', link)
-    if (img) {
-      return img.src
-    }
-
-    img = $('var', link)
-    if (img) {
-      return img.title
-    }
-
-    return ''
   }
 
   function sortCaseInsensitive(array, getValue) {
@@ -56,16 +42,11 @@ export default (function() {
     {
       name: 'FastPic',
       linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
-      extensionRegEx: /\.([^.]+)\.html$/,
 
-      async getUrl(link, extractor) {
-        const extension = regex.getFirstMatchGroup(
-          extractor.extensionRegEx,
-          link.href
-        )
-        const thumbUrl = getThumbnailUrl(link)
+      async getUrl(link) {
+        const extension = link.url.split('.').slice(-2)[0]
 
-        return `${thumbUrl
+        return `${link.thumbnailUrl
           .replace('thumb', 'big')
           .replace('jpeg', extension)}?noht=1`
       }
@@ -76,7 +57,7 @@ export default (function() {
       linkRegEx: new RegExp('fastpic.ru/big'),
 
       async getUrl(link) {
-        return `${link.href}?noht=1`
+        return `${link.url}?noht=1`
       }
     },
 
@@ -92,7 +73,7 @@ export default (function() {
 
       async getUrl(link, extractor) {
         const imageUrl = await getUrlFromPage(link, extractor)
-        const pageUrl = link.href
+        const pageUrl = link.url
 
         const url = new URL(pageUrl)
         url.search = ''
@@ -132,12 +113,12 @@ export default (function() {
       linkRegEx: new RegExp('^http://imagetwist.com'),
 
       async getUrl(link) {
-        const imageName = link.href
+        const imageName = link.url
           .split('/')
           .pop()
           .replace('.html', '')
         const extension = imageName.split('.').pop()
-        const imageUrl = getThumbnailUrl(link)
+        const imageUrl = link.thumbnailUrl
           .replace('/th/', '/i/')
           .slice(0, -extension.length)
 
@@ -156,8 +137,8 @@ export default (function() {
       hostReplaceRegEx: new RegExp('(picturelol|picshick|imageshimage)'),
 
       async getUrl(link, extractor) {
-        const imageName = link.href.split('/').pop()
-        const imageUrl = getThumbnailUrl(link)
+        const imageName = link.url.split('/').pop()
+        const imageUrl = link.thumbnailUrl
           .replace('/th/', '/i/')
           .replace(extractor.hostReplaceRegEx, 'imagetwist')
 
@@ -176,7 +157,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://imgbum.net'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('-thumb', '')
+        return link.thumbnailUrl.replace('-thumb', '')
       }
     },
 
@@ -207,7 +188,7 @@ export default (function() {
       ),
 
       async getUrl(link, extractor) {
-        return getThumbnailUrl(link)
+        return link.thumbnailUrl
           .replace(
             extractor.hostReplaceRegEx,
             'picpic.online' /* or 'p0xpicmoney.ru' */
@@ -226,7 +207,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://stuffed.ru'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('-thumb', '')
+        return link.thumbnailUrl.replace('-thumb', '')
       }
     },
     /*
@@ -237,7 +218,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://picage.ru'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link)
+        return link.thumbnailUrl
           .replace('picage', 'pic4you')
           .replace('-thumb', '')
       }
@@ -269,7 +250,7 @@ export default (function() {
       ),
 
       async getUrl(link, extractor) {
-        return getThumbnailUrl(link)
+        return link.thumbnailUrl
           .replace(extractor.hostReplaceRegEx, 'fortstore.net')
           .replace('small-', '')
           .replace('/small/', '/big/')
@@ -281,7 +262,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://nikapic.ru'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('/small/', '/big/')
+        return link.thumbnailUrl.replace('/small/', '/big/')
       }
     },
 
@@ -296,7 +277,7 @@ export default (function() {
       linkRegEx: new RegExp('^https://imgtaxi.com'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link)
+        return link.thumbnailUrl
           .replace('/small/', '/big/')
           .replace('/small-medium/', '/big/')
       }
@@ -312,7 +293,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://imgbox.com'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link)
+        return link.thumbnailUrl
           .replace('/thumbs', '/images')
           .replace('_t', '_o')
       }
@@ -329,7 +310,7 @@ export default (function() {
       datePattern: /(\d{4})\.(\d{2})\.(\d{2})/,
 
       async getUrl(link, extractor) {
-        return getThumbnailUrl(link)
+        return link.thumbnailUrl
           .replace('thumbs', 'out')
           .replace(extractor.datePattern, '$1/$2/$3')
       }
@@ -340,7 +321,7 @@ export default (function() {
       linkRegEx: new RegExp('imageban.ru/out'),
 
       async getUrl(link) {
-        return link.href
+        return link.url
       }
     },
 
@@ -351,10 +332,10 @@ export default (function() {
     */
     {
       name: 'Radikal.ru',
-      linkRegEx: new RegExp('^https?://.+.radikal.ru/'),
+      linkRegEx: /https?:\/\/.\.radikal\.ru\//,
 
       async getUrl(link) {
-        return link.href
+        return link.url
       }
     },
 
@@ -368,7 +349,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://piccash.net/'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link)
+        return link.thumbnailUrl
           .replace('_thumb', '_full')
           .replace('-thumb', '')
       }
@@ -384,7 +365,7 @@ export default (function() {
       linkRegEx: new RegExp('^https://imgdrive.net'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('small', 'big')
+        return link.thumbnailUrl.replace('small', 'big')
       }
     },
 
@@ -398,7 +379,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://imgchilibum.ru/v'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('_s/', '_b/')
+        return link.thumbnailUrl.replace('_s/', '_b/')
       }
     },
 
@@ -410,7 +391,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://xxxscreens.com'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('small/', 'big/')
+        return link.thumbnailUrl.replace('small/', 'big/')
       }
     },
 
@@ -424,7 +405,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://money-pic.ru'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('-thumb', '')
+        return link.thumbnailUrl.replace('-thumb', '')
       }
     },
 
@@ -438,7 +419,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://vfl.ru'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('_s', '')
+        return link.thumbnailUrl.replace('_s', '')
       }
     },
 
@@ -452,9 +433,7 @@ export default (function() {
       linkRegEx: new RegExp('^http://lostpic.net'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link)
-          .replace('.th', '')
-          .replace('http:', 'https:')
+        return link.thumbnailUrl.replace('.th', '').replace('http:', 'https:')
       }
     },
 
@@ -468,7 +447,7 @@ export default (function() {
       linkRegEx: new RegExp('^https://imgadult.com'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('/small/', '/big/')
+        return link.thumbnailUrl.replace('/small/', '/big/')
       }
     },
 
@@ -482,7 +461,7 @@ export default (function() {
       linkRegEx: new RegExp('^https://ibb.co'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link).replace('//thumb', '//image')
+        return link.thumbnailUrl.replace('//thumb', '//image')
       }
     },
 
@@ -496,7 +475,7 @@ export default (function() {
       linkRegEx: new RegExp('^https://imx.to'),
 
       async getUrl(link) {
-        return getThumbnailUrl(link)
+        return link.thumbnailUrl
           .replace('/imx', '/i.imx')
           .replace('/u/t/', '/i/')
       }
@@ -518,8 +497,8 @@ export default (function() {
       return sortCaseInsensitive(result, value => value.name)
     },
 
-    getImageUrl(link, hostName) {
-      const extractor = extractorsByName[hostName]
+    getImageUrl(link) {
+      const extractor = extractorsByName[link.host]
 
       return extractor.getUrl(link, extractor)
     },
@@ -540,7 +519,12 @@ export default (function() {
 
         const extractor = extractorsActive.find(e => e.linkRegEx.test(url))
 
-        return extractor ? extractor.name : null
+        if (extractor) {
+          prevExtractor = extractor
+          return extractor.name
+        }
+
+        return null
       }
     }
   }

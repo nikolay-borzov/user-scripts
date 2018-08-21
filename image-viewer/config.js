@@ -139,7 +139,7 @@ export default (function() {
       const handler = () => showMenu(config)
 
       // eslint-disable-next-line
-      if (GM_registerMenuCommand) {
+      if (typeof GM_registerMenuCommand !== 'undefined') {
         GM_registerMenuCommand('Image Viewer Settings', handler)
       } else {
         unsafeWindow.imageViewer = {

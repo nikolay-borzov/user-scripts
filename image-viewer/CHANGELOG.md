@@ -1,5 +1,17 @@
 # Image Viewer Changelog
 
+## 1.1.0 - 2018-08-20
+## Added
+- Intermediate state when loading the image - show thumbnail blurred and resized to actual image size
+- Browserlist config
+
+## Changed
+- Remove loading indicator on image link
+
+## Fixed
+- Greasemonkey 4 compatibility
+- Styles for Firefox/Edge
+
 ## 1.0.3 - 2018-08-14
 ## Added
 - Image host support: `IMX.to`, `Imageshimage.com`

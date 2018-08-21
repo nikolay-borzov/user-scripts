@@ -7,7 +7,7 @@ export default (function() {
 
   return function polyfill(methodName) {
     if (gmMethodMap.hasOwnProperty(methodName)) {
-      return 'GM' in window && methodName in GM
+      return typeof GM !== 'undefined' && methodName in GM
         ? GM[methodName]
         : function(...args) {
             return new Promise((resolve, reject) => {

@@ -11,13 +11,15 @@ export default (function() {
     imageLinkZoom: 'iv-icon--type-zoom',
     imageLinkHover: 'iv-icon--hover',
     brokenImage: 'iv-icon--type-image-broken',
-    loading: 'iv-icon--type-loading',
+    loadingIcon: 'iv-icon--type-loading',
+    loading: 'iv-image-view__image--loading',
+    thumbnail: 'iv-image-view__image--thumbnail',
     open: 'iv-image-view--open',
     single: 'iv-image-view--single',
     fullHeight: 'iv-image-view--full-height',
     iconExpand: 'iv-icon--type-expand',
     iconShrink: 'iv-icon--type-shrink',
-    grabbing: 'iv-image-view__image--grabbing',
+    grabbing: 'iv-image--grabbing',
     buttonActive: 'iv-icon-button--active'
   }
 
@@ -28,9 +30,14 @@ export default (function() {
   const EMPTY_SRC =
     'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI='
 
+  const TRANSITION_DURATION = 350
+  // eslint-disable-next-line
+  const canOpenInTab = typeof GM_openInTab !== 'undefined'
+
   const elements = {
     container: null,
     image: null,
+    imageThumbnail: null,
     imageContainer: null,
     imageNumber: null,
     imageTotal: null,
@@ -65,9 +72,11 @@ export default (function() {
     async show(link) {
       const container = elements.container
       const img = elements.image
+      const thumbnail = elements.imageThumbnail
 
       state.currentLink = link
 
+      // Update images counter
       if (state.isSingle) {
         container.classList.add(CLASSES.single)
       } else {
@@ -75,49 +84,76 @@ export default (function() {
         elements.imageNumber.textContent = state.getCurrentLinkIndex() + 1
       }
 
-      if (state.open) {
-        // Clear previous
-        img.src = EMPTY_SRC
+      // Open image view
+      if (!state.open) {
+        document.documentElement.classList.add(CLASSES.open)
+        state.open = true
+      }
 
-        if (link.classList.contains(CLASSES.brokenImage)) {
-          container.classList.add(CLASSES.brokenImage)
-          // Do not try to load broken image
-          return
-        } else {
-          container.classList.remove(CLASSES.brokenImage)
-          container.classList.add(CLASSES.loading)
-        }
+      // Clear previous
+      img.src = EMPTY_SRC
+
+      if (link.classList.contains(CLASSES.brokenImage)) {
+        container.classList.add(CLASSES.brokenImage)
+        // Do not try to load broken image
+        return
+      }
+
+      container.classList.remove(CLASSES.brokenImage)
+      // Show loading indicator
+      container.classList.add(CLASSES.loading, CLASSES.loadingIcon)
+
+      const isSizeKnown = !!link.dataset.ivWidth
+      const thumbnailUrl = link.dataset.ivThumbnail
+
+      if (isSizeKnown) {
+        // Set up thumbnail size equal to image size to reduce image loading time feeling
+        thumbnail.width = link.dataset.ivWidth
+        thumbnail.src = thumbnailUrl
+        // Show thumbnail resized to image size
+        container.classList.add(CLASSES.thumbnail)
       } else {
-        link.classList.replace(CLASSES.imageLinkZoom, CLASSES.loading)
+        // Thumbnail is hidden after image is loaded
       }
 
       let imageUrl = link.dataset.ivImgUrl
       // Get full image URL
       if (!imageUrl) {
-        imageUrl = await urlExtractor.getImageUrl(link, link.dataset.ivHost)
+        imageUrl = await urlExtractor.getImageUrl({
+          url: link.href,
+          thumbnailUrl,
+          host: link.dataset.ivHost
+        })
+
         if (!imageUrl) {
           image.markAsBroken(link)
           return
         }
+
         link.dataset.ivImgUrl = imageUrl
       }
 
+      // Preload image
       try {
-        await image.preload(imageUrl)
+        await image.preload(
+          imageUrl,
+          isSizeKnown ? null : image.setThumbnailSize
+        )
+
         img.src = imageUrl
 
-        if (state.open) {
-          container.classList.remove(CLASSES.loading)
-        } else {
-          link.classList.replace(CLASSES.loading, CLASSES.imageLinkZoom)
-          // Open image view
-          document.documentElement.classList.add(CLASSES.open)
-          state.open = true
-        }
+        container.classList.remove(
+          CLASSES.thumbnail,
+          CLASSES.loading,
+          CLASSES.loadingIcon
+        )
+
+        // Hide thumbnail after timeout. Useful for images with transparency
+        setTimeout(image.hideThumbnail, TRANSITION_DURATION)
       } catch (e) {
-        // eslint-disable-next-line
-        if (GM_openInTab) {
-          // If image cannot be loaded, open it in new tab
+        // If image cannot be loaded, open it in new tab
+        if (canOpenInTab) {
+          // eslint-disable-next-line
           GM_openInTab(imageUrl)
         }
         // Prevent opening failed image again
@@ -128,15 +164,47 @@ export default (function() {
       }
     },
 
-    preload(url) {
+    preload(url, onSizeGet) {
       return new Promise((resolve, reject) => {
-        let imageObj = new Image()
+        const imageObject = new Image()
 
-        imageObj.onload = resolve
-        imageObj.onerror = reject
+        imageObject.onload = resolve
+        imageObject.onerror = reject
         // Load image
-        imageObj.src = url
+        imageObject.src = url
+
+        if (onSizeGet) {
+          image.getSize(imageObject).then(onSizeGet)
+        }
       })
+    },
+
+    getSize(img) {
+      return new Promise(resolve => {
+        const intervalId = setInterval(() => {
+          if (img.naturalWidth) {
+            clearInterval(intervalId)
+            resolve({ width: img.naturalWidth, complete: img.complete })
+          }
+        }, 10)
+      })
+    },
+
+    setThumbnailSize({ width, complete }) {
+      elements.imageThumbnail.width = width
+      elements.imageThumbnail.src = state.currentLink.dataset.ivThumbnail
+
+      if (!complete) {
+        elements.container.classList.add(CLASSES.thumbnail)
+      }
+
+      // Save image size
+      state.currentLink.dataset.ivWidth = width
+    },
+
+    hideThumbnail() {
+      elements.imageThumbnail.removeAttribute('width')
+      elements.imageThumbnail.src = EMPTY_SRC
     },
 
     hide() {
@@ -170,15 +238,12 @@ export default (function() {
     },
 
     markAsBroken(link) {
-      if (state.open) {
-        elements.container.classList.replace(
-          CLASSES.loading,
-          CLASSES.brokenImage
-        )
-        link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
-      } else {
-        link.classList.replace(CLASSES.loading, CLASSES.brokenImage)
-      }
+      elements.container.classList.replace(
+        CLASSES.loadingIcon,
+        CLASSES.brokenImage
+      )
+      elements.container.classList.remove(CLASSES.loading)
+      link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
     }
   }
 
@@ -298,10 +363,14 @@ export default (function() {
 
     viewContainerBody() {
       elements.image = $.create('img', {
-        className: 'iv-image-view__image',
+        className: 'iv-image',
         events: {
           'mousedown mouseup mousemove mouseout dblclick': events.mouse
         }
+      })
+
+      elements.imageThumbnail = $.create('img', {
+        className: 'iv-thumbnail'
       })
 
       elements.imageContainer = $.create('div', {
@@ -313,6 +382,11 @@ export default (function() {
             events: {
               click: image.hide
             }
+          },
+          {
+            tag: 'div',
+            className: 'iv-thumbnail-wrapper',
+            contents: elements.imageThumbnail
           },
           elements.image
         ]
@@ -417,13 +491,16 @@ export default (function() {
     const imagesWithLinks = $$('a > img, a > var', container)
 
     imagesWithLinks
-      .map(img => img.parentNode)
-      .filter(link => link.href)
-      .forEach(link => {
+      .map(img => {
+        return { link: img.parentNode, thumbnailUrl: img.src || img.title }
+      })
+      .filter(({ link }) => link.href)
+      .forEach(({ link, thumbnailUrl }) => {
         const hostName = getHostName(link.href)
 
         if (hostName) {
           link.dataset.ivHost = hostName
+          link.dataset.ivThumbnail = thumbnailUrl
           link.classList.add(...linkClasses)
         }
       })
