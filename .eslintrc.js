@@ -5,5 +5,11 @@ module.exports = {
     greasemonkey: true,
     jquery: true
   },
-  extends: 'prettier-standard'
+  plugins: ['prettier', 'standard'],
+  extends: [
+    'standard',
+    'prettier',
+    'plugin:prettier/recommended',
+    'prettier/standard'
+  ]
 }
