@@ -1,6 +1,5 @@
 import request from 'request'
 import regex from 'regex'
-import { $ } from 'bliss'
 
 export default (function() {
   async function getPageHtml(pageUrl) {

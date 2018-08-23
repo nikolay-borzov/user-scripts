@@ -23,7 +23,6 @@
 // @grant       GM.setValue
 // @grant       GM_getValue
 // @grant       GM.getValue
-// @grant       GM_openInTab
 // @grant       GM_registerMenuCommand
 // ==/UserScript==
 

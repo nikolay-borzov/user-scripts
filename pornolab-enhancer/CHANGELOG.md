@@ -1,5 +1,9 @@
 # Pornolab Enhancer Changelog
 
+## 1.12.1 - 2018-08-22
+## Changed
+- Rebuild with improved Greasemonkey 4 compatibility 
+
 ## 1.12.0 - 2018-04-22
 ## Removed
 - Move `Image view` to a separate user script
