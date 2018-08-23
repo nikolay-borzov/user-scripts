@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "build": "node .build/build.js",
-    "postbuild": "npm run fix",
     "watch": "node .build/build.js --watch",
     "fix": "eslint dist/*.user.js --fix"
   },

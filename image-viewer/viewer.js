@@ -31,8 +31,6 @@ export default (function() {
     'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI='
 
   const TRANSITION_DURATION = 350
-  // eslint-disable-next-line
-  const canOpenInTab = typeof GM_openInTab !== 'undefined'
 
   const elements = {
     container: null,
@@ -151,11 +149,6 @@ export default (function() {
         // Hide thumbnail after timeout. Useful for images with transparency
         setTimeout(image.hideThumbnail, TRANSITION_DURATION)
       } catch (e) {
-        // If image cannot be loaded, open it in new tab
-        if (canOpenInTab) {
-          // eslint-disable-next-line
-          GM_openInTab(imageUrl)
-        }
         // Prevent opening failed image again
         link.classList.remove(CLASSES.imageLink)
         image.markAsBroken(link)

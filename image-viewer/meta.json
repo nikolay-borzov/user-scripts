@@ -1,7 +1,7 @@
 {
   "name": "Image Viewer",
   "namespace": "https://github.com/shikiyoku",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Allows viewing full image without leaving the page",
   "author": "shikiyoku",
   "license": "MIT",
@@ -22,7 +22,6 @@
     "GM.setValue",
     "GM_getValue",
     "GM.getValue",
-    "GM_openInTab",
     "GM_registerMenuCommand"
   ],
   "run-at": "document-start",

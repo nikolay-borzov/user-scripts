@@ -340,6 +340,25 @@ export default (function() {
     },
 
     /*
+    link:       http://radikal.ru/F/s40.radikal.ru/i087/1205/55/a8a7e55a9bc7.png.html
+    thumbnail:  http://s40.radikal.ru/i087/1205/55/a8a7e55a9bc7t.jpg
+    image:      https://s40.radikal.ru/i087/1205/55/a8a7e55a9bc7.png
+    */
+    {
+      name: 'Radikal.ru (obsolete)',
+      linkRegEx: new RegExp('^http://radikal.ru/'),
+
+      async getUrl(link) {
+        const extension = link.url.split('.').slice(-2)[0]
+
+        return link.thumbnailUrl
+          .replace('http:/', 'https:/')
+          .replace('t.', '.')
+          .replace('jpg', extension)
+      }
+    },
+
+    /*
       link:       http://piccash.net/53489/845533/
       thumbnail:  http://piccash.net/allimage/2018/7-15/img_thumb/845533-thumb.jpeg
       image:      http://piccash.net/allimage/2018/7-15/img_full/845533.jpeg

@@ -1,5 +1,12 @@
 # Image Viewer Changelog
 
+## 1.1.1 - 2018-08-23
+## Added
+- Image host support: `Radikal.ru` (obsolete)
+
+## Removed
+- Open image in tab if it cannot be loaded
+
 ## 1.1.0 - 2018-08-20
 ## Added
 - Intermediate state when loading the image - show thumbnail blurred and resized to actual image size
