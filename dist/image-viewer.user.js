@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @namespace   https://github.com/shikiyoku
 // @description Allows viewing full image without leaving the page
-// @version     1.1.1
+// @version     1.1.2
 // @author      shikiyoku
 // @license     MIT
 // @copyright   2018+, shikiyoku
@@ -26,8 +26,8 @@
 // @grant       GM_registerMenuCommand
 // ==/UserScript==
 
-(function () {
-  'use strict';
+;(function() {
+  'use strict'
 
   /* global Bliss */
   // eslint-disable-next-line
@@ -39,11 +39,10 @@
   const $$ = Bliss.$;
 
   var gmPolyfill = (function() {
-
     const gmMethodMap = {
       getValue: 'GM_getValue',
       setValue: 'GM_setValue'
-    };
+    }
 
     return function polyfill(methodName) {
       if (gmMethodMap.hasOwnProperty(methodName)) {
@@ -52,9 +51,9 @@
           : function(...args) {
               return new Promise((resolve, reject) => {
                 try {
-                  resolve(window[gmMethodMap[methodName]](...args));
+                  resolve(window[gmMethodMap[methodName]](...args))
                 } catch (e) {
-                  reject(e);
+                  reject(e)
                 }
               })
             }
@@ -62,16 +61,15 @@
 
       return null
     }
-  })();
+  })()
 
   var store = (function() {
     return {
-
       get: gmPolyfill('getValue'),
 
       set: gmPolyfill('setValue')
     }
-  })();
+  })()
 
   var request = (function() {
     const xmlHttpRequest =
@@ -86,25 +84,24 @@
           method,
           onload: resolve,
           onerror: reject
-        });
+        })
       })
     }
-  })();
+  })()
 
   var regex = {
-
     getMatchGroups(regEx, str) {
-      let matches = [];
-      let match;
+      let matches = []
+      let match
 
       while ((match = regEx.exec(str)) !== null) {
         if (match.index === regEx.lastIndex) {
-          regEx.lastIndex++;
+          regEx.lastIndex++
         }
 
-        let groups = match.slice(1);
+        let groups = match.slice(1)
         if (groups.some(group => group)) {
-          matches.push(groups);
+          matches.push(groups)
         }
       }
 
@@ -112,29 +109,31 @@
     },
 
     getFirstMatchGroup(regEx, str) {
-      let match = regEx.exec(str);
+      let match = regEx.exec(str)
 
       return match ? match[1] : null
     }
-  };
+  }
 
   var urlExtractor = (function() {
     async function getPageHtml(pageUrl) {
-      let response = await request(pageUrl);
+      let response = await request(pageUrl)
 
       return response.responseText
     }
 
     async function getUrlFromPage(link, extractor) {
-      const html = await getPageHtml(link.url);
+      const html = await getPageHtml(link.url)
 
       return regex.getFirstMatchGroup(extractor.imageUrlRegEx, html)
     }
 
     function sortCaseInsensitive(array, getValue) {
-
       return array
-        .map((value, index) => ({ index, value: getValue(value).toLowerCase() }))
+        .map((value, index) => ({
+          index,
+          value: getValue(value).toLowerCase()
+        }))
         .sort((a, b) => {
           if (a.value > b.value) {
             return 1
@@ -147,20 +146,19 @@
         .map(m => array[m.index])
     }
 
-    let extractorsActive = [];
+    let extractorsActive = []
 
     const extractors = [
-
       {
         name: 'FastPic',
         linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
 
         async getUrl(link) {
-          const extension = link.url.split('.').slice(-2)[0];
+          const extension = link.url.split('.').slice(-2)[0]
 
           return `${link.thumbnailUrl
-          .replace('thumb', 'big')
-          .replace('jpeg', extension)}?noht=1`
+            .replace('thumb', 'big')
+            .replace('jpeg', extension)}?noht=1`
         }
       },
 
@@ -179,12 +177,12 @@
         imageUrlRegEx: /id="thepic".*src="([^"]*)"/i,
 
         async getUrl(link, extractor) {
-          const imageUrl = await getUrlFromPage(link, extractor);
-          const pageUrl = link.url;
+          const imageUrl = await getUrlFromPage(link, extractor)
+          const pageUrl = link.url
 
-          const url = new URL(pageUrl);
-          url.search = '';
-          url.pathname = imageUrl;
+          const url = new URL(pageUrl)
+          url.search = ''
+          url.pathname = imageUrl
 
           return url.href
         }
@@ -212,11 +210,11 @@
           const imageName = link.url
             .split('/')
             .pop()
-            .replace('.html', '');
-          const extension = imageName.split('.').pop();
+            .replace('.html', '')
+          const extension = imageName.split('.').pop()
           const imageUrl = link.thumbnailUrl
             .replace('/th/', '/i/')
-            .slice(0, -extension.length);
+            .slice(0, -extension.length)
 
           return `${imageUrl}${extension}/${imageName}`
         }
@@ -225,14 +223,16 @@
       {
         name: 'ImageTwist based',
         hosts: ['Picturelol.com', 'PicShick.com', 'Imageshimage.com'],
-        linkRegEx: new RegExp('^https?://(picturelol|picshick|imageshimage).com'),
+        linkRegEx: new RegExp(
+          '^https?://(picturelol|picshick|imageshimage).com'
+        ),
         hostReplaceRegEx: new RegExp('(picturelol|picshick|imageshimage)'),
 
         async getUrl(link, extractor) {
-          const imageName = link.url.split('/').pop();
+          const imageName = link.url.split('/').pop()
           const imageUrl = link.thumbnailUrl
             .replace('/th/', '/i/')
-            .replace(extractor.hostReplaceRegEx, 'imagetwist');
+            .replace(extractor.hostReplaceRegEx, 'imagetwist')
 
           return `${imageUrl}/${imageName}`
         }
@@ -265,10 +265,7 @@
 
         async getUrl(link, extractor) {
           return link.thumbnailUrl
-            .replace(
-              extractor.hostReplaceRegEx,
-              'picpic.online'
-            )
+            .replace(extractor.hostReplaceRegEx, 'picpic.online')
             .replace('-thumb', '')
         }
       },
@@ -382,7 +379,7 @@
         linkRegEx: new RegExp('^http://radikal.ru/'),
 
         async getUrl(link) {
-          const extension = link.url.split('.').slice(-2)[0];
+          const extension = link.url.split('.').slice(-2)[0]
 
           return link.thumbnailUrl
             .replace('http:/', 'https:/')
@@ -484,44 +481,43 @@
             .replace('/u/t/', '/i/')
         }
       }
-    ];
+    ]
 
     const extractorsByName = extractors.reduce((result, extractor) => {
-      result[extractor.name] = extractor;
+      result[extractor.name] = extractor
       return result
-    }, {});
+    }, {})
 
     return {
       getImageHostsInfo() {
         const result = extractors.map(e => ({
           name: e.name,
           description: e.hosts ? e.hosts.join(', ') : ''
-        }));
+        }))
 
         return sortCaseInsensitive(result, value => value.name)
       },
 
       getImageUrl(link) {
-        const extractor = extractorsByName[link.host];
+        const extractor = extractorsByName[link.host]
 
         return extractor.getUrl(link, extractor)
       },
 
       getHostNameMatcher(enabledHosts) {
+        extractorsActive = extractors.filter(e => enabledHosts.includes(e.name))
 
-        extractorsActive = extractors.filter(e => enabledHosts.includes(e.name));
-
-        let prevExtractor = null;
+        let prevExtractor = null
 
         return url => {
           if (prevExtractor && prevExtractor.linkRegEx.test(url)) {
             return prevExtractor.name
           }
 
-          const extractor = extractorsActive.find(e => e.linkRegEx.test(url));
+          const extractor = extractorsActive.find(e => e.linkRegEx.test(url))
 
           if (extractor) {
-            prevExtractor = extractor;
+            prevExtractor = extractor
             return extractor.name
           }
 
@@ -529,23 +525,23 @@
         }
       }
     }
-  })();
+  })()
 
   var config = (function() {
     const CLASSES = {
       open: 'iv-config-form--open'
-    };
+    }
 
-    let configMenu = null;
-    const currentHost = unsafeWindow.location.host;
+    let configMenu = null
+    const currentHost = unsafeWindow.location.host
 
     function showMenu(config) {
-      createMenuElement(config).classList.add(CLASSES.open);
+      createMenuElement(config).classList.add(CLASSES.open)
     }
 
     function createMenuElement(config) {
       if (!configMenu) {
-        const rows = config.hosts.map(createConfigMenuRow);
+        const rows = config.hosts.map(createConfigMenuRow)
 
         configMenu = $.create('div', {
           id: 'iv-config-form',
@@ -568,9 +564,9 @@
                 )
             }
           }
-        });
+        })
 
-        document.body.appendChild(configMenu);
+        document.body.appendChild(configMenu)
       }
 
       return configMenu
@@ -583,11 +579,11 @@
         className: `iv-icon-button iv-icon-button--small iv-icon iv-icon--type-close`,
         events: {
           click: e => {
-            e.preventDefault();
-            configMenu.classList.remove(CLASSES.open);
+            e.preventDefault()
+            configMenu.classList.remove(CLASSES.open)
           }
         }
-      });
+      })
 
       return {
         tag: 'div',
@@ -621,31 +617,32 @@
     }
 
     function updateHostConfig(config, hostName, isEnabled) {
-      config.hosts[hostName] = isEnabled;
-      store.set(currentHost, config);
+      config.hosts[hostName] = isEnabled
+      store.set(currentHost, config)
     }
 
     async function getHostConfig() {
-      const hosts = urlExtractor.getImageHostsInfo();
-      const storedConfig = await store.get(currentHost, { hosts: {} });
-      const enabledHosts = [];
+      const hosts = urlExtractor.getImageHostsInfo()
+      const storedConfig = await store.get(currentHost, { hosts: {} })
+      const enabledHosts = []
 
       hosts.forEach(host => {
-        const id = host.name;
-        const isEnabled = id in storedConfig.hosts ? storedConfig.hosts[id] : true;
+        const id = host.name
+        const isEnabled =
+          id in storedConfig.hosts ? storedConfig.hosts[id] : true
 
-        host.enabled = isEnabled;
-        storedConfig.hosts[id] = isEnabled;
+        host.enabled = isEnabled
+        storedConfig.hosts[id] = isEnabled
 
         if (isEnabled) {
-          enabledHosts.push(id);
+          enabledHosts.push(id)
         }
-      });
+      })
 
       storedConfig.hosts = hosts.reduce((result, host) => {
-        result[host.name] = host.enabled;
+        result[host.name] = host.enabled
         return result
-      }, {});
+      }, {})
 
       return {
         hosts,
@@ -655,40 +652,41 @@
     }
 
     return {
-
       async init() {
-        const config = await getHostConfig();
+        const config = await getHostConfig()
 
-        const handler = () => showMenu(config);
+        const handler = () => showMenu(config)
 
         // eslint-disable-next-line
         if (typeof GM_registerMenuCommand !== 'undefined') {
-          GM_registerMenuCommand('Image Viewer Settings', handler);
+          GM_registerMenuCommand('Image Viewer Settings', handler)
         } else {
           unsafeWindow.imageViewer = {
             settings: handler
-          };
+          }
         }
 
         return config
       }
     }
-  })();
+  })()
 
-  var addStyle = ('GM_addStyle' in window
-    ? GM_addStyle // eslint-disable-line camelcase
-    : css => {
-        var head = document.getElementsByTagName('head')[0];
-        if (head) {
-          var style = document.createElement('style');
-          style.type = 'text/css';
-          style.innerHTML = css;
-          head.appendChild(style);
-          return css
+  var addStyle =
+    'GM_addStyle' in window
+      ? GM_addStyle // eslint-disable-line camelcase
+      : css => {
+          var head = document.getElementsByTagName('head')[0]
+          if (head) {
+            var style = document.createElement('style')
+            style.type = 'text/css'
+            style.innerHTML = css
+            head.appendChild(style)
+            return css
+          }
         }
-      });
 
-  var css = "/* ----------\n  Animations\n------------ */@-webkit-keyframes spin{0%{-webkit-transform:translate(-50%,-50%) rotate(0deg);transform:translate(-50%,-50%) rotate(0deg)}to{-webkit-transform:translate(-50%,-50%) rotate(1turn);transform:translate(-50%,-50%) rotate(1turn)}}@keyframes spin{0%{-webkit-transform:translate(-50%,-50%) rotate(0deg);transform:translate(-50%,-50%) rotate(0deg)}to{-webkit-transform:translate(-50%,-50%) rotate(1turn);transform:translate(-50%,-50%) rotate(1turn)}}\n\n/* -----\n  Icons\n------- */.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{content:\"\";position:absolute;z-index:2;top:50%;left:50%;width:100%;height:100%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);background-repeat:no-repeat;background-position:50%;background-size:contain}\n\n/* Icon that is shown on hover */.iv-icon--hover:after{transition:opacity .35s ease;opacity:0}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{width:50px;height:50px}.iv-icon--type-loading:after{-webkit-animation:spin 1s linear infinite;animation:spin 1s linear infinite;opacity:1;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z'/%3E%3C/svg%3E\")!important}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-expand:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5m3 9h2v5h-5v-2h3v-3m-7 3v2H5v-5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-shrink:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M14 14h5v2h-3v3h-2v-5m-9 0h5v5H8v-3H5v-2m3-9h2v5H5V8h3V5m11 3v2h-5V5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42l3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}\n\n/* ----------\n  Image link\n------------ */.iv-image-link{display:-webkit-inline-box;display:inline-flex;min-width:50px;min-height:50px;margin:3px;padding:4px;border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);vertical-align:top /* Fix alignment for short images */}.iv-image-link img{margin:0}.iv-image-link>:not(img){display:-webkit-box;display:flex; /* Remove bottom padding */-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;width:100%}\n\n/* Backdrop */.iv-image-link:before{content:\"\";position:absolute;z-index:1;top:4px;right:4px;bottom:4px;left:4px;transition:opacity .35s ease;opacity:0;background-color:rgba(0,0,0,.5)}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}\n\n/* ------------\n  Broken image\n-------------- */.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.2)}.iv-image-link img:after{z-index:0;width:35px;height:35px}\n\n/* ----------\n  Image view\n------------ */.iv-image-view{display:none;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;height:0;transition:opacity .35s ease-out;opacity:0;background-color:rgba(0,0,0,.8);color:#fff;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.iv-image-view--open body,html.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{display:-webkit-box;display:flex;position:fixed;z-index:3;top:0;right:0;bottom:0;left:0;height:auto;opacity:1}.iv-image-view--single .single-hide{visibility:hidden}.iv-image-view__footer,.iv-image-view__header{display:-webkit-box;display:flex;background-color:rgba(0,0,0,.8)}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:2}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__header{-webkit-box-pack:justify;justify-content:space-between}.iv-image-view__footer{-webkit-box-pack:center;justify-content:center}.iv-image-view__body{display:-webkit-box;display:flex;position:relative;height:100%;overflow:auto}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-thumbnail-wrapper{display:-webkit-box;display:flex;position:absolute;z-index:0;top:0;left:0;width:100%;height:100%}.iv-image-view__number{display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;padding:0 40px;font-size:18px}.iv-image-view__backdrop{\n  /* fixed keeps backdrop while scrolling down */position:fixed;z-index:1;top:0;left:0;width:100%;height:100%}.iv-image,.iv-thumbnail{max-width:100%;max-height:100%;object-fit:contain;\n  /*\n    Align horizontally\n    It also resizes image to natural size when `max-height: none`\n  */margin:auto}.iv-image{z-index:2;transition:opacity .35s ease-out;opacity:1}@supports (-webkit-appearance:none){.iv-image{\n    /* Add fix for Chrome to remove extra space */-webkit-box-flex:0;flex:0 1}}.iv-thumbnail{filter:url('data:image/svg+xml;charset=utf-8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filter\"><feGaussianBlur stdDeviation=\"5\" /></filter></svg>#filter');-webkit-filter:blur(5px);filter:blur(5px)}\n\n/* Hide image during loading, when thumbnail is shown and on error */.iv-icon--type-error .iv-image,.iv-image-view__image--loading .iv-image,.iv-image-view__image--thumbnail .iv-image{opacity:0}.iv-image-view__image--thumbnail .iv-thumbnail-wrapper{z-index:2}\n\n/*\n  Cancel height restriction\n  Set cursor to grab hand\n */.iv-image-view--full-height .iv-image,.iv-image-view--full-height .iv-thumbnail{max-height:none;cursor:-webkit-grab;cursor:grab}.iv-image-view--full-height .iv-image--grabbing{cursor:-webkit-grabbing;cursor:grabbing}\n\n/* -----------\n  Icon button\n------------- */.iv-icon-button{width:50px;height:50px;transition:all .35s ease-out}.iv-icon-button--small{width:25px;height:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}\n\n/* -----------\n  Config menu\n------------- */.iv-config-form{display:none;top:10px;left:10px;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;width:50%;max-width:500px;height:50%;padding:10px;background-color:rgba(0,0,0,.85);color:#fff}.iv-config-form--open{display:-webkit-box;display:flex;position:fixed;z-index:3}.iv-config-form__header{display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;padding:10px}.iv-config-form__header-title,.iv-config-form__options{-webkit-box-flex:1;flex-grow:1}.iv-config-form__options{display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-flow:column wrap;overflow:auto}.iv-config-form__label{display:-webkit-box;display:flex;-webkit-box-flex:0;flex:0 0 auto;-webkit-box-align:center;align-items:center;margin:0;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0!important}";
+  var css =
+    "/* ----------\n  Animations\n------------ */@-webkit-keyframes spin{0%{-webkit-transform:translate(-50%,-50%) rotate(0deg);transform:translate(-50%,-50%) rotate(0deg)}to{-webkit-transform:translate(-50%,-50%) rotate(1turn);transform:translate(-50%,-50%) rotate(1turn)}}@keyframes spin{0%{-webkit-transform:translate(-50%,-50%) rotate(0deg);transform:translate(-50%,-50%) rotate(0deg)}to{-webkit-transform:translate(-50%,-50%) rotate(1turn);transform:translate(-50%,-50%) rotate(1turn)}}\n\n/* -----\n  Icons\n------- */.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{content:\"\";position:absolute;z-index:2;top:50%;left:50%;width:100%;height:100%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);background-repeat:no-repeat;background-position:50%;background-size:contain}\n\n/* Icon that is shown on hover */.iv-icon--hover:after{transition:opacity .35s ease;opacity:0}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{width:50px;height:50px}.iv-icon--type-loading:after{-webkit-animation:spin 1s linear infinite;animation:spin 1s linear infinite;opacity:1;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z'/%3E%3C/svg%3E\")!important}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-expand:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5m3 9h2v5h-5v-2h3v-3m-7 3v2H5v-5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-shrink:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M14 14h5v2h-3v3h-2v-5m-9 0h5v5H8v-3H5v-2m3-9h2v5H5V8h3V5m11 3v2h-5V5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42l3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}\n\n/* ----------\n  Image link\n------------ */.iv-image-link{display:-webkit-inline-box;display:inline-flex;min-width:50px;min-height:50px;margin:3px;padding:4px;border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);vertical-align:top /* Fix alignment for short images */}.iv-image-link img{margin:0}.iv-image-link>:not(img){display:-webkit-box;display:flex; /* Remove bottom padding */-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;width:100%}\n\n/* Backdrop */.iv-image-link:before{content:\"\";position:absolute;z-index:1;top:4px;right:4px;bottom:4px;left:4px;transition:opacity .35s ease;opacity:0;background-color:rgba(0,0,0,.5)}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}\n\n/* ------------\n  Broken image\n-------------- */.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.2)}.iv-image-link img:after{z-index:0;width:35px;height:35px}\n\n/* ----------\n  Image view\n------------ */.iv-image-view{display:none;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;height:0;transition:opacity .35s ease-out;opacity:0;background-color:rgba(0,0,0,.8);color:#fff;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.iv-image-view--open body,html.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{display:-webkit-box;display:flex;position:fixed;z-index:3;top:0;right:0;bottom:0;left:0;height:auto;opacity:1}.iv-image-view--single .single-hide{visibility:hidden}.iv-image-view__footer,.iv-image-view__header{display:-webkit-box;display:flex;background-color:rgba(0,0,0,.8)}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:2}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__header{-webkit-box-pack:justify;justify-content:space-between}.iv-image-view__footer{-webkit-box-pack:center;justify-content:center}.iv-image-view__body{display:-webkit-box;display:flex;position:relative;height:100%;overflow:auto}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-thumbnail-wrapper{display:-webkit-box;display:flex;position:absolute;z-index:0;top:0;left:0;width:100%;height:100%}.iv-image-view__number{display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;padding:0 40px;font-size:18px}.iv-image-view__backdrop{\n  /* fixed keeps backdrop while scrolling down */position:fixed;z-index:1;top:0;left:0;width:100%;height:100%}.iv-image,.iv-thumbnail{max-width:100%;max-height:100%;object-fit:contain;\n  /*\n    Align horizontally\n    It also resizes image to natural size when `max-height: none`\n  */margin:auto}.iv-image{z-index:2;transition:opacity .35s ease-out;opacity:1}@supports (-webkit-appearance:none){.iv-image{\n    /* Add fix for Chrome to remove extra space */-webkit-box-flex:0;flex:0 1}}.iv-thumbnail{filter:url('data:image/svg+xml;charset=utf-8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filter\"><feGaussianBlur stdDeviation=\"5\" /></filter></svg>#filter');-webkit-filter:blur(5px);filter:blur(5px)}\n\n/* Hide image during loading, when thumbnail is shown and on error */.iv-icon--type-error .iv-image,.iv-image-view__image--loading .iv-image,.iv-image-view__image--thumbnail .iv-image{opacity:0}.iv-image-view__image--thumbnail .iv-thumbnail-wrapper{z-index:2}\n\n/*\n  Cancel height restriction\n  Set cursor to grab hand\n */.iv-image-view--full-height .iv-image,.iv-image-view--full-height .iv-thumbnail{max-height:none;cursor:-webkit-grab;cursor:grab}.iv-image-view--full-height .iv-image--grabbing{cursor:-webkit-grabbing;cursor:grabbing}\n\n/* -----------\n  Icon button\n------------- */.iv-icon-button{width:50px;height:50px;transition:all .35s ease-out}.iv-icon-button--small{width:25px;height:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}\n\n/* -----------\n  Config menu\n------------- */.iv-config-form{display:none;top:10px;left:10px;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;width:50%;max-width:500px;height:50%;padding:10px;background-color:rgba(0,0,0,.85);color:#fff}.iv-config-form--open{display:-webkit-box;display:flex;position:fixed;z-index:3}.iv-config-form__header{display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;padding:10px}.iv-config-form__header-title,.iv-config-form__options{-webkit-box-flex:1;flex-grow:1}.iv-config-form__options{display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-flow:column wrap;overflow:auto}.iv-config-form__label{display:-webkit-box;display:flex;-webkit-box-flex:0;flex:0 0 auto;-webkit-box-align:center;align-items:center;margin:0;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0!important}"
 
   var initViewer = (function() {
     const CLASSES = {
@@ -706,16 +704,16 @@
       iconShrink: 'iv-icon--type-shrink',
       grabbing: 'iv-image--grabbing',
       buttonActive: 'iv-icon-button--active'
-    };
+    }
 
     const SELECTORS = {
       imageLink: `.${CLASSES.imageLink}`
-    };
+    }
 
     const EMPTY_SRC =
-      'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI=';
+      'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI='
 
-    const TRANSITION_DURATION = 350;
+    const TRANSITION_DURATION = 350
 
     const elements = {
       container: null,
@@ -730,7 +728,7 @@
         close: null,
         toggleFullHeight: null
       }
-    };
+    }
 
     const state = {
       firstClick: true,
@@ -746,103 +744,101 @@
       },
       dragPosition: null,
       dragging: false
-    };
+    }
 
     const image = {
       async show(link) {
-        const container = elements.container;
-        const img = elements.image;
-        const thumbnail = elements.imageThumbnail;
+        const container = elements.container
+        const img = elements.image
+        const thumbnail = elements.imageThumbnail
 
-        state.currentLink = link;
+        state.currentLink = link
 
         if (state.isSingle) {
-          container.classList.add(CLASSES.single);
+          container.classList.add(CLASSES.single)
         } else {
-          container.classList.remove(CLASSES.single);
-          elements.imageNumber.textContent = state.getCurrentLinkIndex() + 1;
+          container.classList.remove(CLASSES.single)
+          elements.imageNumber.textContent = state.getCurrentLinkIndex() + 1
         }
 
         if (!state.open) {
-          document.documentElement.classList.add(CLASSES.open);
-          state.open = true;
+          document.documentElement.classList.add(CLASSES.open)
+          state.open = true
         }
 
-        img.src = EMPTY_SRC;
+        img.src = EMPTY_SRC
 
         if (link.classList.contains(CLASSES.brokenImage)) {
-          container.classList.add(CLASSES.brokenImage);
+          container.classList.add(CLASSES.brokenImage)
 
           return
         }
 
-        container.classList.remove(CLASSES.brokenImage);
+        container.classList.remove(CLASSES.brokenImage)
 
-        container.classList.add(CLASSES.loading, CLASSES.loadingIcon);
+        container.classList.add(CLASSES.loading, CLASSES.loadingIcon)
 
-        const isSizeKnown = !!link.dataset.ivWidth;
-        const thumbnailUrl = link.dataset.ivThumbnail;
+        const isSizeKnown = !!link.dataset.ivWidth
+        const thumbnailUrl = link.dataset.ivThumbnail
 
         if (isSizeKnown) {
+          thumbnail.width = link.dataset.ivWidth
+          thumbnail.src = thumbnailUrl
 
-          thumbnail.width = link.dataset.ivWidth;
-          thumbnail.src = thumbnailUrl;
-
-          container.classList.add(CLASSES.thumbnail);
+          container.classList.add(CLASSES.thumbnail)
         }
 
-        let imageUrl = link.dataset.ivImgUrl;
+        let imageUrl = link.dataset.ivImgUrl
 
         if (!imageUrl) {
           imageUrl = await urlExtractor.getImageUrl({
             url: link.href,
             thumbnailUrl,
             host: link.dataset.ivHost
-          });
+          })
 
           if (!imageUrl) {
-            image.markAsBroken(link);
+            image.markAsBroken(link)
             return
           }
 
-          link.dataset.ivImgUrl = imageUrl;
+          link.dataset.ivImgUrl = imageUrl
         }
 
         try {
           await image.preload(
             imageUrl,
             isSizeKnown ? null : image.setThumbnailSize
-          );
+          )
 
-          img.src = imageUrl;
+          img.src = imageUrl
 
           container.classList.remove(
             CLASSES.thumbnail,
             CLASSES.loading,
             CLASSES.loadingIcon
-          );
+          )
 
-          setTimeout(image.hideThumbnail, TRANSITION_DURATION);
+          setTimeout(image.hideThumbnail, TRANSITION_DURATION)
         } catch (e) {
+          link.classList.remove(CLASSES.imageLink)
+          image.markAsBroken(link)
 
-          link.classList.remove(CLASSES.imageLink);
-          image.markAsBroken(link);
-
-          $.attributes(link, { target: '_blank' });
+          $.attributes(link, { target: '_blank' })
         }
       },
 
       preload(url, onSizeGet) {
         return new Promise((resolve, reject) => {
-          const imageObject = new Image();
+          const imageObject = new Image()
 
-          imageObject.onload = resolve;
-          imageObject.onerror = reject;
+          imageObject.onload = resolve
+          imageObject.onerror = reject
 
-          imageObject.src = url;
+          imageObject.src = url
 
           if (onSizeGet) {
-            image.getSize(imageObject).then(onSizeGet);
+            image.getSize(imageObject).then(onSizeGet)
           }
         })
       },
@@ -851,99 +847,98 @@
         return new Promise(resolve => {
           const intervalId = setInterval(() => {
             if (img.naturalWidth) {
-              clearInterval(intervalId);
-              resolve({ width: img.naturalWidth, complete: img.complete });
+              clearInterval(intervalId)
+              resolve({ width: img.naturalWidth, complete: img.complete })
             }
-          }, 10);
+          }, 10)
         })
       },
 
       setThumbnailSize({ width, complete }) {
-        elements.imageThumbnail.width = width;
-        elements.imageThumbnail.src = state.currentLink.dataset.ivThumbnail;
+        elements.imageThumbnail.width = width
+        elements.imageThumbnail.src = state.currentLink.dataset.ivThumbnail
 
         if (!complete) {
-          elements.container.classList.add(CLASSES.thumbnail);
+          elements.container.classList.add(CLASSES.thumbnail)
         }
 
-        state.currentLink.dataset.ivWidth = width;
+        state.currentLink.dataset.ivWidth = width
       },
 
       hideThumbnail() {
-        elements.imageThumbnail.removeAttribute('width');
-        elements.imageThumbnail.src = EMPTY_SRC;
+        elements.imageThumbnail.removeAttribute('width')
+        elements.imageThumbnail.src = EMPTY_SRC
       },
 
       hide() {
-        document.documentElement.classList.remove(CLASSES.open);
-        state.open = false;
-        state.currentLink = null;
-        elements.image.src = EMPTY_SRC;
-        events.keyboard.unbind();
+        document.documentElement.classList.remove(CLASSES.open)
+        state.open = false
+        state.currentLink = null
+        elements.image.src = EMPTY_SRC
+        events.keyboard.unbind()
       },
 
       next() {
-        const currentIndex = state.getCurrentLinkIndex();
+        const currentIndex = state.getCurrentLinkIndex()
         const newIndex =
-          currentIndex < state.getLastLinkIndex() ? currentIndex + 1 : 0;
+          currentIndex < state.getLastLinkIndex() ? currentIndex + 1 : 0
 
-        image.show(state.linksSet[newIndex]);
+        image.show(state.linksSet[newIndex])
       },
 
       previous() {
-        const currentIndex = state.getCurrentLinkIndex();
+        const currentIndex = state.getCurrentLinkIndex()
         const newIndex =
-          currentIndex === 0 ? state.getLastLinkIndex() : currentIndex - 1;
+          currentIndex === 0 ? state.getLastLinkIndex() : currentIndex - 1
 
-        image.show(state.linksSet[newIndex]);
+        image.show(state.linksSet[newIndex])
       },
 
       toggleFullHeight() {
-        elements.container.classList.toggle(CLASSES.fullHeight);
-        elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconExpand);
-        elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconShrink);
+        elements.container.classList.toggle(CLASSES.fullHeight)
+        elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconExpand)
+        elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconShrink)
       },
 
       markAsBroken(link) {
         elements.container.classList.replace(
           CLASSES.loadingIcon,
           CLASSES.brokenImage
-        );
-        elements.container.classList.remove(CLASSES.loading);
-        link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage);
+        )
+        elements.container.classList.remove(CLASSES.loading)
+        link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
       }
-    };
+    }
 
     const events = {
       linkClick(e) {
-        e.preventDefault();
+        e.preventDefault()
 
         if (state.firstClick) {
-          create.viewContainer();
-          state.firstClick = false;
+          create.viewContainer()
+          state.firstClick = false
         }
 
-        let link = e.target;
+        let link = e.target
 
-        state.linksSet = $$(SELECTORS.imageLink, link.parentNode);
-        state.isSingle = state.linksSet.length === 1;
+        state.linksSet = $$(SELECTORS.imageLink, link.parentNode)
+        state.isSingle = state.linksSet.length === 1
 
         if (!state.isSingle) {
-
-          elements.imageTotal.textContent = state.linksSet.length;
+          elements.imageTotal.textContent = state.linksSet.length
         }
 
-        events.keyboard.bind();
+        events.keyboard.bind()
 
-        image.show(link);
+        image.show(link)
       },
 
       keyboard: {
         bind() {
-          document.addEventListener('keydown', events.keyboard.handler, true);
+          document.addEventListener('keydown', events.keyboard.handler, true)
         },
         unbind() {
-          document.removeEventListener('keydown', events.keyboard.handler, true);
+          document.removeEventListener('keydown', events.keyboard.handler, true)
         },
         handler(e) {
           if (e.defaultPrevented || e.repeat) {
@@ -952,61 +947,62 @@
 
           switch (e.key) {
             case 'ArrowRight':
-              image.next();
+              image.next()
               break
 
             case 'ArrowLeft':
-              image.previous();
+              image.previous()
               break
 
             case 'Escape':
-              image.hide();
+              image.hide()
               break
 
             case ' ':
-              image.toggleFullHeight();
+              image.toggleFullHeight()
               break
 
             default:
               return
           }
 
-          e.preventDefault();
+          e.preventDefault()
         }
       },
 
       mouse(e) {
         switch (e.type) {
           case 'mousedown':
-            state.dragging = true;
-            state.dragPosition = e.clientY;
-            elements.image.classList.add(CLASSES.grabbing);
+            state.dragging = true
+            state.dragPosition = e.clientY
+            elements.image.classList.add(CLASSES.grabbing)
             break
 
           case 'mousemove':
             if (state.dragging) {
-              elements.imageContainer.scrollTop -= e.clientY - state.dragPosition;
-              state.dragPosition = e.clientY;
+              elements.imageContainer.scrollTop -=
+                e.clientY - state.dragPosition
+              state.dragPosition = e.clientY
             }
             break
 
           case 'mouseup':
           case 'mouseout':
-            state.dragging = false;
-            elements.image.classList.remove(CLASSES.grabbing);
+            state.dragging = false
+            elements.image.classList.remove(CLASSES.grabbing)
             break
 
           case 'dblclick':
-            image.toggleFullHeight();
+            image.toggleFullHeight()
             break
 
           default:
             return
         }
 
-        e.preventDefault();
+        e.preventDefault()
       }
-    };
+    }
 
     const create = {
       viewContainer() {
@@ -1017,9 +1013,9 @@
             create.viewContainerBody(),
             create.viewContainerFooter()
           ]
-        });
+        })
 
-        document.body.appendChild(elements.container);
+        document.body.appendChild(elements.container)
       },
 
       viewContainerBody() {
@@ -1028,11 +1024,11 @@
           events: {
             'mousedown mouseup mousemove mouseout dblclick': events.mouse
           }
-        });
+        })
 
         elements.imageThumbnail = $.create('img', {
           className: 'iv-thumbnail'
-        });
+        })
 
         elements.imageContainer = $.create('div', {
           className: 'iv-image-view__body',
@@ -1051,24 +1047,24 @@
             },
             elements.image
           ]
-        });
+        })
 
         return elements.imageContainer
       },
 
       viewContainerHeader() {
-        elements.imageNumber = document.createElement('span');
-        elements.imageTotal = document.createElement('span');
+        elements.imageNumber = document.createElement('span')
+        elements.imageTotal = document.createElement('span')
         let imageNumber = $.create('div', {
           className: 'iv-image-view__number single-hide',
           contents: [elements.imageNumber, '/', elements.imageTotal]
-        });
+        })
 
         elements.buttons.close = create.toolbarButton(
           'Close (Esc)',
           'close',
           image.hide
-        );
+        )
 
         return {
           tag: 'div',
@@ -1082,24 +1078,24 @@
       },
 
       viewContainerFooter() {
-        const buttons = elements.buttons;
+        const buttons = elements.buttons
         buttons.previous = create.toolbarButton(
           'Previous (←)',
           'previous',
           image.previous,
           'single-hide'
-        );
+        )
         buttons.toggleFullHeight = create.toolbarButton(
           'Toggle full height (Space)',
           'expand',
           image.toggleFullHeight
-        );
+        )
         buttons.next = create.toolbarButton(
           'Next (→)',
           'next',
           image.next,
           'single-hide'
-        );
+        )
 
         return {
           tag: 'div',
@@ -1119,18 +1115,18 @@
           className: `iv-icon-button iv-icon iv-icon--type-${icon} ${className}`,
           events: {
             click: e => {
-              e.preventDefault();
-              handler();
+              e.preventDefault()
+              handler()
             }
           }
         })
       }
-    };
+    }
 
     return function(enabledHosts) {
-      addStyle(css);
+      addStyle(css)
 
-      const container = $('body');
+      const container = $('body')
 
       const linkClasses = [
         CLASSES.imageLink,
@@ -1139,11 +1135,11 @@
         'iv-icon--hover',
         CLASSES.imageLinkZoom,
         'iv-icon--size-button'
-      ];
+      ]
 
-      const getHostName = urlExtractor.getHostNameMatcher(enabledHosts);
+      const getHostName = urlExtractor.getHostNameMatcher(enabledHosts)
 
-      const imagesWithLinks = $$('a > img, a > var', container);
+      const imagesWithLinks = $$('a > img, a > var', container)
 
       imagesWithLinks
         .map(img => {
@@ -1151,23 +1147,22 @@
         })
         .filter(({ link }) => link.href)
         .forEach(({ link, thumbnailUrl }) => {
-          const hostName = getHostName(link.href);
+          const hostName = getHostName(link.href)
 
           if (hostName) {
-            link.dataset.ivHost = hostName;
-            link.dataset.ivThumbnail = thumbnailUrl;
-            link.classList.add(...linkClasses);
+            link.dataset.ivHost = hostName
+            link.dataset.ivThumbnail = thumbnailUrl
+            link.classList.add(...linkClasses)
           }
-        });
+        })
 
-      $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick);
+      $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
     }
-  })();
+  })()
 
   $.ready().then(async () => {
-    const hostConfig = await config.init();
+    const hostConfig = await config.init()
 
-    initViewer(hostConfig.enabledHosts);
-  });
-
-}());
+    initViewer(hostConfig.enabledHosts)
+  })
+})()

@@ -1,6 +1,10 @@
 # Pornolab Enhancer Changelog
 
-## 1.12.1 - 2018-08-22
+## 1.12.2 - 2018-08-23
+## Fixed
+- Formatting
+
+## 1.12.1 - 2018-08-23
 ## Changed
 - Rebuild with improved Greasemonkey 4 compatibility 
 

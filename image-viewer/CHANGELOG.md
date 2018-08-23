@@ -1,5 +1,9 @@
 # Image Viewer Changelog
 
+## 1.1.2 - 2018-08-23
+## Fixed
+- Formatting
+
 ## 1.1.1 - 2018-08-23
 ## Added
 - Image host support: `Radikal.ru` (obsolete)
