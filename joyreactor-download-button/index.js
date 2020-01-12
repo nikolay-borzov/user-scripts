@@ -1,5 +1,5 @@
 import addStyle from '../common/addStyle'
-import dom from 'dom'
+import dom from '../common/dom'
 import css from './styles.css'
 
 addStyle(css)

@@ -1,7 +1,7 @@
 /* global Menu jQuery */
-import addStyle from 'addStyle'
-import { $ } from 'bliss'
-import store from 'store'
+import addStyle from '../../../common/addStyle'
+import { $ } from '../../../libs/bliss'
+import store from '../../../common/store'
 
 import configCSS from './styles.css'
 
@@ -98,7 +98,10 @@ export default (function() {
         e.preventDefault()
         Menu.clicked(jQuery(menuLink))
       })
-      .hover(() => Menu.hovered($menuLink), () => Menu.unhovered($menuLink))
+      .hover(
+        () => Menu.hovered($menuLink),
+        () => Menu.unhovered($menuLink)
+      )
   }
 
   function getParams() {

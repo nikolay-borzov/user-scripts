@@ -59,7 +59,7 @@ function replaceTextByMap(text, map) {
 const SUB_FORUM_SEPARATOR = ' / '
 function replaceSubForum(selector) {
   $(selector).each((index, node) => {
-    let text = node.textContent
+    const text = node.textContent
     if (text.includes(SUB_FORUM_SEPARATOR)) {
       node.textContent = text.split(SUB_FORUM_SEPARATOR)[1]
     }

@@ -5,14 +5,9 @@
   "description": "Translates basic content in English",
   "author": "shikiyoku",
   "license": "MIT",
-  "copyright": "2017+, shikiyoku",
   "icon": "http://static.pornolab.net/favicon.ico",
   "homepageURL": "https://github.com/shikiyoku/user-scripts",
   "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
-  "include": [ 
-    "http*://pornolab.net/*",
-    "http*://pornolab.lib/*",
-    "http*://pornolab.cc/*"
-  ],
+  "include": "*//pornolab.*",
   "run-at": "document-end"
 }

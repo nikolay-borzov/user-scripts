@@ -1,5 +1,5 @@
-import store from 'store'
-import { $ } from 'bliss'
+import store from '../common/store'
+import { $ } from '../libs/bliss'
 import urlExtractor from './url-extractor'
 
 export default (function() {

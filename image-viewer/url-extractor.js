@@ -1,9 +1,9 @@
-import request from 'request'
-import regex from 'regex'
+import request from '../common/request'
+import regex from '../common/regex'
 
 export default (function() {
   async function getPageHtml(pageUrl) {
-    let response = await request(pageUrl)
+    const response = await request(pageUrl)
 
     return response.responseText
   }
@@ -472,7 +472,7 @@ export default (function() {
     /*
       link:       https://ibb.co/cx4HBK
       thumbnail:  https://thumb.ibb.co/cx4HBK/horrorvillian.jpg
-      image:      https://image.ibb.co/fAyNdz/horrorvillian.jpg or https://image.ibb.co/cx4HBK/horrorvillian.jpg 
+      image:      https://image.ibb.co/fAyNdz/horrorvillian.jpg or https://image.ibb.co/cx4HBK/horrorvillian.jpg
     */
     {
       name: 'imgbb.com',

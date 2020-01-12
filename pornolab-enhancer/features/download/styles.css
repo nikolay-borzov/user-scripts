@@ -47,7 +47,8 @@
 .quick-download__icon {
   display: block;
   height: 45px;
-  background: svg-load('download.svg', fill=var(--color-active)) no-repeat center center;
+  background: svg-load('download.svg', fill=#345da4) /*var(--color-active)*/
+    no-repeat center center;
   background-size: contain;
 }
 

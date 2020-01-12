@@ -1,6 +1,6 @@
-import addStyle from 'addStyle'
-import { $ } from 'bliss'
-import regex from 'regex'
+import addStyle from '../../../common/addStyle'
+import { $ } from '../../../libs/bliss'
+import regex from '../../../common/regex'
 
 import findSimilarCSS from './styles.css'
 

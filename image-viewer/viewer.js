@@ -1,5 +1,5 @@
-import { $, $$ } from 'bliss'
-import addStyle from 'addStyle'
+import { $, $$ } from '../libs/bliss'
+import addStyle from '../common/addStyle'
 
 import imageViewCSS from './styles.css'
 
@@ -252,7 +252,7 @@ export default (function() {
         state.firstClick = false
       }
 
-      let link = e.target
+      const link = e.target
       // Collect neighbor links
       state.linksSet = $$(SELECTORS.imageLink, link.parentNode)
       state.isSingle = state.linksSet.length === 1
@@ -391,7 +391,7 @@ export default (function() {
     viewContainerHeader() {
       elements.imageNumber = document.createElement('span')
       elements.imageTotal = document.createElement('span')
-      let imageNumber = $.create('div', {
+      const imageNumber = $.create('div', {
         className: 'iv-image-view__number single-hide',
         contents: [elements.imageNumber, '/', elements.imageTotal]
       })

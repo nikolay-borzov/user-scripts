@@ -11,7 +11,8 @@ module.exports = scriptFolder => {
       maxEmptyLines: 1
     }),
     fileSize({
-      showGzippedSize: false
+      showGzippedSize: false,
+      showMinifiedSize: false
     }),
     metablock({
       file: path.resolve(scriptFolder, 'meta.json')

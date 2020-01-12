@@ -1,4 +1,6 @@
 const yargs = require('yargs')
+const path = require('path')
+const fs = require('fs')
 const scripts = require('./scripts')
 
 module.exports = function getConfig() {
@@ -16,7 +18,15 @@ module.exports = function getConfig() {
     }).argv
 
   const scriptName = scripts.getName(argv.script)
-  const rollupOptions = require(`../${scriptName}/rollup.config`)
+
+  const configPath = `../${scriptName}/rollup.config.js`
+  const rollupOptions = fs.existsSync(path.resolve(__dirname, configPath))
+    ? require(`../${scriptName}/rollup.config`)
+    : {
+        input: {
+          plugins: []
+        }
+      }
 
   return {
     watch: argv.watch,

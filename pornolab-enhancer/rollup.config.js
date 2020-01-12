@@ -1,6 +1,5 @@
 const path = require('path')
-const resolve = require('rollup-plugin-node-resolve')
-const alias = require('rollup-plugin-alias')
+const resolve = require('@rollup/plugin-node-resolve')
 const postcss = require('rollup-plugin-postcss')
 
 // postCSS plugins
@@ -35,24 +34,13 @@ module.exports = {
             loadPaths: [imagesPath]
           }),
           inlineSvg({
-            path: imagesPath
+            paths: [imagesPath]
           })
         ]
       }),
 
       resolve({
-        jsnext: true,
-        main: true,
-        browser: true
-      }),
-
-      alias({
-        resolve: ['.js'],
-        bliss: path.resolve('libs/bliss'),
-        store: path.resolve('common/store'),
-        addStyle: path.resolve('common/addStyle'),
-        regex: path.resolve('common/regex'),
-        request: path.resolve('common/request')
+        mainFields: ['jsnext', 'main', 'browser']
       })
     ]
   }

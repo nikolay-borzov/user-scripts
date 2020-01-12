@@ -19,7 +19,8 @@
   width: 17px;
   height: 17px;
   transform: translate(-50%, -50%);
-  background: svg-load('similar.svg', fill=var(--color-active)) no-repeat center center;
+  background: svg-load('similar.svg', fill=#345da4 /*var(--color-active)*/)
+    no-repeat center center;
   background-size: contain;
 }
 

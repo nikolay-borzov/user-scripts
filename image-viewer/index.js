@@ -1,4 +1,4 @@
-import { $ } from 'bliss'
+import { $ } from '../libs/bliss'
 import config from './config'
 import initViewer from './viewer'
 

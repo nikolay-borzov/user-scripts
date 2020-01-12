@@ -11,22 +11,20 @@ config.rollupOptions.input.plugins = config.rollupOptions.input.plugins.concat(
   commonPlugins
 )
 // Set input and output
-config.rollupOptions.input.input = path.resolve(scriptFolder, 'main.js')
+config.rollupOptions.input.input = path.resolve(scriptFolder, 'index.js')
 config.rollupOptions.output = {
   file: path.resolve(root, `dist/${config.scriptName}.user.js`),
   format: 'iife',
   sourcemap: false
 }
 
-const log = console.log.bind(console)
-
 // TODO: Add more verbose info
 async function build() {
   try {
-    log('Building...')
+    console.log('Building...')
     const bundle = await rollup.rollup(config.rollupOptions.input)
     await bundle.write(config.rollupOptions.output)
-    log('Building done!')
+    console.log('Building done!')
   } catch (e) {
     console.error(e)
   }

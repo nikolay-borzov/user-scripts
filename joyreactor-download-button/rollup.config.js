@@ -1,5 +1,4 @@
 const path = require('path')
-const alias = require('rollup-plugin-alias')
 const postcss = require('rollup-plugin-postcss')
 
 // postCSS plugins
@@ -22,14 +21,9 @@ module.exports = {
         plugins: [
           cssnext(),
           inlineSvg({
-            path: path.resolve(__dirname, 'icons')
+            paths: [path.resolve(__dirname, 'icons')]
           })
         ]
-      }),
-
-      alias({
-        resolve: ['.js'],
-        dom: path.resolve('common/dom')
       })
     ]
   }

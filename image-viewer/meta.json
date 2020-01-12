@@ -5,15 +5,11 @@
   "description": "Allows viewing full image without leaving the page",
   "author": "shikiyoku",
   "license": "MIT",
-  "copyright": "2018+, shikiyoku",
   "icon": "https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png",
   "homepageURL": "https://github.com/shikiyoku/user-scripts",
   "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
-  "connect": [
-    "www.imagebam.com",
-    "imagevenue.com",
-    "www.turboimagehost.com"
-  ],
+  "include": "*",
+  "connect": ["www.imagebam.com", "imagevenue.com", "www.turboimagehost.com"],
   "grant": [
     "GM_addStyle",
     "GM_xmlhttpRequest",
@@ -25,8 +21,5 @@
     "GM_registerMenuCommand"
   ],
   "run-at": "document-start",
-  "compatible": [
-    "chrome",
-    "firefox"
-  ]
+  "compatible": ["chrome", "firefox"]
 }

@@ -1,5 +1,5 @@
-import { $ } from 'bliss'
-import addStyle from 'addStyle'
+import { $ } from '../../../libs/bliss'
+import addStyle from '../../../common/addStyle'
 
 import downloadCSS from './styles.css'
 

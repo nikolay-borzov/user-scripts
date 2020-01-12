@@ -1,17 +1,14 @@
 // ==UserScript==
 // @name        Pornolab English
-// @namespace   https://github.com/shikiyoku
 // @description Translates basic content in English
+// @namespace   https://github.com/shikiyoku
 // @version     0.1.0
 // @author      shikiyoku
 // @license     MIT
-// @copyright   2017+, shikiyoku
 // @icon        http://static.pornolab.net/favicon.ico
 // @homepageURL https://github.com/shikiyoku/user-scripts
 // @supportURL  https://github.com/shikiyoku/user-scripts/issues
-// @include     http*://pornolab.net/*
-// @include     http*://pornolab.lib/*
-// @include     http*://pornolab.cc/*
+// @include     *//pornolab.*
 // @run-at      document-end
 // @grant       none
 // ==/UserScript==
@@ -88,7 +85,7 @@
   const SUB_FORUM_SEPARATOR = ' / '
   function replaceSubForum(selector) {
     $(selector).each((index, node) => {
-      let text = node.textContent
+      const text = node.textContent
       if (text.includes(SUB_FORUM_SEPARATOR)) {
         node.textContent = text.split(SUB_FORUM_SEPARATOR)[1]
       }
@@ -351,7 +348,7 @@
     }
   }
 
-  var topic$1 = {
+  var topic = {
     path: '/forum/viewtopic.php',
     maps: [pageHeader, pager, breadcrumb, torrentInfo, topicHeader]
   }
@@ -376,7 +373,7 @@
     maps: [pageHeader, breadcrumb]
   }
 
-  const pages = [main, topic$1, tracker, search, privateMessages, profile]
+  const pages = [main, topic, tracker, search, privateMessages, profile]
 
   const pageMath = pages.find(page => page.path === location.pathname)
 

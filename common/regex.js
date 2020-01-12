@@ -5,7 +5,7 @@ export default {
    * @returns {Array<string>}
    */
   getMatchGroups(regEx, str) {
-    let matches = []
+    const matches = []
     let match
 
     while ((match = regEx.exec(str)) !== null) {
@@ -13,7 +13,7 @@ export default {
         regEx.lastIndex++
       }
 
-      let groups = match.slice(1)
+      const groups = match.slice(1)
       if (groups.some(group => group)) {
         matches.push(groups)
       }
@@ -28,7 +28,7 @@ export default {
    * @returns {string}
    */
   getFirstMatchGroup(regEx, str) {
-    let match = regEx.exec(str)
+    const match = regEx.exec(str)
 
     return match ? match[1] : null
   }

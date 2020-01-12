@@ -23,7 +23,9 @@
 /* -----
   Icons
 ------- */
-.iv-icon { position: relative; }
+.iv-icon {
+  position: relative;
+}
 
 .iv-icon::after,
 .iv-image-link img::after {
@@ -55,22 +57,35 @@
   height: 50px;
 }
 
+/* HACK: svg-load no longer supports custom variables */
 .iv-icon--type-loading::after {
   animation: spin 1s linear infinite;
   opacity: 1;
-  background-image: svg-load('loading.svg', fill=var(--color-text)) !important;
+  background-image: svg-load('loading.svg', fill=#fff) !important;
 }
 
-.iv-icon--type-zoom::after { background-image: svg-load('zoom-in.svg', fill=var(--color-text)); }
-.iv-icon--type-next::after { background-image: svg-load('next.svg', fill=var(--color-text)); }
-.iv-icon--type-previous::after { background-image: svg-load('before.svg', fill=var(--color-text)); }
-.iv-icon--type-close::after { background-image: svg-load('close.svg', fill=var(--color-text)); }
-.iv-icon--type-expand::after { background-image: svg-load('expand.svg', fill=var(--color-text)); }
-.iv-icon--type-shrink::after { background-image: svg-load('shrink.svg', fill=var(--color-text)); }
+.iv-icon--type-zoom::after {
+  background-image: svg-load('zoom-in.svg', fill=#fff);
+}
+.iv-icon--type-next::after {
+  background-image: svg-load('next.svg', fill=#fff);
+}
+.iv-icon--type-previous::after {
+  background-image: svg-load('before.svg', fill=#fff);
+}
+.iv-icon--type-close::after {
+  background-image: svg-load('close.svg', fill=#fff);
+}
+.iv-icon--type-expand::after {
+  background-image: svg-load('expand.svg', fill=#fff);
+}
+.iv-icon--type-shrink::after {
+  background-image: svg-load('shrink.svg', fill=#fff);
+}
 
 .iv-icon--type-image-broken::after,
 .iv-image-link img::after {
-  background-image: svg-load('image-broken.svg', fill=var(--color-text));
+  background-image: svg-load('image-broken.svg', fill=#fff);
 }
 
 /* ----------
@@ -269,7 +284,7 @@ html.iv-image-view--open,
   opacity: 1;
 }
 
-@supports (-webkit-appearance:none) {
+@supports (-webkit-appearance: none) {
   .iv-image {
     /* Add fix for Chrome to remove extra space */
     flex: 0 1;

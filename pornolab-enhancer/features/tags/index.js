@@ -1,6 +1,7 @@
-import addStyle from 'addStyle'
-import regex from 'regex'
-import { $ } from 'bliss'
+import addStyle from '../../../common/addStyle'
+import regex from '../../../common/regex'
+import { $ } from '../../../libs/bliss'
+import { hasOwnProperty } from '../../../common/helpers'
 
 import tagsCSS from './styles.css'
 
@@ -57,9 +58,9 @@ export default (function() {
    * @param {string} titleRaw
    */
   function tokenizeTitle(titleRaw) {
-    let tagGroupsBefore = []
-    let titleParts = []
-    let tagGroupsAfter = []
+    const tagGroupsBefore = []
+    const titleParts = []
+    const tagGroupsAfter = []
 
     regex.getMatchGroups(TITLE_REGEX, titleRaw).forEach(groups => {
       let tags = []
@@ -110,22 +111,24 @@ export default (function() {
    * @param {Array<string>} tags
    */
   function createTagLinks(tags) {
-    return tags.filter(tag => tag.length).map(tag => {
-      let className = 'tags-row-tag'
-      tag = tag.trim()
+    return tags
+      .filter(tag => tag.length)
+      .map(tag => {
+        let className = 'tags-row-tag'
+        tag = tag.trim()
 
-      const tagkey = tag.toLowerCase()
-      if (TAG_ICON_MAP.hasOwnProperty(tagkey)) {
-        className = `${className} tag-with-icon icon-${TAG_ICON_MAP[tagkey]}`
-      }
+        const tagkey = tag.toLowerCase()
+        if (hasOwnProperty(TAG_ICON_MAP, tagkey)) {
+          className = `${className} tag-with-icon icon-${TAG_ICON_MAP[tagkey]}`
+        }
 
-      return $.create('a', {
-        className,
-        textContent: tag,
-        href: `/forum/tracker.php?nm=${tag}`,
-        target: '_blank'
+        return $.create('a', {
+          className,
+          textContent: tag,
+          href: `/forum/tracker.php?nm=${tag}`,
+          target: '_blank'
+        })
       })
-    })
   }
 
   /**
