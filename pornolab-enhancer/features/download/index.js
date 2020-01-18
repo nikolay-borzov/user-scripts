@@ -1,5 +1,5 @@
 import { $ } from '../../../libs/bliss'
-import addStyle from '../../../common/addStyle'
+import { addStyle } from '../../../common/api'
 
 import downloadCSS from './styles.css'
 

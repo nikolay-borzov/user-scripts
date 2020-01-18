@@ -1,7 +1,6 @@
 /* global Menu jQuery */
-import addStyle from '../../../common/addStyle'
+import { addStyle, store } from '../../../common/api'
 import { $ } from '../../../libs/bliss'
-import store from '../../../common/store'
 
 import configCSS from './styles.css'
 

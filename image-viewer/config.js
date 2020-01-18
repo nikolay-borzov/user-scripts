@@ -1,4 +1,4 @@
-import store from '../common/store'
+import { store } from '../common/api'
 import { $ } from '../libs/bliss'
 import urlExtractor from './url-extractor'
 

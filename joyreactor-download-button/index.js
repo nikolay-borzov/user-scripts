@@ -1,4 +1,4 @@
-import addStyle from '../common/addStyle'
+import { addStyle } from '../common/api'
 import dom from '../common/dom'
 import css from './styles.css'
 

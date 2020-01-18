@@ -1,7 +1,7 @@
 {
   "name": "Image Viewer",
   "namespace": "https://github.com/shikiyoku",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Allows viewing full image without leaving the page",
   "author": "shikiyoku",
   "license": "MIT",
@@ -9,7 +9,12 @@
   "homepageURL": "https://github.com/shikiyoku/user-scripts",
   "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
   "include": "*",
-  "connect": ["www.imagebam.com", "imagevenue.com", "www.turboimagehost.com"],
+  "connect": [
+    "www.imagebam.com",
+    "imagevenue.com",
+    "www.turboimagehost.com",
+    "fastpic.ru"
+  ],
   "grant": [
     "GM_addStyle",
     "GM_xmlhttpRequest",
@@ -18,7 +23,9 @@
     "GM.setValue",
     "GM_getValue",
     "GM.getValue",
-    "GM_registerMenuCommand"
+    "GM_registerMenuCommand",
+    "GM_openInTab",
+    "GM.openInTab"
   ],
   "run-at": "document-start",
   "compatible": ["chrome", "firefox"]

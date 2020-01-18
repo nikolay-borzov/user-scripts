@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @description Allows viewing full image without leaving the page
 // @namespace   https://github.com/shikiyoku
-// @version     1.1.2
+// @version     1.1.3
 // @author      shikiyoku
 // @license     MIT
 // @icon        https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png
@@ -12,6 +12,7 @@
 // @connect     www.imagebam.com
 // @connect     imagevenue.com
 // @connect     www.turboimagehost.com
+// @connect     fastpic.ru
 // @run-at      document-start
 // @compatible  chrome
 // @compatible  firefox
@@ -23,6 +24,8 @@
 // @grant       GM_getValue
 // @grant       GM.getValue
 // @grant       GM_registerMenuCommand
+// @grant       GM_openInTab
+// @grant       GM.openInTab
 // ==/UserScript==
 
 ;(function() {
@@ -41,10 +44,17 @@
     return Object.prototype.hasOwnProperty.call(object, property)
   }
 
+  async function wait(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms)
+    })
+  }
+
   var gmPolyfill = (function() {
     const gmMethodMap = {
       getValue: 'GM_getValue',
-      setValue: 'GM_setValue'
+      setValue: 'GM_setValue',
+      openInTab: 'GM_openInTab'
     }
 
     return function polyfill(methodName) {
@@ -66,15 +76,24 @@
     }
   })()
 
-  var store = (function() {
-    return {
-      get: gmPolyfill('getValue'),
+  const addStyle =
+    'GM_addStyle' in window
+      ? GM_addStyle // eslint-disable-line camelcase
+      : css => {
+          const head = document.getElementsByTagName('head')[0]
 
-      set: gmPolyfill('setValue')
-    }
-  })()
+          if (head) {
+            const style = document.createElement('style')
 
-  var request = (function() {
+            style.type = 'text/css'
+            style.innerHTML = css
+            head.appendChild(style)
+
+            return css
+          }
+        }
+
+  const request = (function() {
     const xmlHttpRequest =
       typeof GM !== 'undefined' && 'xmlHttpRequest' in GM
         ? GM.xmlHttpRequest
@@ -92,45 +111,430 @@
     }
   })()
 
-  var regex = {
-    getMatchGroups(regEx, str) {
-      const matches = []
-      let match
+  const store = {
+    get: gmPolyfill('getValue'),
 
-      while ((match = regEx.exec(str)) !== null) {
-        if (match.index === regEx.lastIndex) {
-          regEx.lastIndex++
-        }
+    set: gmPolyfill('setValue')
+  }
 
-        const groups = match.slice(1)
-        if (groups.some(group => group)) {
-          matches.push(groups)
-        }
-      }
+  const openInTab = gmPolyfill('openInTab')
 
-      return matches
-    },
+  function isFullSizeImageResponse(response) {
+    return response.responseHeaders.toLowerCase().includes('content-length')
+  }
 
-    getFirstMatchGroup(regEx, str) {
-      const match = regEx.exec(str)
+  async function poolFullSizeImage(url) {
+    let response = await request(url)
 
-      return match ? match[1] : null
+    if (isFullSizeImageResponse(response)) {
+      return url
+    }
+
+    const tab = await openInTab(url, true)
+
+    do {
+      await wait(300)
+      response = await request(url)
+    } while (!isFullSizeImageResponse(response))
+
+    tab.close()
+
+    return url
+  }
+
+  const fastpic = {
+    name: 'FastPic',
+    linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
+
+    async getUrl(link) {
+      const extension = link.url.split('.').slice(-2)[0]
+
+      const url = `${link.thumbnailUrl
+        .replace('thumb', 'big')
+        .replace('jpeg', extension)}?noht=1`
+
+      return poolFullSizeImage(url)
     }
   }
 
+  const fastpicDirect = {
+    name: 'FastPic (direct link)',
+    linkRegEx: new RegExp('fastpic.ru/big'),
+
+    async getUrl(link) {
+      const url = `${link.url}?noht=1`
+
+      return poolFullSizeImage(url)
+    }
+  }
+
+  async function getPageHtml(pageUrl) {
+    const response = await request(pageUrl)
+
+    return response.responseText
+  }
+
+  async function getUrlFromPage(link, extractor) {
+    const html = await getPageHtml(link.url)
+
+    const match = extractor.imageUrlRegEx.exec(html)
+
+    let url
+
+    if (match.groups) {
+      url = match.groups.url
+    } else {
+      url = match[1]
+    }
+
+    if (!url) {
+      console.warn(`[image-viewer] Unable to get URL from page ${link.url}`)
+    }
+
+    return url
+  }
+
+  const imagebam = {
+    name: 'ImageBam',
+    linkRegEx: new RegExp('^http://www.imagebam.com/image'),
+    imageUrlRegEx: /property="og:image" content="([^"]*)"/,
+    getUrl: getUrlFromPage
+  }
+
+  const DATE_PATTERN = /(\d{4})\.(\d{2})\.(\d{2})/
+
+  const imageban = {
+    name: 'ImageBan.ru',
+    linkRegEx: new RegExp('//imageban.ru/show'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl
+        .replace('thumbs', 'out')
+        .replace(DATE_PATTERN, '$1/$2/$3')
+    }
+  }
+
+  const imagebanDirect = {
+    name: 'ImageBan.ru (direct link)',
+    linkRegEx: new RegExp('imageban.ru/out'),
+
+    async getUrl(link) {
+      return link.url
+    }
+  }
+
+  const imagetwist = {
+    name: 'ImageTwist',
+    linkRegEx: new RegExp('^http://imagetwist.com'),
+
+    async getUrl(link) {
+      const imageName = link.url
+        .split('/')
+        .pop()
+        .replace('.html', '')
+      const extension = imageName.split('.').pop()
+      const imageUrl = link.thumbnailUrl
+        .replace('/th/', '/i/')
+        .slice(0, -extension.length)
+
+      return `${imageUrl}${extension}/${imageName}`
+    }
+  }
+
+  const HOST_REPLACE_REG_EX = new RegExp('(picturelol|picshick|imageshimage)')
+
+  const imagetwistBased = {
+    name: 'ImageTwist based',
+    hosts: ['Picturelol.com', 'PicShick.com', 'Imageshimage.com'],
+    linkRegEx: new RegExp('^https?://(picturelol|picshick|imageshimage).com'),
+
+    async getUrl(link) {
+      const imageName = link.url.split('/').pop()
+      const imageUrl = link.thumbnailUrl
+        .replace('/th/', '/i/')
+        .replace(HOST_REPLACE_REG_EX, 'imagetwist')
+
+      return `${imageUrl}/${imageName}`
+    }
+  }
+
+  const imagevenue = {
+    name: 'ImageVenue.com',
+    linkRegEx: new RegExp('imagevenue.com/img.php'),
+    imageUrlRegEx: /id=("|')thepic\1.*src=\1(?<url>[^']*)/i,
+
+    async getUrl(link, extractor) {
+      const imageUrl = await getUrlFromPage(link, extractor)
+      const pageUrl = link.url
+
+      const url = new URL(pageUrl)
+      url.search = ''
+      url.pathname = imageUrl
+
+      return url.href
+    }
+  }
+
+  const imgadult = {
+    name: 'ImgAdult.com',
+    linkRegEx: new RegExp('^https://imgadult.com'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('/small/', '/big/')
+    }
+  }
+
+  const imgbb = {
+    name: 'imgbb.com',
+    linkRegEx: new RegExp('^https://ibb.co'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('//thumb', '//image')
+    }
+  }
+
+  const imgbox = {
+    name: 'imgbox.com',
+    linkRegEx: new RegExp('^http://imgbox.com'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('/thumbs', '/images').replace('_t', '_o')
+    }
+  }
+
+  const imgbum = {
+    name: 'imgbum.net',
+    linkRegEx: new RegExp('^http://imgbum.net'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('-thumb', '')
+    }
+  }
+
+  const imgchilibum = {
+    name: 'imgchilibum.ru',
+    linkRegEx: new RegExp('^http://imgchilibum.ru/v'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('_s/', '_b/')
+    }
+  }
+
+  const imgdrive = {
+    name: 'ImgDrive.net',
+    linkRegEx: new RegExp('^https://imgdrive.net'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('small', 'big')
+    }
+  }
+
+  const imgtaxi = {
+    name: 'imgtaxi.com',
+    linkRegEx: new RegExp('^https://imgtaxi.com'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl
+        .replace('/small/', '/big/')
+        .replace('/small-medium/', '/big/')
+    }
+  }
+
+  const imx = {
+    name: 'IMX.to',
+    linkRegEx: new RegExp('^https://imx.to'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('/imx', '/i.imx').replace('/u/t/', '/i/')
+    }
+  }
+
+  const lostpic = {
+    name: 'Lostpic.net',
+    linkRegEx: new RegExp('^http://lostpic.net'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('.th', '').replace('http:', 'https:')
+    }
+  }
+
+  const moneyPic = {
+    name: 'money-pic.ru',
+    linkRegEx: new RegExp('^http://money-pic.ru'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('-thumb', '')
+    }
+  }
+
+  const nikapic = {
+    name: 'nikapic.ru',
+    linkRegEx: new RegExp('^http://nikapic.ru'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('/small/', '/big/')
+    }
+  }
+
+  const picage = {
+    name: 'picage.ru',
+    linkRegEx: new RegExp('^http://picage.ru'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl
+        .replace('picage', 'pic4you')
+        .replace('-thumb', '')
+    }
+  }
+
+  const piccash = {
+    name: 'PicCash.net',
+    linkRegEx: new RegExp('^http://piccash.net/'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('_thumb', '_full').replace('-thumb', '')
+    }
+  }
+
+  const HOST_REPLACE_REG_EX$1 = new RegExp(
+    '(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
+  )
+
+  const picforall = {
+    name: 'PicForAll.ru',
+    hosts: [
+      'freescreens.ru',
+      'imgclick.ru',
+      'picclick.ru',
+      'payforpic.ru',
+      'picforall.ru'
+    ],
+    linkRegEx: new RegExp(
+      '^http://(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
+    ),
+
+    async getUrl(link) {
+      return link.thumbnailUrl
+        .replace(HOST_REPLACE_REG_EX$1, 'picpic.online')
+        .replace('-thumb', '')
+    }
+  }
+
+  const HOST_REPLACE_REG_EX$2 = new RegExp(
+    '(iceimg.net|pixsense.net|vestimage.site|chaosimg.site)'
+  )
+
+  const pixsense = {
+    name: 'PixSense',
+    hosts: [
+      'www.iceimg.net',
+      'www.pixsense.net',
+      'www.vestimage.site',
+      'www.chaosimg.site'
+    ],
+    linkRegEx: new RegExp(
+      '^http://www.(iceimg.net|pixsense.net|vestimage.site|chaosimg.site)'
+    ),
+
+    async getUrl(link) {
+      return link.thumbnailUrl
+        .replace(HOST_REPLACE_REG_EX$2, 'fortstore.net')
+        .replace('small-', '')
+        .replace('/small/', '/big/')
+    }
+  }
+
+  const radikal = {
+    name: 'Radikal.ru',
+    linkRegEx: /https?:\/\/.\.radikal\.ru\//,
+
+    async getUrl(link) {
+      return link.url
+    }
+  }
+
+  const radikalObsolete = {
+    name: 'Radikal.ru (obsolete)',
+    linkRegEx: new RegExp('^http://radikal.ru/'),
+
+    async getUrl(link) {
+      const extension = link.url.split('.').slice(-2)[0]
+
+      return link.thumbnailUrl
+        .replace('http:/', 'https:/')
+        .replace('t.', '.')
+        .replace('jpg', extension)
+    }
+  }
+
+  const stuffed = {
+    name: 'stuffed.ru',
+    linkRegEx: new RegExp('^http://stuffed.ru'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('-thumb', '')
+    }
+  }
+
+  const turboimagehost = {
+    name: 'TurboImageHost',
+    linkRegEx: new RegExp('^https://www.turboimagehost.com/p'),
+    imageUrlRegEx: /property="og:image" content="([^"]*)"/,
+    getUrl: getUrlFromPage
+  }
+
+  const vfl = {
+    name: 'VFL.ru',
+    linkRegEx: new RegExp('^http://vfl.ru'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('_s', '')
+    }
+  }
+
+  const xxxscreens = {
+    name: 'XXXScreens.com',
+    linkRegEx: new RegExp('^http://xxxscreens.com'),
+
+    async getUrl(link) {
+      return link.thumbnailUrl.replace('small/', 'big/')
+    }
+  }
+
+  var hostExtractors = /* #__PURE__ */ Object.freeze({
+    __proto__: null,
+    fastpic: fastpic,
+    fastpicDirect: fastpicDirect,
+    imagebam: imagebam,
+    imageban: imageban,
+    imagebanDirect: imagebanDirect,
+    imagetwist: imagetwist,
+    imagetwistBased: imagetwistBased,
+    imagevenue: imagevenue,
+    imgadult: imgadult,
+    imgbb: imgbb,
+    imgbox: imgbox,
+    imgbum: imgbum,
+    imgchilibum: imgchilibum,
+    imgdrive: imgdrive,
+    imgtaxi: imgtaxi,
+    imx: imx,
+    lostpic: lostpic,
+    moneyPic: moneyPic,
+    nikapic: nikapic,
+    picage: picage,
+    piccash: piccash,
+    picforall: picforall,
+    pixsense: pixsense,
+    radikal: radikal,
+    radikalObsolete: radikalObsolete,
+    stuffed: stuffed,
+    turboimagehost: turboimagehost,
+    vfl: vfl,
+    xxxscreens: xxxscreens
+  })
+
   var urlExtractor = (function() {
-    async function getPageHtml(pageUrl) {
-      const response = await request(pageUrl)
-
-      return response.responseText
-    }
-
-    async function getUrlFromPage(link, extractor) {
-      const html = await getPageHtml(link.url)
-
-      return regex.getFirstMatchGroup(extractor.imageUrlRegEx, html)
-    }
-
     function sortCaseInsensitive(array, getValue) {
       return array
         .map((value, index) => ({
@@ -151,340 +555,7 @@
 
     let extractorsActive = []
 
-    const extractors = [
-      {
-        name: 'FastPic',
-        linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
-
-        async getUrl(link) {
-          const extension = link.url.split('.').slice(-2)[0]
-
-          return `${link.thumbnailUrl
-            .replace('thumb', 'big')
-            .replace('jpeg', extension)}?noht=1`
-        }
-      },
-
-      {
-        name: 'FastPic (direct link)',
-        linkRegEx: new RegExp('fastpic.ru/big'),
-
-        async getUrl(link) {
-          return `${link.url}?noht=1`
-        }
-      },
-
-      {
-        name: 'ImageVenue.com',
-        linkRegEx: new RegExp('imagevenue.com/img.php'),
-        imageUrlRegEx: /id="thepic".*src="([^"]*)"/i,
-
-        async getUrl(link, extractor) {
-          const imageUrl = await getUrlFromPage(link, extractor)
-          const pageUrl = link.url
-
-          const url = new URL(pageUrl)
-          url.search = ''
-          url.pathname = imageUrl
-
-          return url.href
-        }
-      },
-
-      {
-        name: 'TurboImageHost',
-        linkRegEx: new RegExp('^https://www.turboimagehost.com/p'),
-        imageUrlRegEx: /property="og:image" content="([^"]*)"/,
-        getUrl: getUrlFromPage
-      },
-
-      {
-        name: 'ImageBam',
-        linkRegEx: new RegExp('^http://www.imagebam.com/image'),
-        imageUrlRegEx: /property="og:image" content="([^"]*)"/,
-        getUrl: getUrlFromPage
-      },
-
-      {
-        name: 'ImageTwist',
-        linkRegEx: new RegExp('^http://imagetwist.com'),
-
-        async getUrl(link) {
-          const imageName = link.url
-            .split('/')
-            .pop()
-            .replace('.html', '')
-          const extension = imageName.split('.').pop()
-          const imageUrl = link.thumbnailUrl
-            .replace('/th/', '/i/')
-            .slice(0, -extension.length)
-
-          return `${imageUrl}${extension}/${imageName}`
-        }
-      },
-
-      {
-        name: 'ImageTwist based',
-        hosts: ['Picturelol.com', 'PicShick.com', 'Imageshimage.com'],
-        linkRegEx: new RegExp(
-          '^https?://(picturelol|picshick|imageshimage).com'
-        ),
-        hostReplaceRegEx: new RegExp('(picturelol|picshick|imageshimage)'),
-
-        async getUrl(link, extractor) {
-          const imageName = link.url.split('/').pop()
-          const imageUrl = link.thumbnailUrl
-            .replace('/th/', '/i/')
-            .replace(extractor.hostReplaceRegEx, 'imagetwist')
-
-          return `${imageUrl}/${imageName}`
-        }
-      },
-
-      {
-        name: 'imgbum.net',
-        linkRegEx: new RegExp('^http://imgbum.net'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('-thumb', '')
-        }
-      },
-
-      {
-        name: 'PicForAll.ru',
-        hosts: [
-          'freescreens.ru',
-          'imgclick.ru',
-          'picclick.ru',
-          'payforpic.ru',
-          'picforall.ru'
-        ],
-        linkRegEx: new RegExp(
-          '^http://(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
-        ),
-        hostReplaceRegEx: new RegExp(
-          '(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
-        ),
-
-        async getUrl(link, extractor) {
-          return link.thumbnailUrl
-            .replace(extractor.hostReplaceRegEx, 'picpic.online')
-            .replace('-thumb', '')
-        }
-      },
-
-      {
-        name: 'stuffed.ru',
-        linkRegEx: new RegExp('^http://stuffed.ru'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('-thumb', '')
-        }
-      },
-
-      {
-        name: 'picage.ru',
-        linkRegEx: new RegExp('^http://picage.ru'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl
-            .replace('picage', 'pic4you')
-            .replace('-thumb', '')
-        }
-      },
-
-      {
-        name: 'PixSense',
-        hosts: [
-          'www.iceimg.net',
-          'www.pixsense.net',
-          'www.vestimage.site',
-          'www.chaosimg.site'
-        ],
-        linkRegEx: new RegExp(
-          '^http://www.(iceimg.net|pixsense.net|vestimage.site|chaosimg.site)'
-        ),
-        hostReplaceRegEx: new RegExp(
-          '(iceimg.net|pixsense.net|vestimage.site|chaosimg.site)'
-        ),
-
-        async getUrl(link, extractor) {
-          return link.thumbnailUrl
-            .replace(extractor.hostReplaceRegEx, 'fortstore.net')
-            .replace('small-', '')
-            .replace('/small/', '/big/')
-        }
-      },
-
-      {
-        name: 'nikapic.ru',
-        linkRegEx: new RegExp('^http://nikapic.ru'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('/small/', '/big/')
-        }
-      },
-
-      {
-        name: 'imgtaxi.com',
-        linkRegEx: new RegExp('^https://imgtaxi.com'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl
-            .replace('/small/', '/big/')
-            .replace('/small-medium/', '/big/')
-        }
-      },
-
-      {
-        name: 'imgbox.com',
-        linkRegEx: new RegExp('^http://imgbox.com'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl
-            .replace('/thumbs', '/images')
-            .replace('_t', '_o')
-        }
-      },
-
-      {
-        name: 'ImageBan.ru',
-        linkRegEx: new RegExp('//imageban.ru/show'),
-        datePattern: /(\d{4})\.(\d{2})\.(\d{2})/,
-
-        async getUrl(link, extractor) {
-          return link.thumbnailUrl
-            .replace('thumbs', 'out')
-            .replace(extractor.datePattern, '$1/$2/$3')
-        }
-      },
-
-      {
-        name: 'ImageBan.ru (direct link)',
-        linkRegEx: new RegExp('imageban.ru/out'),
-
-        async getUrl(link) {
-          return link.url
-        }
-      },
-
-      {
-        name: 'Radikal.ru',
-        linkRegEx: /https?:\/\/.\.radikal\.ru\//,
-
-        async getUrl(link) {
-          return link.url
-        }
-      },
-
-      {
-        name: 'Radikal.ru (obsolete)',
-        linkRegEx: new RegExp('^http://radikal.ru/'),
-
-        async getUrl(link) {
-          const extension = link.url.split('.').slice(-2)[0]
-
-          return link.thumbnailUrl
-            .replace('http:/', 'https:/')
-            .replace('t.', '.')
-            .replace('jpg', extension)
-        }
-      },
-
-      {
-        name: 'PicCash.net',
-        linkRegEx: new RegExp('^http://piccash.net/'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl
-            .replace('_thumb', '_full')
-            .replace('-thumb', '')
-        }
-      },
-
-      {
-        name: 'ImgDrive.net',
-        linkRegEx: new RegExp('^https://imgdrive.net'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('small', 'big')
-        }
-      },
-
-      {
-        name: 'imgchilibum.ru',
-        linkRegEx: new RegExp('^http://imgchilibum.ru/v'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('_s/', '_b/')
-        }
-      },
-
-      {
-        name: 'XXXScreens.com',
-        linkRegEx: new RegExp('^http://xxxscreens.com'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('small/', 'big/')
-        }
-      },
-
-      {
-        name: 'money-pic.ru',
-        linkRegEx: new RegExp('^http://money-pic.ru'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('-thumb', '')
-        }
-      },
-
-      {
-        name: 'VFL.ru',
-        linkRegEx: new RegExp('^http://vfl.ru'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('_s', '')
-        }
-      },
-
-      {
-        name: 'Lostpic.net',
-        linkRegEx: new RegExp('^http://lostpic.net'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('.th', '').replace('http:', 'https:')
-        }
-      },
-
-      {
-        name: 'ImgAdult.com',
-        linkRegEx: new RegExp('^https://imgadult.com'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('/small/', '/big/')
-        }
-      },
-
-      {
-        name: 'imgbb.com',
-        linkRegEx: new RegExp('^https://ibb.co'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl.replace('//thumb', '//image')
-        }
-      },
-
-      {
-        name: 'IMX.to',
-        linkRegEx: new RegExp('^https://imx.to'),
-
-        async getUrl(link) {
-          return link.thumbnailUrl
-            .replace('/imx', '/i.imx')
-            .replace('/u/t/', '/i/')
-        }
-      }
-    ]
+    const extractors = Object.values(hostExtractors).filter(Boolean)
 
     const extractorsByName = extractors.reduce((result, extractor) => {
       result[extractor.name] = extractor
@@ -673,20 +744,6 @@
       }
     }
   })()
-
-  var addStyle =
-    'GM_addStyle' in window
-      ? GM_addStyle // eslint-disable-line camelcase
-      : css => {
-          var head = document.getElementsByTagName('head')[0]
-          if (head) {
-            var style = document.createElement('style')
-            style.type = 'text/css'
-            style.innerHTML = css
-            head.appendChild(style)
-            return css
-          }
-        }
 
   var css =
     "@-webkit-keyframes spin{0%{-webkit-transform:translate(-50%,-50%) rotate(0deg);transform:translate(-50%,-50%) rotate(0deg)}to{-webkit-transform:translate(-50%,-50%) rotate(1turn);transform:translate(-50%,-50%) rotate(1turn)}}@keyframes spin{0%{-webkit-transform:translate(-50%,-50%) rotate(0deg);transform:translate(-50%,-50%) rotate(0deg)}to{-webkit-transform:translate(-50%,-50%) rotate(1turn);transform:translate(-50%,-50%) rotate(1turn)}}.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{content:\"\";position:absolute;z-index:2;top:50%;left:50%;width:100%;height:100%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);background-repeat:no-repeat;background-position:50%;background-size:contain}.iv-icon--hover:after{transition:opacity .35s ease;opacity:0}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{width:50px;height:50px}.iv-icon--type-loading:after{-webkit-animation:spin 1s linear infinite;animation:spin 1s linear infinite;opacity:1;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 002 12h2a8 8 0 018-8z'/%3E%3C/svg%3E\")!important}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-expand:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5m3 9h2v5h-5v-2h3v-3m-7 3v2H5v-5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-shrink:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M14 14h5v2h-3v3h-2v-5m-9 0h5v5H8v-3H5v-2m3-9h2v5H5V8h3V5m11 3v2h-5V5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 012-2h14a2 2 0 012 2m-3 6.42l3 3.01V19a2 2 0 01-2 2H5a2 2 0 01-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.iv-image-link{display:-webkit-inline-box;display:inline-flex;min-width:50px;min-height:50px;margin:3px;padding:4px;border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);vertical-align:top}.iv-image-link img{margin:0}.iv-image-link>:not(img){display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;width:100%}.iv-image-link:before{content:\"\";position:absolute;z-index:1;top:4px;right:4px;bottom:4px;left:4px;transition:opacity .35s ease;opacity:0;background-color:rgba(0,0,0,.5)}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.2)}.iv-image-link img:after{z-index:0;width:35px;height:35px}.iv-image-view{display:none;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;height:0;transition:opacity .35s ease-out;opacity:0;background-color:rgba(0,0,0,.8);color:#fff;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.iv-image-view--open body,html.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{display:-webkit-box;display:flex;position:fixed;z-index:3;top:0;right:0;bottom:0;left:0;height:auto;opacity:1}.iv-image-view--single .single-hide{visibility:hidden}.iv-image-view__footer,.iv-image-view__header{display:-webkit-box;display:flex;background-color:rgba(0,0,0,.8)}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:2}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__header{-webkit-box-pack:justify;justify-content:space-between}.iv-image-view__footer{-webkit-box-pack:center;justify-content:center}.iv-image-view__body{display:-webkit-box;display:flex;position:relative;height:100%;overflow:auto}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-thumbnail-wrapper{display:-webkit-box;display:flex;position:absolute;z-index:0;top:0;left:0;width:100%;height:100%}.iv-image-view__number{display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;padding:0 40px;font-size:18px}.iv-image-view__backdrop{position:fixed;z-index:1;top:0;left:0;width:100%;height:100%}.iv-image,.iv-thumbnail{max-width:100%;max-height:100%;object-fit:contain;margin:auto}.iv-image{z-index:2;transition:opacity .35s ease-out;opacity:1}@supports (-webkit-appearance:none){.iv-image{-webkit-box-flex:0;flex:0 1}}.iv-thumbnail{filter:url('data:image/svg+xml;charset=utf-8,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filter\"><feGaussianBlur stdDeviation=\"5\" /></filter></svg>#filter');-webkit-filter:blur(5px);filter:blur(5px)}.iv-icon--type-error .iv-image,.iv-image-view__image--loading .iv-image,.iv-image-view__image--thumbnail .iv-image{opacity:0}.iv-image-view__image--thumbnail .iv-thumbnail-wrapper{z-index:2}.iv-image-view--full-height .iv-image,.iv-image-view--full-height .iv-thumbnail{max-height:none;cursor:-webkit-grab;cursor:grab}.iv-image-view--full-height .iv-image--grabbing{cursor:-webkit-grabbing;cursor:grabbing}.iv-icon-button{width:50px;height:50px;transition:all .35s ease-out}.iv-icon-button--small{width:25px;height:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}.iv-config-form{display:none;top:10px;left:10px;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;width:50%;max-width:500px;height:50%;padding:10px;background-color:rgba(0,0,0,.85);color:#fff}.iv-config-form--open{display:-webkit-box;display:flex;position:fixed;z-index:3}.iv-config-form__header{display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;padding:10px}.iv-config-form__header-title,.iv-config-form__options{-webkit-box-flex:1;flex-grow:1}.iv-config-form__options{display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-flow:column wrap;overflow:auto}.iv-config-form__label{display:-webkit-box;display:flex;-webkit-box-flex:0;flex:0 0 auto;-webkit-box-align:center;align-items:center;margin:0;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0!important}"

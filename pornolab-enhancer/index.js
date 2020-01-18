@@ -1,4 +1,4 @@
-import addStyle from '../common/addStyle'
+import { addStyle } from '../common/api'
 
 import config from './features/config'
 import tags from './features/tags'

@@ -1,4 +1,4 @@
-import addStyle from '../../../common/addStyle'
+import { addStyle } from '../../../common/api'
 import regex from '../../../common/regex'
 import { $ } from '../../../libs/bliss'
 import { hasOwnProperty } from '../../../common/helpers'
