@@ -49,7 +49,7 @@ export const fastpic = {
 
     const url = `${link.thumbnailUrl
       .replace('thumb', 'big')
-      .replace('jpeg', extension)}?noht=1`
+      .replace('jpeg', extension)}?nh7=1`
 
     return poolFullSizeImage(url)
   }
@@ -61,7 +61,7 @@ export const fastpicDirect = {
   linkRegEx: new RegExp('fastpic.ru/big'),
 
   async getUrl(link) {
-    const url = `${link.url}?noht=1`
+    const url = `${link.url}?nh7=1`
 
     return poolFullSizeImage(url)
   }

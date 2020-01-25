@@ -1,10 +1,16 @@
 # Image Viewer Changelog
 
+## 1.1.4 - 2020-01-25
+
+## Fixed
+
+- FastPic URL extracting (new query string param)
+
 ## 1.1.3 - 2020-01-18
 
 ## Fixed
 
-- FastPic and ImageVenue url extracting
+- FastPic and ImageVenue URL extracting
 
 ## 1.1.2 - 2018-08-23
 
@@ -62,7 +68,7 @@
 
 ## Fixed
 
-- Url extraction from image host page
+- URL extraction from image host page
 
 ## 1.0.0 - 2018-07-18
 
@@ -74,7 +80,7 @@
 ## Added
 
 - Image host support: `radikal.ru`, `stuffed.ru`, `imageban.ru`, `piccash.net`, `imgdrive.net`, `imgchilibum.ru`, `XXXScreens.com`, `money-pic.ru`
-- Display host alias urls on hover
+- Display host alias URLs on hover
 
 ## Fixed
 

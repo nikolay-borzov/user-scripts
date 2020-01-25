@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @description Allows viewing full image without leaving the page
 // @namespace   https://github.com/shikiyoku
-// @version     1.1.3
+// @version     1.1.4
 // @author      shikiyoku
 // @license     MIT
 // @icon        https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png
@@ -151,7 +151,7 @@
 
       const url = `${link.thumbnailUrl
         .replace('thumb', 'big')
-        .replace('jpeg', extension)}?noht=1`
+        .replace('jpeg', extension)}?nh7=1`
 
       return poolFullSizeImage(url)
     }
@@ -162,7 +162,7 @@
     linkRegEx: new RegExp('fastpic.ru/big'),
 
     async getUrl(link) {
-      const url = `${link.url}?noht=1`
+      const url = `${link.url}?nh7=1`
 
       return poolFullSizeImage(url)
     }
