@@ -49,10 +49,3 @@ export const store = {
    */
   set: gmPolyfill('setValue')
 }
-
-/**
- * @param {string} url
- * @param {Tampermonkey.OpenTabOptions | boolean} [options]
- * @returns {Tampermonkey.OpenTabObject}
- */
-export const openInTab = gmPolyfill('openInTab')

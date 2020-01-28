@@ -1,5 +1,11 @@
 # Image Viewer Changelog
 
+## 1.1.5 - 2020-01-28
+
+## Fixed
+
+- FastPic URL extracting - get URL from page markup
+
 ## 1.1.4 - 2020-01-25
 
 ## Fixed

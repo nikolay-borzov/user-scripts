@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @description Allows viewing full image without leaving the page
 // @namespace   https://github.com/shikiyoku
-// @version     1.1.4
+// @version     1.1.5
 // @author      shikiyoku
 // @license     MIT
 // @icon        https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png
@@ -24,8 +24,6 @@
 // @grant       GM_getValue
 // @grant       GM.getValue
 // @grant       GM_registerMenuCommand
-// @grant       GM_openInTab
-// @grant       GM.openInTab
 // ==/UserScript==
 
 ;(function() {
@@ -42,12 +40,6 @@
 
   function hasOwnProperty(object, property) {
     return Object.prototype.hasOwnProperty.call(object, property)
-  }
-
-  async function wait(ms) {
-    return new Promise(resolve => {
-      setTimeout(resolve, ms)
-    })
   }
 
   var gmPolyfill = (function() {
@@ -117,57 +109,6 @@
     set: gmPolyfill('setValue')
   }
 
-  const openInTab = gmPolyfill('openInTab')
-
-  function isFullSizeImageResponse(response) {
-    return response.responseHeaders.toLowerCase().includes('content-length')
-  }
-
-  async function poolFullSizeImage(url) {
-    let response = await request(url)
-
-    if (isFullSizeImageResponse(response)) {
-      return url
-    }
-
-    const tab = await openInTab(url, true)
-
-    do {
-      await wait(300)
-      response = await request(url)
-    } while (!isFullSizeImageResponse(response))
-
-    tab.close()
-
-    return url
-  }
-
-  const fastpic = {
-    name: 'FastPic',
-    linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
-
-    async getUrl(link) {
-      const extension = link.url.split('.').slice(-2)[0]
-
-      const url = `${link.thumbnailUrl
-        .replace('thumb', 'big')
-        .replace('jpeg', extension)}?nh7=1`
-
-      return poolFullSizeImage(url)
-    }
-  }
-
-  const fastpicDirect = {
-    name: 'FastPic (direct link)',
-    linkRegEx: new RegExp('fastpic.ru/big'),
-
-    async getUrl(link) {
-      const url = `${link.url}?nh7=1`
-
-      return poolFullSizeImage(url)
-    }
-  }
-
   async function getPageHtml(pageUrl) {
     const response = await request(pageUrl)
 
@@ -192,6 +133,28 @@
     }
 
     return url
+  }
+
+  const fastpic = {
+    name: 'FastPic',
+    linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
+    imageUrlRegEx: new RegExp(`loading_img = '(?<url>[^']+)'`),
+    getUrl: getUrlFromPage
+  }
+
+  const URL_PARTS_REGEXP = /i(\d+).+big(\/\d+\/\d+\/).+\/([^/]+)$/
+
+  const fastpicDirect = {
+    name: 'FastPic (direct link)',
+    linkRegEx: new RegExp('fastpic.ru/big'),
+
+    async getUrl(link) {
+      const [, index, date, filename] = URL_PARTS_REGEXP.exec(link.url)
+
+      const url = `https://fastpic.ru/view/${index}${date}${filename}.html`
+
+      return fastpic.getUrl({ ...link, url }, fastpic)
+    }
   }
 
   const imagebam = {
