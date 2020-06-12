@@ -15,29 +15,40 @@ config.rollupOptions.input.input = path.resolve(scriptFolder, 'index.js')
 config.rollupOptions.output = {
   file: path.resolve(root, `dist/${config.scriptName}.user.js`),
   format: 'iife',
-  sourcemap: false
+  sourcemap: false,
 }
+
+const { input, output } = config.rollupOptions
 
 // TODO: Add more verbose info
 async function build() {
   try {
     console.log('Building...')
-    const bundle = await rollup.rollup(config.rollupOptions.input)
-    await bundle.write(config.rollupOptions.output)
-    console.log('Building done!')
+    const bundle = await rollup.rollup(input)
+    await bundle.write(output)
+    console.log('✔ Building done!')
   } catch (e) {
     console.error(e)
   }
 }
 
 if (config.watch) {
-  require('./watch')(
-    {
-      root,
-      scriptFolder: config.scriptName
-    },
-    build
-  )
+  rollup
+    .watch({
+      ...input,
+      output,
+      watch: {
+        chokidar: {
+          cwd: root,
+          ignoreInitial: true,
+          usePolling: true,
+          interval: 500,
+        },
+      },
+    })
+    // TODO: Looks like it doesn't work
+    .on('ready', () => console.log('👁 Watching'))
+    .on('error', (error) => console.log(`Watcher error: ${error}`))
 } else {
   build()
 }

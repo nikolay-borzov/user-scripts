@@ -15,5 +15,5 @@ export const piccash = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('_thumb', '_full').replace('-thumb', '')
-  }
+  },
 }

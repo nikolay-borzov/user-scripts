@@ -25,7 +25,7 @@ export const picforall = {
     'imgclick.ru',
     'picclick.ru',
     'payforpic.ru',
-    'picforall.ru'
+    'picforall.ru',
   ],
   linkRegEx: new RegExp(
     '^http://(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
@@ -35,5 +35,5 @@ export const picforall = {
     return link.thumbnailUrl
       .replace(HOST_REPLACE_REG_EX, 'picpic.online' /* or 'p0xpicmoney.ru' */)
       .replace('-thumb', '')
-  }
+  },
 }

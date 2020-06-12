@@ -24,7 +24,7 @@ export const pixsense = {
     'www.iceimg.net',
     'www.pixsense.net',
     'www.vestimage.site',
-    'www.chaosimg.site'
+    'www.chaosimg.site',
   ],
   linkRegEx: new RegExp(
     '^http://www.(iceimg.net|pixsense.net|vestimage.site|chaosimg.site)'
@@ -35,5 +35,5 @@ export const pixsense = {
       .replace(HOST_REPLACE_REG_EX, 'fortstore.net')
       .replace('small-', '')
       .replace('/small/', '/big/')
-  }
+  },
 }

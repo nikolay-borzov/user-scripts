@@ -15,7 +15,7 @@ export const radikal = {
 
   async getUrl(link) {
     return link.url
-  }
+  },
 }
 
 /*
@@ -36,5 +36,5 @@ export const radikalObsolete = {
       .replace('http:/', 'https:/')
       .replace('t.', '.')
       .replace('jpg', extension)
-  }
+  },
 }

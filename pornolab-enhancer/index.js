@@ -6,7 +6,7 @@ import pagerCSS from './features/pager/styles.css'
 import download from './features/download'
 import findSimilar from './features/find-similar'
 
-config.init().then(params => {
+config.init().then((params) => {
   const KEYS = config.KEYS
 
   if (params[KEYS.tags]) {

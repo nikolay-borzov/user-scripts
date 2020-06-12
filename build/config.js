@@ -9,12 +9,12 @@ module.exports = function getConfig() {
       alias: 's',
       demandOption: true,
       describe: 'Script ID',
-      choices: scripts.getIds()
+      choices: scripts.getIds(),
     })
     .option('watch', {
       alias: 'w',
       describe: 'Enable watch',
-      type: 'boolean'
+      type: 'boolean',
     }).argv
 
   const scriptName = scripts.getName(argv.script)
@@ -24,13 +24,13 @@ module.exports = function getConfig() {
     ? require(`../${scriptName}/rollup.config`)
     : {
         input: {
-          plugins: []
-        }
+          plugins: [],
+        },
       }
 
   return {
     watch: argv.watch,
     scriptName,
-    rollupOptions
+    rollupOptions,
   }
 }

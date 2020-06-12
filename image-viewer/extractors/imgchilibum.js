@@ -15,5 +15,5 @@ export const imgchilibum = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('_s/', '_b/')
-  }
+  },
 }

@@ -10,12 +10,12 @@ export default {
    * @param {function} callback
    */
   on(parent, eventName, selector, callback) {
-    parent.addEventListener(eventName, function(event) {
+    parent.addEventListener(eventName, function (event) {
       const matchingChild = event.target.closest(selector)
 
       if (matchingChild) {
         callback(matchingChild)
       }
     })
-  }
+  },
 }

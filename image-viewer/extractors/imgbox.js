@@ -15,5 +15,5 @@ export const imgbox = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('/thumbs', '/images').replace('_t', '_o')
-  }
+  },
 }

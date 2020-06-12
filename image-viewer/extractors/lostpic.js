@@ -15,5 +15,5 @@ export const lostpic = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('.th', '').replace('http:', 'https:')
-  }
+  },
 }

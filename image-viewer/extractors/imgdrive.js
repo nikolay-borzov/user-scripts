@@ -15,5 +15,5 @@ export const imgdrive = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('small', 'big')
-  }
+  },
 }

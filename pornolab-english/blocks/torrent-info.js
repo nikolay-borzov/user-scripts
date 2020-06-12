@@ -7,46 +7,46 @@ export default {
       [TOKENS.textNodeIndexMap]: {
         0: { Размер: 'Size' },
         1: { Зарегистрирован: 'Uploaded' },
-        2: { '.torrent скачан': 'Downloaded' }
+        2: { '.torrent скачан': 'Downloaded' },
       },
       [TOKENS.dateTime]: 'b:nth-child(2)',
       'b:nth-child(3)': {
         [TOKENS.replaceMap]: {
           раза: 'times',
-          раз: 'times'
-        }
-      }
+          раз: 'times',
+        },
+      },
     },
     '.row5': {
       '.seed': {
         [TOKENS.textNodeIndexMap]: {
-          0: { Сиды: 'Seeders' }
-        }
+          0: { Сиды: 'Seeders' },
+        },
       },
       '.leech': {
         [TOKENS.textNodeIndexMap]: {
-          0: { Личи: 'Leechers' }
-        }
+          0: { Личи: 'Leechers' },
+        },
       },
-      '.gen': 'Peers statistics'
+      '.gen': 'Peers statistics',
     },
     '.row3': {
       '.med:nth-child(2)': 'Add to "Future Downloads"',
-      '.med:nth-child(3)': 'Remove from the downloads list'
+      '.med:nth-child(3)': 'Remove from the downloads list',
     },
     '#full_details': {
       '.floatL b': {
         [TOKENS.replaceMap]: {
           Сиды: 'Seeders',
-          Личи: 'Leechers'
-        }
+          Личи: 'Leechers',
+        },
       },
       '.tCenter': {
         [TOKENS.textNodeIndexMap]: {
-          0: { 'показаны данные': 'data is' }
+          0: { 'показаны данные': 'data is' },
         },
-        'i b': 'for current session only'
-      }
-    }
-  }
+        'i b': 'for current session only',
+      },
+    },
+  },
 }

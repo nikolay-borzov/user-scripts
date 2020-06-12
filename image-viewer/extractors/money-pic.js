@@ -15,5 +15,5 @@ export const moneyPic = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('-thumb', '')
-  }
+  },
 }

@@ -15,5 +15,5 @@ export const imgadult = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('/small/', '/big/')
-  }
+  },
 }

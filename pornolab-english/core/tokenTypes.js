@@ -6,5 +6,5 @@ export default {
   textNodeIndexMap: 'textNodeIndexMap',
   replaceMap: 'replaceMap',
   replaceSubForum: 'replaceSubForum',
-  dateTime: 'dateTime'
+  dateTime: 'dateTime',
 }

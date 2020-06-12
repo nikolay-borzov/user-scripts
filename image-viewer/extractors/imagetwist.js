@@ -14,17 +14,14 @@ export const imagetwist = {
   linkRegEx: new RegExp('^http://imagetwist.com'),
 
   async getUrl(link) {
-    const imageName = link.url
-      .split('/')
-      .pop()
-      .replace('.html', '')
+    const imageName = link.url.split('/').pop().replace('.html', '')
     const extension = imageName.split('.').pop()
     const imageUrl = link.thumbnailUrl
       .replace('/th/', '/i/')
       .slice(0, -extension.length)
 
     return `${imageUrl}${extension}/${imageName}`
-  }
+  },
 }
 
 /*
@@ -47,5 +44,5 @@ export const imagetwistBased = {
       .replace(HOST_REPLACE_REG_EX, 'imagetwist')
 
     return `${imageUrl}/${imageName}`
-  }
+  },
 }

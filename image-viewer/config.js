@@ -1,10 +1,12 @@
-import { store } from '../common/api'
+import { getStore } from '../common/api'
 import { $ } from '../libs/bliss'
 import urlExtractor from './url-extractor'
 
-export default (function() {
+export default (function () {
+  const store = getStore()
+
   const CLASSES = {
-    open: 'iv-config-form--open'
+    open: 'iv-config-form--open',
   }
 
   let configMenu = null
@@ -26,19 +28,19 @@ export default (function() {
           {
             tag: 'div',
             className: 'iv-config-form__options',
-            contents: rows
-          }
+            contents: rows,
+          },
         ],
         delegate: {
           change: {
-            '.js-iv-config-checkbox': e =>
+            '.js-iv-config-checkbox': (e) =>
               updateHostConfig(
                 config.storedConfig,
                 e.target.value,
                 e.target.checked
-              )
-          }
-        }
+              ),
+          },
+        },
       })
 
       document.body.appendChild(configMenu)
@@ -53,11 +55,11 @@ export default (function() {
       title: 'Close',
       className: `iv-icon-button iv-icon-button--small iv-icon iv-icon--type-close`,
       events: {
-        click: e => {
+        click: (e) => {
           e.preventDefault()
           configMenu.classList.remove(CLASSES.open)
-        }
-      }
+        },
+      },
     })
 
     return {
@@ -67,10 +69,10 @@ export default (function() {
         {
           tag: 'span',
           className: 'iv-config-form__header-title',
-          contents: `Settings for ${currentHost}`
+          contents: `Settings for ${currentHost}`,
         },
-        closeButton
-      ]
+        closeButton,
+      ],
     }
   }
 
@@ -84,10 +86,10 @@ export default (function() {
           type: 'checkbox',
           className: 'iv-config-form__checkbox js-iv-config-checkbox',
           checked: host.enabled,
-          value: host.name
+          value: host.name,
         },
-        host.name
-      ]
+        host.name,
+      ],
     })
   }
 
@@ -104,7 +106,7 @@ export default (function() {
     const storedConfig = await store.get(currentHost, { hosts: {} })
     const enabledHosts = []
 
-    hosts.forEach(host => {
+    hosts.forEach((host) => {
       const id = host.name
       const isEnabled = id in storedConfig.hosts ? storedConfig.hosts[id] : true
 
@@ -124,7 +126,7 @@ export default (function() {
     return {
       hosts,
       storedConfig,
-      enabledHosts
+      enabledHosts,
     }
   }
 
@@ -143,11 +145,11 @@ export default (function() {
         GM_registerMenuCommand('Image Viewer Settings', handler)
       } else {
         unsafeWindow.imageViewer = {
-          settings: handler
+          settings: handler,
         }
       }
 
       return config
-    }
+    },
   }
 })()

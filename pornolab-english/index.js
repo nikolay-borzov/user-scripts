@@ -8,10 +8,10 @@ import profile from './pages/profile'
 
 const pages = [main, topic, tracker, search, privateMessages, profile]
 
-const pageMath = pages.find(page => page.path === location.pathname)
+const pageMath = pages.find((page) => page.path === location.pathname)
 
 if (pageMath) {
-  pageMath.maps.forEach(map => {
+  pageMath.maps.forEach((map) => {
     Object.entries(map).forEach(([token, value]) => translate(token, value))
   })
 } else {

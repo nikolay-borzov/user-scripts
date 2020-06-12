@@ -24,5 +24,5 @@ export const imagevenue = {
     url.pathname = imageUrl
 
     return url.href
-  }
+  },
 }

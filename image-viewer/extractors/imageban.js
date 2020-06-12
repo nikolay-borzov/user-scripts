@@ -19,7 +19,7 @@ export const imageban = {
     return link.thumbnailUrl
       .replace('thumbs', 'out')
       .replace(DATE_PATTERN, '$1/$2/$3')
-  }
+  },
 }
 
 // Direct link
@@ -30,5 +30,5 @@ export const imagebanDirect = {
 
   async getUrl(link) {
     return link.url
-  }
+  },
 }

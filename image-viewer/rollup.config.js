@@ -1,5 +1,5 @@
 const path = require('path')
-const resolve = require('@rollup/plugin-node-resolve')
+const { nodeResolve } = require('@rollup/plugin-node-resolve')
 const postcss = require('rollup-plugin-postcss')
 
 // postCSS plugins
@@ -17,31 +17,31 @@ module.exports = {
       postcss({
         inject: false,
         config: {
-          from: undefined
+          from: undefined,
         },
         minimize: {
           // cssnano
           autoprefixer: false,
-          reduceIdents: false // prevent animation breaking
+          reduceIdents: false, // prevent animation breaking
         },
         plugins: [
           atImport(),
           customProperties({
-            preserve: false
+            preserve: false,
           }),
           cssnext(),
           assets({
-            loadPaths: [imagesPath]
+            loadPaths: [imagesPath],
           }),
           inlineSvg({
-            paths: [imagesPath]
-          })
-        ]
+            paths: [imagesPath],
+          }),
+        ],
       }),
 
-      resolve({
-        mainFields: ['jsnext', 'main', 'browser']
-      })
-    ]
-  }
+      nodeResolve({
+        mainFields: ['jsnext', 'main', 'browser'],
+      }),
+    ],
+  },
 }

@@ -13,7 +13,7 @@
 // @grant       none
 // ==/UserScript==
 
-;(function() {
+;(function () {
   'use strict'
 
   var TOKENS = {
@@ -24,7 +24,7 @@
     textNodeIndexMap: 'textNodeIndexMap',
     replaceMap: 'replaceMap',
     replaceSubForum: 'replaceSubForum',
-    dateTime: 'dateTime'
+    dateTime: 'dateTime',
   }
 
   const dateTimeMap = {
@@ -42,7 +42,7 @@
     года: 'years',
     год: 'year',
     лет: 'years',
-    назад: 'ago'
+    назад: 'ago',
   }
 
   function forEach($elements, callback) {
@@ -51,7 +51,7 @@
 
   function replaceTextNodes($container, indexMap) {
     const nodes = Array.from($container[0].childNodes).filter(
-      n => n.nodeType === 3 && n.data.trim().length
+      (n) => n.nodeType === 3 && n.data.trim().length
     )
 
     Object.entries(indexMap).forEach(([index, translation]) => {
@@ -137,7 +137,7 @@
           $container = $container ? $(token, $container) : $(token)
           if (!$container.length) return
           Object.entries(value).forEach(([token, value]) => {
-            forEach($container, $el => translate(token, value, $el))
+            forEach($container, ($el) => translate(token, value, $el))
           })
         } else {
           const $element = $(token, $container)
@@ -154,106 +154,106 @@
       'a[href="search.php"] b': 'Search',
       'a[href="viewtopic.php?t=980423"] b': 'Rules',
       'a[href="privmsg.php?folder=inbox"] b': 'Inbox',
-      'a[href="groupcp.php"] b': 'Groups'
+      'a[href="groupcp.php"] b': 'Groups',
     },
     '#quick-search': {
-      [TOKENS.textNodeIndexMap]: { 0: 'search ' }
+      [TOKENS.textNodeIndexMap]: { 0: 'search ' },
     },
     '#search-text': {
-      [TOKENS.value]: 'search...'
+      [TOKENS.value]: 'search...',
     },
     '#search-action': {
       'option[value="tracker.php"]': '&nbsp;on tracker&nbsp;',
       'option[value="search.php"]': '&nbsp;on forum&nbsp;',
       'option[value^="search.php?f="]': '&nbsp;on sub-forum&nbsp;',
-      'option[value="cse"]': '&nbsp;on Google&nbsp;'
+      'option[value="cse"]': '&nbsp;on Google&nbsp;',
     },
     '.topmenu': {
       'td:first': {
         [TOKENS.textNodeIndexMap]: {
-          0: { 'Вы зашли как': 'Logged as' }
-        }
+          0: { 'Вы зашли как': 'Logged as' },
+        },
       },
       '[onclick*="{logout: 1}"]': 'Log out',
       'a[href="privmsg.php?folder=inbox"]': {
         [TOKENS.replaceMap]: {
           'Личные сообщения': 'Private messages',
           'новых нет': 'none',
-          'есть новые': 'new'
-        }
+          'есть новые': 'new',
+        },
       },
       'a[href="profile.php?mode=editprofile"]': 'Settings',
       'td:nth-child(3)': {
         'a[href^="./profile.php?mode=viewprofile"]': 'Rating/Downloads',
-        'a[href^="search.php?uid="]': 'My messages'
+        'a[href^="search.php?uid="]': 'My messages',
       },
       'a[href="profile.php?mode=register"] b': 'Registration',
       'form[action="/forum/login.php"]': {
         [TOKENS.textNodeIndexMap]: { 0: ' Name: ', 1: ' Password: ' },
         '[name="login"]': {
-          [TOKENS.value]: 'Login'
-        }
+          [TOKENS.value]: 'Login',
+        },
       },
-      '[href="profile.php?mode=sendpassword"]': 'Forgot password?'
+      '[href="profile.php?mode=sendpassword"]': 'Forgot password?',
     },
     '#ses-short': {
       [TOKENS.title]:
         'Short session (Auto logout after 30 minutes of inactivity)',
-      [TOKENS.textNodeIndexMap]: { 0: 'Do not remember' }
+      [TOKENS.textNodeIndexMap]: { 0: 'Do not remember' },
     },
     '#dls-menu': {
       'a[href^="tracker.php?rid="]': 'Seeding torrents',
       'a[href^="./profile.php?mode=viewprofile&u="]': 'Leeching torrents',
       'a[href$="dlc=1"]': 'Past torrents',
-      'a[href$="dlw=1"]': 'Future torrents'
+      'a[href$="dlw=1"]': 'Future torrents',
     },
-    [TOKENS.replaceSubForum]: '#tr-menu a'
+    [TOKENS.replaceSubForum]: '#tr-menu a',
   }
 
   var main = {
     path: '/forum/index.php',
-    maps: [pageHeader]
+    maps: [pageHeader],
   }
 
   const activePager = {
     '.menu-root': 'Pages',
     '.menu-root + a': 'Previous',
     'a:last': {
-      [TOKENS.replaceMap]: { 'След.': 'Next' }
-    }
+      [TOKENS.replaceMap]: { 'След.': 'Next' },
+    },
   }
 
   var pager = {
     '#main_content_wrap': {
       'table:first p.small:first > b': $.extend(
         {
-          [TOKENS.replaceMap]: { Страницы: 'Pages' }
+          [TOKENS.replaceMap]: { Страницы: 'Pages' },
         },
         activePager
-      )
+      ),
     },
     '#pagination, .bottom_info': {
       'p:first': {
         [TOKENS.textNodeIndexMap]: {
           0: 'Pages ',
-          1: ' of '
-        }
+          1: ' of ',
+        },
       },
-      'p:last': activePager
+      'p:last': activePager,
     },
     '#pg-jump': {
       'th:first': 'To page...',
       'input[type="submit"]': {
-        [TOKENS.value]: 'Go'
-      }
-    }
+        [TOKENS.value]: 'Go',
+      },
+    },
   }
 
   var breadcrumb = {
     '.nav:first': {
-      'a:first': 'Forums index'
+      'a:first': 'Forums index',
     },
-    [TOKENS.replaceSubForum]: '.nav a'
+    [TOKENS.replaceSubForum]: '.nav a',
   }
 
   var torrentInfo = {
@@ -263,48 +263,48 @@
         [TOKENS.textNodeIndexMap]: {
           0: { Размер: 'Size' },
           1: { Зарегистрирован: 'Uploaded' },
-          2: { '.torrent скачан': 'Downloaded' }
+          2: { '.torrent скачан': 'Downloaded' },
         },
         [TOKENS.dateTime]: 'b:nth-child(2)',
         'b:nth-child(3)': {
           [TOKENS.replaceMap]: {
             раза: 'times',
-            раз: 'times'
-          }
-        }
+            раз: 'times',
+          },
+        },
       },
       '.row5': {
         '.seed': {
           [TOKENS.textNodeIndexMap]: {
-            0: { Сиды: 'Seeders' }
-          }
+            0: { Сиды: 'Seeders' },
+          },
         },
         '.leech': {
           [TOKENS.textNodeIndexMap]: {
-            0: { Личи: 'Leechers' }
-          }
+            0: { Личи: 'Leechers' },
+          },
         },
-        '.gen': 'Peers statistics'
+        '.gen': 'Peers statistics',
       },
       '.row3': {
         '.med:nth-child(2)': 'Add to "Future Downloads"',
-        '.med:nth-child(3)': 'Remove from the downloads list'
+        '.med:nth-child(3)': 'Remove from the downloads list',
       },
       '#full_details': {
         '.floatL b': {
           [TOKENS.replaceMap]: {
             Сиды: 'Seeders',
-            Личи: 'Leechers'
-          }
+            Личи: 'Leechers',
+          },
         },
         '.tCenter': {
           [TOKENS.textNodeIndexMap]: {
-            0: { 'показаны данные': 'data is' }
+            0: { 'показаны данные': 'data is' },
           },
-          'i b': 'for current session only'
-        }
-      }
-    }
+          'i b': 'for current session only',
+        },
+      },
+    },
   }
 
   const topicHeader = {
@@ -312,7 +312,7 @@
       'a.small:first': 'My messages',
       '[onclick*="add_ut"]': 'add',
       '[onclick*="del_ut"]': 'delete',
-      '.menu-root': 'View options'
+      '.menu-root': 'View options',
     },
     '#topic-options': {
       th: 'View options',
@@ -326,10 +326,10 @@
               'картинки званий': 'badges',
               'картинки в сообщениях': 'images in messages',
               смайлики: 'smiles',
-              подписи: 'signatures'
-            }
-          }
-        }
+              подписи: 'signatures',
+            },
+          },
+        },
       },
       '#spoiler-opt': {
         legend: 'Show',
@@ -337,48 +337,48 @@
           [TOKENS.textNodeIndexMap]: {
             0: {
               'спойлер открытым': 'spolires opened',
-              'загружаемые картинки': 'downloadable images'
-            }
-          }
-        }
+              'загружаемые картинки': 'downloadable images',
+            },
+          },
+        },
       },
       '[type="button"]': {
-        [TOKENS.value]: 'Send'
-      }
-    }
+        [TOKENS.value]: 'Send',
+      },
+    },
   }
 
   var topic = {
     path: '/forum/viewtopic.php',
-    maps: [pageHeader, pager, breadcrumb, torrentInfo, topicHeader]
+    maps: [pageHeader, pager, breadcrumb, torrentInfo, topicHeader],
   }
 
   var tracker = {
     path: '/forum/tracker.php',
-    maps: [pageHeader, pager]
+    maps: [pageHeader, pager],
   }
 
   var search = {
     path: '/forum/search.php',
-    maps: [pageHeader, pager]
+    maps: [pageHeader, pager],
   }
 
   var privateMessages = {
     path: '/forum/privmsg.php',
-    maps: [pageHeader]
+    maps: [pageHeader],
   }
 
   var profile = {
     path: '/forum/profile.php',
-    maps: [pageHeader, breadcrumb]
+    maps: [pageHeader, breadcrumb],
   }
 
   const pages = [main, topic, tracker, search, privateMessages, profile]
 
-  const pageMath = pages.find(page => page.path === location.pathname)
+  const pageMath = pages.find((page) => page.path === location.pathname)
 
   if (pageMath) {
-    pageMath.maps.forEach(map => {
+    pageMath.maps.forEach((map) => {
       Object.entries(map).forEach(([token, value]) => translate(token, value))
     })
   } else {

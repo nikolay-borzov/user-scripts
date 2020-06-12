@@ -15,5 +15,5 @@ export const vfl = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('_s', '')
-  }
+  },
 }

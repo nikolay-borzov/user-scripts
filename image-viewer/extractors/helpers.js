@@ -1,5 +1,7 @@
 // @ts-check
-import { request } from '../../common/api'
+import { getRequest } from '../../common/api'
+
+const request = getRequest()
 
 /**
  * @typedef {import('../url-extractor').Link} Link

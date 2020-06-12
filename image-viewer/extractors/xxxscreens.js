@@ -13,5 +13,5 @@ export const xxxscreens = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('small/', 'big/')
-  }
+  },
 }

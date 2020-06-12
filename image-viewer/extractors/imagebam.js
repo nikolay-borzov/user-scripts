@@ -10,5 +10,5 @@ export const imagebam = {
   name: 'ImageBam',
   linkRegEx: new RegExp('^http://www.imagebam.com/image'),
   imageUrlRegEx: /property="og:image" content="([^"]*)"/,
-  getUrl: getUrlFromPage
+  getUrl: getUrlFromPage,
 }

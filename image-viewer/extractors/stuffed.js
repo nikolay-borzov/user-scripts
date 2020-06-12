@@ -15,5 +15,5 @@ export const stuffed = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('-thumb', '')
-  }
+  },
 }

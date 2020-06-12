@@ -5,7 +5,7 @@ import imageViewCSS from './styles.css'
 
 import urlExtractor from './url-extractor'
 
-export default (function() {
+export default (function () {
   const CLASSES = {
     imageLink: 'js-image-link',
     imageLinkZoom: 'iv-icon--type-zoom',
@@ -20,11 +20,11 @@ export default (function() {
     iconExpand: 'iv-icon--type-expand',
     iconShrink: 'iv-icon--type-shrink',
     grabbing: 'iv-image--grabbing',
-    buttonActive: 'iv-icon-button--active'
+    buttonActive: 'iv-icon-button--active',
   }
 
   const SELECTORS = {
-    imageLink: `.${CLASSES.imageLink}`
+    imageLink: `.${CLASSES.imageLink}`,
   }
 
   const EMPTY_SRC =
@@ -43,8 +43,8 @@ export default (function() {
       next: null,
       previous: null,
       close: null,
-      toggleFullHeight: null
-    }
+      toggleFullHeight: null,
+    },
   }
 
   const state = {
@@ -60,7 +60,7 @@ export default (function() {
       return this.linksSet.length - 1
     },
     dragPosition: null,
-    dragging: false
+    dragging: false,
   }
 
   /**
@@ -120,7 +120,7 @@ export default (function() {
         imageUrl = await urlExtractor.getImageUrl({
           url: link.href,
           thumbnailUrl,
-          host: link.dataset.ivHost
+          host: link.dataset.ivHost,
         })
 
         if (!imageUrl) {
@@ -173,7 +173,7 @@ export default (function() {
     },
 
     getSize(img) {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const intervalId = setInterval(() => {
           if (img.naturalWidth) {
             clearInterval(intervalId)
@@ -237,7 +237,7 @@ export default (function() {
       )
       elements.container.classList.remove(CLASSES.loading)
       link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
-    }
+    },
   }
 
   /**
@@ -301,7 +301,7 @@ export default (function() {
         }
 
         e.preventDefault()
-      }
+      },
     },
 
     mouse(e) {
@@ -334,7 +334,7 @@ export default (function() {
       }
 
       e.preventDefault()
-    }
+    },
   }
 
   /**
@@ -347,8 +347,8 @@ export default (function() {
         contents: [
           create.viewContainerHeader(),
           create.viewContainerBody(),
-          create.viewContainerFooter()
-        ]
+          create.viewContainerFooter(),
+        ],
       })
 
       document.body.appendChild(elements.container)
@@ -358,12 +358,12 @@ export default (function() {
       elements.image = $.create('img', {
         className: 'iv-image',
         events: {
-          'mousedown mouseup mousemove mouseout dblclick': events.mouse
-        }
+          'mousedown mouseup mousemove mouseout dblclick': events.mouse,
+        },
       })
 
       elements.imageThumbnail = $.create('img', {
-        className: 'iv-thumbnail'
+        className: 'iv-thumbnail',
       })
 
       elements.imageContainer = $.create('div', {
@@ -373,16 +373,16 @@ export default (function() {
             tag: 'div',
             className: 'iv-image-view__backdrop',
             events: {
-              click: image.hide
-            }
+              click: image.hide,
+            },
           },
           {
             tag: 'div',
             className: 'iv-thumbnail-wrapper',
-            contents: elements.imageThumbnail
+            contents: elements.imageThumbnail,
           },
-          elements.image
-        ]
+          elements.image,
+        ],
       })
 
       return elements.imageContainer
@@ -393,7 +393,7 @@ export default (function() {
       elements.imageTotal = document.createElement('span')
       const imageNumber = $.create('div', {
         className: 'iv-image-view__number single-hide',
-        contents: [elements.imageNumber, '/', elements.imageTotal]
+        contents: [elements.imageNumber, '/', elements.imageTotal],
       })
 
       elements.buttons.close = create.toolbarButton(
@@ -408,8 +408,8 @@ export default (function() {
         contents: {
           tag: 'div',
           className: 'iv-image-view__header',
-          contents: [imageNumber, elements.buttons.close]
-        }
+          contents: [imageNumber, elements.buttons.close],
+        },
       }
     },
 
@@ -439,8 +439,8 @@ export default (function() {
         contents: {
           tag: 'div',
           className: 'iv-image-view__footer',
-          contents: [buttons.previous, buttons.toggleFullHeight, buttons.next]
-        }
+          contents: [buttons.previous, buttons.toggleFullHeight, buttons.next],
+        },
       }
     },
 
@@ -450,20 +450,20 @@ export default (function() {
         title: title,
         className: `iv-icon-button iv-icon iv-icon--type-${icon} ${className}`,
         events: {
-          click: e => {
+          click: (e) => {
             e.preventDefault()
             handler()
-          }
-        }
+          },
+        },
       })
-    }
+    },
   }
 
   /**
    * Initializes image viewer
    * @param {Array<string>} enabledHosts
    */
-  return function(enabledHosts) {
+  return function (enabledHosts) {
     addStyle(imageViewCSS)
 
     const container = $('body')
@@ -476,7 +476,7 @@ export default (function() {
       'iv-icon',
       'iv-icon--hover',
       CLASSES.imageLinkZoom,
-      'iv-icon--size-button'
+      'iv-icon--size-button',
     ]
 
     const getHostName = urlExtractor.getHostNameMatcher(enabledHosts)
@@ -484,7 +484,7 @@ export default (function() {
     const imagesWithLinks = $$('a > img, a > var', container)
 
     imagesWithLinks
-      .map(img => {
+      .map((img) => {
         return { link: img.parentNode, thumbnailUrl: img.src || img.title }
       })
       .filter(({ link }) => link.href)

@@ -5,7 +5,7 @@ import { hasOwnProperty } from '../../../common/helpers'
 
 import tagsCSS from './styles.css'
 
-export default (function() {
+export default (function () {
   const TOPIC_PATH = '/forum/viewtopic.php'
 
   // Separates tags from title
@@ -25,7 +25,7 @@ export default (function() {
     '1080p',
     '1080i',
     '1440p',
-    '2160p'
+    '2160p',
   ]
   const DIMENSION_ICON_NAME = 'dimension'
 
@@ -46,10 +46,10 @@ export default (function() {
     cen: 'cen',
     uncen: 'uncen',
     ptcen: 'ptcen',
-    inprogress: 'in-progress'
+    inprogress: 'in-progress',
   }
 
-  DIMENSIONS.forEach(dim => {
+  DIMENSIONS.forEach((dim) => {
     TAG_ICON_MAP[dim] = DIMENSION_ICON_NAME
   })
 
@@ -62,7 +62,7 @@ export default (function() {
     const titleParts = []
     const tagGroupsAfter = []
 
-    regex.getMatchGroups(TITLE_REGEX, titleRaw).forEach(groups => {
+    regex.getMatchGroups(TITLE_REGEX, titleRaw).forEach((groups) => {
       let tags = []
 
       // First group - tags
@@ -83,7 +83,7 @@ export default (function() {
     return {
       tagGroupsBefore,
       title: titleParts.join('').trim(),
-      tagGroupsAfter
+      tagGroupsAfter,
     }
   }
 
@@ -103,7 +103,7 @@ export default (function() {
 
     return $.create('div', {
       className: 'tags-row',
-      contents: tags
+      contents: tags,
     })
   }
 
@@ -112,8 +112,8 @@ export default (function() {
    */
   function createTagLinks(tags) {
     return tags
-      .filter(tag => tag.length)
-      .map(tag => {
+      .filter((tag) => tag.length)
+      .map((tag) => {
         let className = 'tags-row-tag'
         tag = tag.trim()
 
@@ -126,7 +126,7 @@ export default (function() {
           className,
           textContent: tag,
           href: `/forum/tracker.php?nm=${tag}`,
-          target: '_blank'
+          target: '_blank',
         })
       })
   }
@@ -152,7 +152,7 @@ export default (function() {
     // Remove tags from title
     $.set(titleLink, {
       textContent: titleParts.title,
-      title: title
+      title: title,
     })
 
     if (hasTagBefore) {
@@ -164,7 +164,7 @@ export default (function() {
     }
   }
 
-  return function() {
+  return function () {
     $.ready().then(() => {
       if (location.pathname === TOPIC_PATH) {
         createPostTags()

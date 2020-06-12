@@ -12,7 +12,7 @@ export function hasOwnProperty(object, property) {
  * @returns {Promise<void>}
  */
 export async function wait(ms) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }

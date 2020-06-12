@@ -1,15 +1,17 @@
 /* global Menu jQuery */
-import { addStyle, store } from '../../../common/api'
+import { addStyle, getStore } from '../../../common/api'
 import { $ } from '../../../libs/bliss'
 
 import configCSS from './styles.css'
 
-export default (function() {
+export default (function () {
+  const store = getStore()
+
   const KEYS = {
     tags: 'tags',
     similar: 'similar',
     pager: 'pager',
-    download: 'download'
+    download: 'download',
   }
 
   function getRow(label, storeKey, checked) {
@@ -21,10 +23,10 @@ export default (function() {
           type: 'checkbox',
           className: 'config-form__checkbox js-config-checkbox',
           checked,
-          value: storeKey
+          value: storeKey,
         },
-        label
-      ]
+        label,
+      ],
     })
   }
 
@@ -34,11 +36,11 @@ export default (function() {
       type: 'button',
       value: 'Apply',
       events: {
-        click: e => {
+        click: (e) => {
           document.location.reload()
           Menu.hide(e)
-        }
-      }
+        },
+      },
     }
 
     return $.create('div', {
@@ -56,24 +58,24 @@ export default (function() {
             tag: 'a',
             target: '_blank',
             href: 'https://github.com/shikiyoku/user-scripts#image-viewer',
-            contents: 'Try Image Viewer'
-          }
+            contents: 'Try Image Viewer',
+          },
         },
         {
           tag: 'div',
           className: 'config-form__footer',
-          contents: button
-        }
+          contents: button,
+        },
       ],
       delegate: {
         change: {
-          '.js-config-checkbox': e =>
-            store.set(e.target.value, e.target.checked)
-        }
+          '.js-config-checkbox': (e) =>
+            store.set(e.target.value, e.target.checked),
+        },
       },
       events: {
-        mousedown: e => e.stopPropagation()
-      }
+        mousedown: (e) => e.stopPropagation(),
+      },
     })
   }
 
@@ -85,7 +87,7 @@ export default (function() {
     const menuLink = $.create('a', {
       className: 'config-menu-link',
       textContent: 'PLE',
-      href: '#config-form'
+      href: '#config-form',
     })
 
     $.contents(container, ['· ', menuLink])
@@ -93,7 +95,7 @@ export default (function() {
     // Show menu on click
     const $menuLink = jQuery(menuLink)
     $menuLink
-      .click(e => {
+      .click((e) => {
         e.preventDefault()
         Menu.clicked(jQuery(menuLink))
       })
@@ -105,8 +107,8 @@ export default (function() {
 
   function getParams() {
     return Promise.all(
-      Object.values(KEYS).map(key => store.get(key, true))
-    ).then(values => {
+      Object.values(KEYS).map((key) => store.get(key, true))
+    ).then((values) => {
       return Object.keys(KEYS).reduce((result, key, index) => {
         result[key] = values[index]
         return result
@@ -125,6 +127,6 @@ export default (function() {
       })
 
       return params
-    }
+    },
   }
 })()

@@ -18,7 +18,7 @@ import * as hostExtractors from './extractors/index'
  * @property {(link: Link, extractor: Extractor) => Promise<string>} getUrl
  */
 
-export default (function() {
+export default (function () {
   function sortCaseInsensitive(array, getValue) {
     // Sorting with map
     return array
@@ -32,7 +32,7 @@ export default (function() {
         }
         return 0
       })
-      .map(m => array[m.index])
+      .map((m) => array[m.index])
   }
 
   let extractorsActive = []
@@ -47,12 +47,12 @@ export default (function() {
 
   return {
     getImageHostsInfo() {
-      const result = extractors.map(e => ({
+      const result = extractors.map((e) => ({
         name: e.name,
-        description: e.hosts ? e.hosts.join(', ') : ''
+        description: e.hosts ? e.hosts.join(', ') : '',
       }))
 
-      return sortCaseInsensitive(result, value => value.name)
+      return sortCaseInsensitive(result, (value) => value.name)
     },
 
     getImageUrl(link) {
@@ -63,19 +63,19 @@ export default (function() {
 
     getHostNameMatcher(enabledHosts) {
       // Keep enabled extractors
-      extractorsActive = extractors.filter(e => enabledHosts.includes(e.name))
+      extractorsActive = extractors.filter((e) => enabledHosts.includes(e.name))
 
       // It is often case when neighbor links are from the same image host. Therefore
       // we can improve search by checking link URL with the previous extractor
       // linkRegEx
       let prevExtractor = null
 
-      return url => {
+      return (url) => {
         if (prevExtractor && prevExtractor.linkRegEx.test(url)) {
           return prevExtractor.name
         }
 
-        const extractor = extractorsActive.find(e => e.linkRegEx.test(url))
+        const extractor = extractorsActive.find((e) => e.linkRegEx.test(url))
 
         if (extractor) {
           prevExtractor = extractor
@@ -84,6 +84,6 @@ export default (function() {
 
         return null
       }
-    }
+    },
   }
 })()

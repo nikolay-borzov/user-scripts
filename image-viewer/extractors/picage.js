@@ -13,5 +13,5 @@ export const picage = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('picage', 'pic4you').replace('-thumb', '')
-  }
+  },
 }

@@ -10,7 +10,7 @@ const topicHeader = {
     'a.small:first': 'My messages',
     '[onclick*="add_ut"]': 'add',
     '[onclick*="del_ut"]': 'delete',
-    '.menu-root': 'View options'
+    '.menu-root': 'View options',
   },
   '#topic-options': {
     th: 'View options',
@@ -24,10 +24,10 @@ const topicHeader = {
             'картинки званий': 'badges',
             'картинки в сообщениях': 'images in messages',
             смайлики: 'smiles',
-            подписи: 'signatures'
-          }
-        }
-      }
+            подписи: 'signatures',
+          },
+        },
+      },
     },
     '#spoiler-opt': {
       legend: 'Show',
@@ -35,22 +35,22 @@ const topicHeader = {
         [TOKENS.textNodeIndexMap]: {
           0: {
             'спойлер открытым': 'spolires opened',
-            'загружаемые картинки': 'downloadable images'
-          }
-        }
-      }
+            'загружаемые картинки': 'downloadable images',
+          },
+        },
+      },
     },
     '[type="button"]': {
-      [TOKENS.value]: 'Send'
-    }
-  }
+      [TOKENS.value]: 'Send',
+    },
+  },
 }
 
-const topic = {
-  '#topic_main': {}
-}
+/* const topic = {
+  '#topic_main': {},
+} */
 
 export default {
   path: '/forum/viewtopic.php',
-  maps: [pageHeader, pager, breadcrumb, torrentInfo, topicHeader]
+  maps: [pageHeader, pager, breadcrumb, torrentInfo, topicHeader],
 }

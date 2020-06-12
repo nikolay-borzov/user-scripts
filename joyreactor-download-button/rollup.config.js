@@ -11,20 +11,20 @@ module.exports = {
       postcss({
         inject: false,
         config: {
-          from: undefined
+          from: undefined,
         },
         minimize: {
           // cssnano
           autoprefixer: false,
-          reduceIdents: false // prevent animation breaking
+          reduceIdents: false, // prevent animation breaking
         },
         plugins: [
           cssnext(),
           inlineSvg({
-            paths: [path.resolve(__dirname, 'icons')]
-          })
-        ]
-      })
-    ]
-  }
+            paths: [path.resolve(__dirname, 'icons')],
+          }),
+        ],
+      }),
+    ],
+  },
 }

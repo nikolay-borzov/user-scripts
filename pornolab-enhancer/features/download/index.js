@@ -3,7 +3,7 @@ import { addStyle } from '../../../common/api'
 
 import downloadCSS from './styles.css'
 
-export default (function() {
+export default (function () {
   const ENABLE_ON_PATH = '/forum/viewtopic.php'
 
   function triggerEvent(element, eventName) {
@@ -21,7 +21,7 @@ export default (function() {
       href: '#',
 
       events: {
-        click: e => {
+        click: (e) => {
           e.preventDefault()
 
           triggerEvent(
@@ -29,27 +29,27 @@ export default (function() {
             jQuery.browser.opera ? 'mouseover' : 'mousedown'
           )
           triggerEvent(downloadLink, 'click')
-        }
+        },
       },
 
       contents: [
         {
           tag: 'span',
-          className: 'quick-download__icon'
+          className: 'quick-download__icon',
         },
         {
           tag: 'span',
           textContent: document
             .querySelector('.attach')
-            .querySelector('.row1:nth-child(5) td:nth-child(2)').textContent
-        }
-      ]
+            .querySelector('.row1:nth-child(5) td:nth-child(2)').textContent,
+        },
+      ],
     })
 
     document.body.appendChild(link)
   }
 
-  return function() {
+  return function () {
     $.ready().then(() => {
       if (location.pathname !== ENABLE_ON_PATH) {
         return

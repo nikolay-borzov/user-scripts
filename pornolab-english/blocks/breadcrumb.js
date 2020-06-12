@@ -2,7 +2,7 @@ import TOKENS from '../core/tokenTypes'
 
 export default {
   '.nav:first': {
-    'a:first': 'Forums index'
+    'a:first': 'Forums index',
   },
-  [TOKENS.replaceSubForum]: '.nav a'
+  [TOKENS.replaceSubForum]: '.nav a',
 }

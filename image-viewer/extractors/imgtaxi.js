@@ -18,5 +18,5 @@ export const imgtaxi = {
     return link.thumbnailUrl
       .replace('/small/', '/big/')
       .replace('/small-medium/', '/big/')
-  }
+  },
 }

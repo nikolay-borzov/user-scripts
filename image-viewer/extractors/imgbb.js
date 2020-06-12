@@ -15,5 +15,5 @@ export const imgbb = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('//thumb', '//image')
-  }
+  },
 }

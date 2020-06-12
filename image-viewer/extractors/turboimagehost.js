@@ -14,5 +14,5 @@ export const turboimagehost = {
   name: 'TurboImageHost',
   linkRegEx: new RegExp('^https://www.turboimagehost.com/p'),
   imageUrlRegEx: /property="og:image" content="([^"]*)"/,
-  getUrl: getUrlFromPage
+  getUrl: getUrlFromPage,
 }

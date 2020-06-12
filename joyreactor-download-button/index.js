@@ -5,7 +5,7 @@ import css from './styles.css'
 addStyle(css)
 
 const CLASSES = {
-  processed: 'js-has-download-button'
+  processed: 'js-has-download-button',
 }
 
 function createDownloadLink(imgContainer) {

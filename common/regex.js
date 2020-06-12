@@ -14,7 +14,7 @@ export default {
       }
 
       const groups = match.slice(1)
-      if (groups.some(group => group)) {
+      if (groups.some((group) => group)) {
         matches.push(groups)
       }
     }
@@ -31,5 +31,5 @@ export default {
     const match = regEx.exec(str)
 
     return match ? match[1] : null
-  }
+  },
 }

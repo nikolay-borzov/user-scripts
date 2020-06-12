@@ -15,7 +15,7 @@ const dateTimeMap = {
   года: 'years',
   год: 'year',
   лет: 'years',
-  назад: 'ago'
+  назад: 'ago',
 }
 
 function forEach($elements, callback) {
@@ -24,7 +24,7 @@ function forEach($elements, callback) {
 
 function replaceTextNodes($container, indexMap) {
   const nodes = Array.from($container[0].childNodes).filter(
-    n => n.nodeType === 3 && n.data.trim().length
+    (n) => n.nodeType === 3 && n.data.trim().length
   )
   // Replace text node(s) at index
   Object.entries(indexMap).forEach(([index, translation]) => {
@@ -111,7 +111,7 @@ export function translate(token, value, $container) {
         $container = $container ? $(token, $container) : $(token)
         if (!$container.length) return
         Object.entries(value).forEach(([token, value]) => {
-          forEach($container, $el => translate(token, value, $el))
+          forEach($container, ($el) => translate(token, value, $el))
           // translate(token, value, $container)
         })
       } else {

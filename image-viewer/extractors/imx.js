@@ -15,5 +15,5 @@ export const imx = {
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('/imx', '/i.imx').replace('/u/t/', '/i/')
-  }
+  },
 }

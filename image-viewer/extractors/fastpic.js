@@ -14,7 +14,7 @@ export const fastpic = {
   name: 'FastPic',
   linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
   imageUrlRegEx: new RegExp(`src="(?<url>[^"]+)" class="image img-fluid"`),
-  getUrl: getUrlFromPage
+  getUrl: getUrlFromPage,
 }
 
 /*
@@ -36,5 +36,5 @@ export const fastpicDirect = {
     const url = `https://fastpic.ru/view/${index}${date}${filename}.html`
 
     return fastpic.getUrl({ ...link, url }, fastpic)
-  }
+  },
 }
