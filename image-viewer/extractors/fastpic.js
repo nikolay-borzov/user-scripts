@@ -13,7 +13,7 @@ import { getUrlFromPage } from './helpers'
 export const fastpic = {
   name: 'FastPic',
   linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
-  imageUrlRegEx: new RegExp(`loading_img = '(?<url>[^']+)'`),
+  imageUrlRegEx: new RegExp(`src="(?<url>[^"]+)" class="image img-fluid"`),
   getUrl: getUrlFromPage
 }
 

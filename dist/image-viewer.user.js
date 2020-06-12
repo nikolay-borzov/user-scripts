@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @description Allows viewing full image without leaving the page
 // @namespace   https://github.com/shikiyoku
-// @version     1.1.5
+// @version     1.1.6
 // @author      shikiyoku
 // @license     MIT
 // @icon        https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png
@@ -122,10 +122,12 @@
 
     let url
 
-    if (match.groups) {
-      url = match.groups.url
-    } else {
-      url = match[1]
+    if (match) {
+      if (match.groups) {
+        url = match.groups.url
+      } else {
+        url = match[1]
+      }
     }
 
     if (!url) {
@@ -138,7 +140,7 @@
   const fastpic = {
     name: 'FastPic',
     linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
-    imageUrlRegEx: new RegExp(`loading_img = '(?<url>[^']+)'`),
+    imageUrlRegEx: new RegExp(`src="(?<url>[^"]+)" class="image img-fluid"`),
     getUrl: getUrlFromPage
   }
 

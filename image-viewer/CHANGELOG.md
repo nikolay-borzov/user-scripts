@@ -1,5 +1,12 @@
 # Image Viewer Changelog
 
+## 1.1.6 - 2020-06-12
+
+## Fixed
+
+- FastPic URL extracting after page markup change
+- Handle case when URL cannot extracted from a page HTML because pattern has no matches
+
 ## 1.1.5 - 2020-01-28
 
 ## Fixed

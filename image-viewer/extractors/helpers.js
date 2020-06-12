@@ -24,12 +24,14 @@ export async function getUrlFromPage(link, extractor) {
 
   let url
 
-  // First try to get named capturing group 'url'
-  if (match.groups) {
-    url = match.groups.url
-  } else {
-    // Otherwise get first group match
-    url = match[1]
+  if (match) {
+    // First try to get named capturing group 'url'
+    if (match.groups) {
+      url = match.groups.url
+    } else {
+      // Otherwise get first group match
+      url = match[1]
+    }
   }
 
   if (!url) {
