@@ -1,5 +1,11 @@
 # Image Viewer Changelog
 
+## 1.1.7 - 2020-07-17
+
+## Fixed
+
+- Full size image displaying in Firefox
+
 ## 1.1.6 - 2020-06-12
 
 ## Fixed

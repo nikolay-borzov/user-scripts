@@ -67,18 +67,23 @@
 .iv-icon--type-zoom::after {
   background-image: svg-load('zoom-in.svg', fill=#fff);
 }
+
 .iv-icon--type-next::after {
   background-image: svg-load('next.svg', fill=#fff);
 }
+
 .iv-icon--type-previous::after {
   background-image: svg-load('before.svg', fill=#fff);
 }
+
 .iv-icon--type-close::after {
   background-image: svg-load('close.svg', fill=#fff);
 }
+
 .iv-icon--type-expand::after {
   background-image: svg-load('expand.svg', fill=#fff);
 }
+
 .iv-icon--type-shrink::after {
   background-image: svg-load('shrink.svg', fill=#fff);
 }
@@ -286,8 +291,8 @@ html.iv-image-view--open,
 
 @supports (-webkit-appearance: none) {
   .iv-image {
-    /* Add fix for Chrome to remove extra space */
-    flex: 0 1;
+    /* FIX: Remove extra space for Chrome. Looks like it's no longer needed */
+    /* flex: 0 1 auto; */
   }
 }
 
