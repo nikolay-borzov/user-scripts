@@ -31,7 +31,21 @@ export const fastpicDirect = {
   linkRegEx: new RegExp('fastpic.ru/big'),
 
   async getUrl(link) {
-    const [, index, date, filename] = URL_PARTS_REGEXP.exec(link.url)
+    let hostLink = link.url
+
+    // Get URL from query string param
+    if (hostLink.includes('?')) {
+      const urlObject = new URL(hostLink)
+      const params = new URLSearchParams(urlObject.search)
+      for (const param of params.values()) {
+        if (fastpicDirect.linkRegEx.test(param)) {
+          hostLink = param
+          break
+        }
+      }
+    }
+
+    const [, index, date, filename] = URL_PARTS_REGEXP.exec(hostLink)
 
     const url = `https://fastpic.ru/view/${index}${date}${filename}.html`
 

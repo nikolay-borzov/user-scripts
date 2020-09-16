@@ -1,5 +1,17 @@
 # Image Viewer Changelog
 
+## 1.1.8 - 2020-09-16
+
+## Fixed
+
+- ImageVenue legacy link handling
+
+## Added
+
+- ImageVenue new link format support
+- `phun` ImageTwist link subdomain support
+- Support FastPic direct link as a query string param
+
 ## 1.1.7 - 2020-07-17
 
 ## Fixed
@@ -41,7 +53,7 @@
 
 ## Added
 
-- Image host support: `Radikal.ru` (obsolete)
+- Image host support: `Radikal.ru` (legacy)
 
 ## Removed
 

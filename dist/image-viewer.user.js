@@ -2,7 +2,7 @@
 // @name        Image Viewer
 // @description Allows viewing full image without leaving the page
 // @namespace   https://github.com/shikiyoku
-// @version     1.1.7
+// @version     1.1.8
 // @author      shikiyoku
 // @license     MIT
 // @icon        https://raw.githubusercontent.com/shikiyoku/user-scripts/master/image-viewer/icon.png
@@ -165,7 +165,20 @@
     linkRegEx: new RegExp('fastpic.ru/big'),
 
     async getUrl(link) {
-      const [, index, date, filename] = URL_PARTS_REGEXP.exec(link.url)
+      let hostLink = link.url
+
+      if (hostLink.includes('?')) {
+        const urlObject = new URL(hostLink)
+        const params = new URLSearchParams(urlObject.search)
+        for (const param of params.values()) {
+          if (fastpicDirect.linkRegEx.test(param)) {
+            hostLink = param
+            break
+          }
+        }
+      }
+
+      const [, index, date, filename] = URL_PARTS_REGEXP.exec(hostLink)
 
       const url = `https://fastpic.ru/view/${index}${date}${filename}.html`
 
@@ -204,7 +217,7 @@
 
   const imagetwist = {
     name: 'ImageTwist',
-    linkRegEx: new RegExp('^http://imagetwist.com'),
+    linkRegEx: new RegExp('imagetwist.com'),
 
     async getUrl(link) {
       const imageName = link.url.split('/').pop().replace('.html', '')
@@ -220,7 +233,7 @@
   const HOST_REPLACE_REG_EX = new RegExp('(picturelol|picshick|imageshimage)')
 
   const imagetwistBased = {
-    name: 'ImageTwist based',
+    name: 'ImageTwist based (legacy)',
     hosts: ['Picturelol.com', 'PicShick.com', 'Imageshimage.com'],
     linkRegEx: new RegExp('^https?://(picturelol|picshick|imageshimage).com'),
 
@@ -234,21 +247,13 @@
     },
   }
 
-  const imagevenue = {
+  const imagevenueLegacy = {
     name: 'ImageVenue.com',
-    linkRegEx: new RegExp('imagevenue.com/img.php'),
-    imageUrlRegEx: /id=("|')thepic\1.*src=\1(?<url>[^']*)/i,
 
-    async getUrl(link, extractor) {
-      const imageUrl = await getUrlFromPage(link, extractor)
-      const pageUrl = link.url
+    linkRegEx: new RegExp('(imagevenue.com/img.php|www.imagevenue.com/\\w+$)'),
+    imageUrlRegEx: /data-toggle="full">\W*<img src="(?<url>[^"]*)/im,
 
-      const url = new URL(pageUrl)
-      url.search = ''
-      url.pathname = imageUrl
-
-      return url.href
-    },
+    getUrl: getUrlFromPage,
   }
 
   const imgadult = {
@@ -429,8 +434,8 @@
     },
   }
 
-  const radikalObsolete = {
-    name: 'Radikal.ru (obsolete)',
+  const radikalLegacy = {
+    name: 'Radikal.ru (legacy)',
     linkRegEx: new RegExp('^http://radikal.ru/'),
 
     async getUrl(link) {
@@ -486,7 +491,7 @@
     imagebanDirect: imagebanDirect,
     imagetwist: imagetwist,
     imagetwistBased: imagetwistBased,
-    imagevenue: imagevenue,
+    imagevenueLegacy: imagevenueLegacy,
     imgadult: imgadult,
     imgbb: imgbb,
     imgbox: imgbox,
@@ -503,7 +508,7 @@
     picforall: picforall,
     pixsense: pixsense,
     radikal: radikal,
-    radikalObsolete: radikalObsolete,
+    radikalLegacy: radikalLegacy,
     stuffed: stuffed,
     turboimagehost: turboimagehost,
     vfl: vfl,

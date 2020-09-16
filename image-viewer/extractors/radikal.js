@@ -25,8 +25,8 @@ export const radikal = {
 */
 
 /** @type {Extractor} */
-export const radikalObsolete = {
-  name: 'Radikal.ru (obsolete)',
+export const radikalLegacy = {
+  name: 'Radikal.ru (legacy)',
   linkRegEx: new RegExp('^http://radikal.ru/'),
 
   async getUrl(link) {
