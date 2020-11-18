@@ -5,16 +5,17 @@
   "main": "index.js",
   "scripts": {
     "build": "node build/build.js",
-    "build:ple": "npm run build -- -s=ple && npm run fix -- dist/pornolab-enhancer.user.js",
-    "build:jrdb": "npm run build -- -s=jrdb && npm run fix -- dist/joyreactor-download-button.user.js",
-    "build:pleng": "npm run build -- -s=pleng && npm run fix -- dist/pornolab-english.user.js",
-    "build:iv": "npm run build -- -s=iv && npm run fix -- dist/image-viewer.user.js",
+    "build:ple": "npm run build -- -s=ple && eslint --fix dist/pornolab-enhancer.user.js",
+    "build:jrdb": "npm run build -- -s=jrdb && eslint --fix dist/joyreactor-download-button.user.js",
+    "build:pleng": "npm run build -- -s=pleng && eslint --fix dist/pornolab-english.user.js",
+    "build:iv": "npm run build -- -s=iv && eslint --fix dist/image-viewer.user.js",
     "watch": "node build/build.js --watch",
     "watch:ple": "npm run watch -- -s=ple",
     "watch:jrdb": "npm run watch -- -s=jrdb",
     "watch:pleng": "npm run watch -- -s=pleng",
     "watch:iv": "npm run watch -- -s=iv",
-    "fix": "eslint --fix **/*.js"
+    "fix": "eslint --fix **/*.js",
+    "update-browserslist-db": "npx browserslist@latest --update-db"
   },
   "lint-staged": {
     "*.js": [
