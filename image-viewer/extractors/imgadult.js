@@ -11,7 +11,7 @@
 /** @type {Extractor} */
 export const imgadult = {
   name: 'ImgAdult.com',
-  linkRegEx: new RegExp('^https://imgadult.com'),
+  linkRegEx: /^https:\/\/imgadult\.com/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('/small/', '/big/')

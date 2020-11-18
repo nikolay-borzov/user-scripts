@@ -18,7 +18,7 @@ import { getUrlFromPage } from './helpers'
 export const imagevenueLegacy = {
   name: 'ImageVenue.com',
   // Exclude image on https://www.imagevenue.com/
-  linkRegEx: new RegExp('(imagevenue.com/img.php|www.imagevenue.com/\\w+$)'),
+  linkRegEx: /(imagevenue.com\/img.php|www.imagevenue.com\/\\w+$)/,
   imageUrlRegEx: /data-toggle="full">\W*<img src="(?<url>[^"]*)/im,
 
   getUrl: getUrlFromPage,

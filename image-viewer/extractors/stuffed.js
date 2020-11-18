@@ -11,7 +11,7 @@
 /** @type {Extractor} */
 export const stuffed = {
   name: 'stuffed.ru',
-  linkRegEx: new RegExp('^http://stuffed.ru'),
+  linkRegEx: /^http:\/\/stuffed\.ru/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('-thumb', '')

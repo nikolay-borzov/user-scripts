@@ -11,7 +11,7 @@
 /** @type {Extractor} */
 export const imx = {
   name: 'IMX.to',
-  linkRegEx: new RegExp('^https://imx.to'),
+  linkRegEx: /^https:\/\/imx\.to/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('/imx', '/i.imx').replace('/u/t/', '/i/')

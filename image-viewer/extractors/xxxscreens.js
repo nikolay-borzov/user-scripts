@@ -9,7 +9,7 @@
 /** @type {Extractor} */
 export const xxxscreens = {
   name: 'XXXScreens.com',
-  linkRegEx: new RegExp('^http://xxxscreens.com'),
+  linkRegEx: /^http:\/\/xxxscreens\.com/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('small/', 'big/')

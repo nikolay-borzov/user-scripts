@@ -7,7 +7,7 @@ export default (function () {
   const ENABLE_ON_PATH = '/forum/viewtopic.php'
 
   function triggerEvent(element, eventName) {
-    var event = document.createEvent('MouseEvents')
+    const event = document.createEvent('MouseEvents')
     event.initEvent(eventName, true, true)
 
     jQuery(element).trigger('mousedown')

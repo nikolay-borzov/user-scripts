@@ -11,7 +11,7 @@
 /** @type {Extractor} */
 export const lostpic = {
   name: 'Lostpic.net',
-  linkRegEx: new RegExp('^http://lostpic.net'),
+  linkRegEx: /^http:\/\/lostpic\.net/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('.th', '').replace('http:', 'https:')

@@ -13,9 +13,7 @@
   image:      http://picpic.online/allimage/4/532639.jpeg
 */
 
-const HOST_REPLACE_REG_EX = new RegExp(
-  '(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
-)
+const HOST_REPLACE_REG_EX = /(freescreens\.ru|imgclick\.ru|picclick\.ru|payforpic\.ru|picforall\.ru)/
 
 /** @type {Extractor} */
 export const picforall = {
@@ -27,9 +25,7 @@ export const picforall = {
     'payforpic.ru',
     'picforall.ru',
   ],
-  linkRegEx: new RegExp(
-    '^http://(freescreens.ru|imgclick.ru|picclick.ru|payforpic.ru|picforall.ru)'
-  ),
+  linkRegEx: /^http:\/\/(freescreens\.ru|imgclick\.ru|picclick\.ru|payforpic\.ru|picforall\.ru)/,
 
   async getUrl(link) {
     return link.thumbnailUrl

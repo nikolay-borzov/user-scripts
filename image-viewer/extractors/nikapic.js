@@ -5,7 +5,7 @@
 /** @type {Extractor} */
 export const nikapic = {
   name: 'nikapic.ru',
-  linkRegEx: new RegExp('^http://nikapic.ru'),
+  linkRegEx: /^http:\/\/nikapic\.ru/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('/small/', '/big/')

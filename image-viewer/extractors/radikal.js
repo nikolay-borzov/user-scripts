@@ -27,7 +27,7 @@ export const radikal = {
 /** @type {Extractor} */
 export const radikalLegacy = {
   name: 'Radikal.ru (legacy)',
-  linkRegEx: new RegExp('^http://radikal.ru/'),
+  linkRegEx: /^http:\/\/radikal\.ru\//,
 
   async getUrl(link) {
     const extension = link.url.split('.').slice(-2)[0]

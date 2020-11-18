@@ -12,8 +12,8 @@ import { getUrlFromPage } from './helpers'
 /** @type {Extractor} */
 export const fastpic = {
   name: 'FastPic',
-  linkRegEx: new RegExp('^http.?://fastpic.ru/view'),
-  imageUrlRegEx: new RegExp(`src="(?<url>[^"]+)" class="image img-fluid"`),
+  linkRegEx: /^http.?:\/\/fastpic\.ru\/view/,
+  imageUrlRegEx: /src="(?<url>[^"]+)" class="image img-fluid"/,
   getUrl: getUrlFromPage,
 }
 
@@ -28,7 +28,7 @@ const URL_PARTS_REGEXP = /i(\d+).+big(\/\d+\/\d+\/).+\/([^/]+)$/
 /** @type {Extractor} */
 export const fastpicDirect = {
   name: 'FastPic (direct link)',
-  linkRegEx: new RegExp('fastpic.ru/big'),
+  linkRegEx: /fastpic\.ru\/big/,
 
   async getUrl(link) {
     let hostLink = link.url

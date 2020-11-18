@@ -12,11 +12,10 @@
 // @run-at      document-end
 // @grant       none
 // ==/UserScript==
-
 ;(function () {
   'use strict'
 
-  var TOKENS = {
+  const TOKENS = {
     placeholder: 'placeholder',
     value: 'value',
     function: 'function',
@@ -147,7 +146,7 @@
     }
   }
 
-  var pageHeader = {
+  const pageHeader = {
     '#main-nav': {
       'a[href="./index.php"] b': 'Main page',
       'a[href="tracker.php"] b': 'Tracker',
@@ -210,7 +209,7 @@
     [TOKENS.replaceSubForum]: '#tr-menu a',
   }
 
-  var main = {
+  const main = {
     path: '/forum/index.php',
     maps: [pageHeader],
   }
@@ -223,7 +222,7 @@
     },
   }
 
-  var pager = {
+  const pager = {
     '#main_content_wrap': {
       'table:first p.small:first > b': $.extend(
         {
@@ -249,14 +248,14 @@
     },
   }
 
-  var breadcrumb = {
+  const breadcrumb = {
     '.nav:first': {
       'a:first': 'Forums index',
     },
     [TOKENS.replaceSubForum]: '.nav a',
   }
 
-  var torrentInfo = {
+  const torrentInfo = {
     '.dl_list': {
       '.catTitle': 'Torrent Info',
       '.pad_8': {
@@ -348,27 +347,27 @@
     },
   }
 
-  var topic = {
+  const topic = {
     path: '/forum/viewtopic.php',
     maps: [pageHeader, pager, breadcrumb, torrentInfo, topicHeader],
   }
 
-  var tracker = {
+  const tracker = {
     path: '/forum/tracker.php',
     maps: [pageHeader, pager],
   }
 
-  var search = {
+  const search = {
     path: '/forum/search.php',
     maps: [pageHeader, pager],
   }
 
-  var privateMessages = {
+  const privateMessages = {
     path: '/forum/privmsg.php',
     maps: [pageHeader],
   }
 
-  var profile = {
+  const profile = {
     path: '/forum/profile.php',
     maps: [pageHeader, breadcrumb],
   }

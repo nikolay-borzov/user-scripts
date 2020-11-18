@@ -11,7 +11,7 @@
 /** @type {Extractor} */
 export const moneyPic = {
   name: 'money-pic.ru',
-  linkRegEx: new RegExp('^http://money-pic.ru'),
+  linkRegEx: /^http:\/\/money-pic\.ru/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('-thumb', '')

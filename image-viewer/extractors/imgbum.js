@@ -12,7 +12,7 @@
 /** @type {Extractor} */
 export const imgbum = {
   name: 'imgbum.net',
-  linkRegEx: new RegExp('^http://imgbum.net'),
+  linkRegEx: /^http:\/\/imgbum\.net/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('-thumb', '')

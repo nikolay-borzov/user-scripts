@@ -11,7 +11,7 @@
 /** @type {Extractor} */
 export const imgdrive = {
   name: 'ImgDrive.net',
-  linkRegEx: new RegExp('^https://imgdrive.net'),
+  linkRegEx: /^https:\/\/imgdrive\.net/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('small', 'big')

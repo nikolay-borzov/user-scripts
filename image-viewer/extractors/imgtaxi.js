@@ -12,7 +12,7 @@
 /** @type {Extractor} */
 export const imgtaxi = {
   name: 'imgtaxi.com',
-  linkRegEx: new RegExp('^https://imgtaxi.com'),
+  linkRegEx: /^https:\/\/imgtaxi\.com/,
 
   async getUrl(link) {
     return link.thumbnailUrl

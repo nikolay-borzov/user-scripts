@@ -11,7 +11,7 @@
 /** @type {Extractor} */
 export const imgchilibum = {
   name: 'imgchilibum.ru',
-  linkRegEx: new RegExp('^http://imgchilibum.ru/v'),
+  linkRegEx: /^http:\/\/imgchilibum\.ru\/v/,
 
   async getUrl(link) {
     return link.thumbnailUrl.replace('_s/', '_b/')
