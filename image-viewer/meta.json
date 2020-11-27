@@ -1,7 +1,7 @@
 {
   "name": "Image Viewer",
   "namespace": "https://github.com/shikiyoku",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Allows viewing full image without leaving the page",
   "author": "shikiyoku",
   "license": "MIT",
@@ -13,7 +13,8 @@
     "www.imagebam.com",
     "imagevenue.com",
     "www.turboimagehost.com",
-    "fastpic.ru"
+    "fastpic.ru",
+    "radikal.ru"
   ],
   "grant": [
     "GM_addStyle",

@@ -1,4 +1,3 @@
-// @ts-check
 import { getRequest } from '../../common/api'
 
 const request = getRequest()

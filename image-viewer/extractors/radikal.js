@@ -1,4 +1,4 @@
-// @ts-check
+import { getUrlFromPage } from './helpers'
 
 /** @typedef {import('../url-extractor').Extractor} Extractor */
 
@@ -19,6 +19,10 @@ export const radikal = {
 }
 
 /*
+  link:       http://radikal.ru/fp/b7867cae0b304552ba321a5c2ad2c63c
+  thumbnail:  http://s003.radikal.ru/i204/1312/e7/5231cb87bd1at.jpg
+  image:      https://s003.radikal.ru/i204/1312/e7/5231cb87bd1a.png
+
   link:       http://radikal.ru/F/s40.radikal.ru/i087/1205/55/a8a7e55a9bc7.png.html
   thumbnail:  http://s40.radikal.ru/i087/1205/55/a8a7e55a9bc7t.jpg
   image:      https://s40.radikal.ru/i087/1205/55/a8a7e55a9bc7.png
@@ -28,13 +32,6 @@ export const radikal = {
 export const radikalLegacy = {
   name: 'Radikal.ru (legacy)',
   linkRegEx: /^http:\/\/radikal\.ru\//,
-
-  async getUrl(link) {
-    const extension = link.url.split('.').slice(-2)[0]
-
-    return link.thumbnailUrl
-      .replace('http:/', 'https:/')
-      .replace('t.', '.')
-      .replace('jpg', extension)
-  },
+  imageUrlRegEx: /id="imgFullSize" src="(?<url>[^"]+)"/,
+  getUrl: getUrlFromPage,
 }

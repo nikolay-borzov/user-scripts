@@ -1,5 +1,11 @@
 # Image Viewer Changelog
 
+## 1.1.9 - 2020-11-28
+
+## Fixed
+
+- Improve `radikal.ru` legacy links support. Had to connect user script to `radikal.ru` to get link to the full image.
+
 ## 1.1.8 - 2020-09-16
 
 ## Fixed

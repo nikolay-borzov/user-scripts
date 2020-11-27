@@ -1,5 +1,3 @@
-// @ts-check
-
 import gmPolyfill from './gm-polyfill'
 
 export const addStyle =

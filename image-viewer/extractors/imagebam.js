@@ -1,4 +1,3 @@
-// @ts-check
 import { getUrlFromPage } from './helpers'
 
 /** @typedef {import('../url-extractor').Extractor} Extractor */

@@ -1,5 +1,3 @@
-// @ts-check
-
 import * as hostExtractors from './extractors/index'
 
 /**
@@ -15,7 +13,7 @@ import * as hostExtractors from './extractors/index'
  * @property {RegExp} linkRegEx
  * @property {RegExp} [imageUrlRegEx]
  * @property {string[]} [hosts]
- * @property {(link: Link, extractor: Extractor) => Promise<string>} getUrl
+ * @property {(link: Link, extractor: Extractor) => Promise<string | undefined>} getUrl
  */
 
 export default (function () {
