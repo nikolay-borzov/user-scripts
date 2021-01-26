@@ -24,8 +24,11 @@ const { input, output } = config.rollupOptions
 async function build() {
   try {
     console.log('Building...')
+
     const bundle = await rollup.rollup(input)
     await bundle.write(output)
+    await bundle.close()
+
     console.log('✔ Building done!')
   } catch (e) {
     console.error(e)
@@ -46,9 +49,21 @@ if (config.watch) {
         },
       },
     })
-    // TODO: Looks like it doesn't work
-    .on('ready', () => console.log('👁 Watching'))
-    .on('error', (error) => console.log(`Watcher error: ${error}`))
+    .on('event', (event) => {
+      switch (event.code) {
+        case 'START':
+          console.log('Watching')
+          break
+
+        case 'BUNDLE_END':
+          event.result.close()
+          break
+
+        case 'ERROR':
+          console.log(`Watcher error: ${event.error}`)
+          break
+      }
+    })
 } else {
   build()
 }
