@@ -1,13 +1,13 @@
 {
   "name": "Pornolab Enhancer",
-  "namespace": "https://github.com/shikiyoku",
+  "namespace": "https://github.com/nikolay-borzov",
   "version": "1.12.2",
   "description": "Improves User Experience",
-  "author": "shikiyoku",
+  "author": "nikolay-borzov",
   "license": "MIT",
-  "icon": "https://raw.githubusercontent.com/shikiyoku/user-scripts/master/pornolab-enhancer/resources/icon.png",
-  "homepageURL": "https://github.com/shikiyoku/user-scripts",
-  "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
+  "icon": "https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/pornolab-enhancer/resources/icon.png",
+  "homepageURL": "https://github.com/nikolay-borzov/user-scripts",
+  "supportURL": "https://github.com/nikolay-borzov/user-scripts/issues",
   "include": "*//pornolab.*",
   "connect": [
     "www.imagebam.com",

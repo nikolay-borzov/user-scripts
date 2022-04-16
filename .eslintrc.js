@@ -6,8 +6,7 @@ module.exports = {
     greasemonkey: true,
     jquery: true,
   },
-  plugins: ['prettier', 'standard'],
-  extends: ['standard', 'plugin:prettier/recommended', 'prettier/standard'],
+  extends: ['standard', 'plugin:prettier/recommended', 'prettier'],
   rules: {
     camelcase: ['warn', { properties: 'never' }],
   },

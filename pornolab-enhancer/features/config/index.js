@@ -57,7 +57,7 @@ export default (function () {
           contents: {
             tag: 'a',
             target: '_blank',
-            href: 'https://github.com/shikiyoku/user-scripts#image-viewer',
+            href: 'https://github.com/nikolay-borzov/user-scripts#image-viewer',
             contents: 'Try Image Viewer',
           },
         },

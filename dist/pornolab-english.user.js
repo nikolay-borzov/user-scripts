@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name        Pornolab English
 // @description Translates basic content in English
-// @namespace   https://github.com/shikiyoku
+// @namespace   https://github.com/nikolay-borzov
 // @version     0.1.0
-// @author      shikiyoku
+// @author      nikolay-borzov
 // @license     MIT
 // @icon        http://static.pornolab.net/favicon.ico
-// @homepageURL https://github.com/shikiyoku/user-scripts
-// @supportURL  https://github.com/shikiyoku/user-scripts/issues
+// @homepageURL https://github.com/nikolay-borzov/user-scripts
+// @supportURL  https://github.com/nikolay-borzov/user-scripts/issues
 // @include     *//pornolab.*
 // @run-at      document-end
 // @grant       none

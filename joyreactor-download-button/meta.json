@@ -1,13 +1,13 @@
 {
   "name": "JoyReactor Download Button",
-  "namespace": "https://github.com/shikiyoku",
+  "namespace": "https://github.com/nikolay-borzov",
   "version": "1.2.0",
   "description": "Adds download buttton to images",
-  "author": "shikiyoku",
+  "author": "nikolay-borzov",
   "license": "MIT",
   "icon": "http://joyreactor.cc/favicon.ico",
-  "homepageURL": "https://github.com/shikiyoku/user-scripts",
-  "supportURL": "https://github.com/shikiyoku/user-scripts/issues",
+  "homepageURL": "https://github.com/nikolay-borzov/user-scripts",
+  "supportURL": "https://github.com/nikolay-borzov/user-scripts/issues",
   "include": ["http://joyreactor.cc/*", "http://joyreactor.com/*"],
   "grant": ["GM_addStyle"],
   "run-at": "document-end"
