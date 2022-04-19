@@ -9,6 +9,7 @@ User scripts for Tampermonkey and ~~Greasemonkey~~
 [![IV file size][iv-size]][iv-url] [![IV OpenUserJS][open-user-js-image]][iv-open-user-js-url] [![IV GreasyFork][greasy-fork-image]][iv-greasy-fork-url]
 
 Allows viewing full-size images from image hosts (e.g. Fastpic) w/o leaving the page.
+
 :bulb: By default, script applies to all sites. I recommend enabling it only for specific sites. In Tampermonkey on script's settings tab uncheck `Original includes` and add your host's masks in `User includes` (e.g. \*.myforum.\*)
 
 ## Controls

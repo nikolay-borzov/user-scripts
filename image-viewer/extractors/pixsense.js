@@ -11,7 +11,8 @@
               https://www.fortstore.net/themes/latest/ssd/big/3108/horrorvillian.jpg
 */
 
-const HOST_REPLACE_REG_EX = /(iceimg\.net|pixsense\.net|vestimage\.site|chaosimg\.site)/
+const HOST_REPLACE_REG_EX =
+  /(iceimg\.net|pixsense\.net|vestimage\.site|chaosimg\.site)/
 
 /** @type {Extractor} */
 export const pixsense = {
@@ -22,7 +23,8 @@ export const pixsense = {
     'www.vestimage.site',
     'www.chaosimg.site',
   ],
-  linkRegEx: /^http:\/\/www\.(iceimg\.net|pixsense\.net|vestimage\.site|chaosimg\.site)/,
+  linkRegEx:
+    /^http:\/\/www\.(iceimg\.net|pixsense\.net|vestimage\.site|chaosimg\.site)/,
 
   async getUrl(link) {
     return link.thumbnailUrl

@@ -7,9 +7,8 @@ const scriptFolder = path.resolve(root, `${config.scriptName}`)
 
 // Add common plugins
 const commonPlugins = require('./common-rollup-plugins')(scriptFolder)
-config.rollupOptions.input.plugins = config.rollupOptions.input.plugins.concat(
-  commonPlugins
-)
+config.rollupOptions.input.plugins =
+  config.rollupOptions.input.plugins.concat(commonPlugins)
 // Set input and output
 config.rollupOptions.input.input = path.resolve(scriptFolder, 'index.js')
 config.rollupOptions.output = {
