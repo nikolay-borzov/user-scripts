@@ -386,7 +386,7 @@
 
       $.set(titleLink, {
         textContent: titleParts.title,
-        title: title,
+        title,
       })
 
       if (hasTagBefore) {
