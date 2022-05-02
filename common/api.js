@@ -1,17 +1,16 @@
-import gmPolyfill from './gm-polyfill'
+import { getGMPolyfillMethod } from './gm-polyfill'
 
 export const addStyle =
   'GM_addStyle' in window
     ? GM_addStyle // eslint-disable-line camelcase
     : (css) => {
-        const head = document.getElementsByTagName('head')[0]
+        const head = document.querySelectorAll('head')[0]
 
         if (head) {
           const style = document.createElement('style')
 
-          style.type = 'text/css'
           style.innerHTML = css
-          head.appendChild(style)
+          head.append(style)
 
           return css
         }
@@ -20,12 +19,12 @@ export const addStyle =
 let request
 
 // Avoid import side effect to enable tree-shaking
-export const getRequest = () => {
+export function getRequest() {
   if (!request) {
     const xmlHttpRequest =
-      typeof GM !== 'undefined' && 'xmlHttpRequest' in GM
+      GM !== undefined && 'xmlHttpRequest' in GM
         ? GM.xmlHttpRequest
-        : GM_xmlhttpRequest // eslint-disable-line
+        : GM_xmlhttpRequest // eslint-disable-line camelcase
 
     request = function (url, { method = 'GET' } = {}) {
       return new Promise((resolve, reject) => {
@@ -38,12 +37,13 @@ export const getRequest = () => {
       })
     }
   }
+
   return request
 }
 
 /**
  * @typedef {object} Store
- * @property {(name: string, defaultValue: *) => *} get
+ * @property {(name: string, defaultValue?: unknown) => *} get
  * @property {(name: string, value: *) => void} set
  */
 
@@ -56,8 +56,8 @@ let store
 export const getStore = () => {
   if (!store) {
     store = {
-      get: gmPolyfill('getValue'),
-      set: gmPolyfill('setValue'),
+      get: getGMPolyfillMethod('getValue'),
+      set: getGMPolyfillMethod('setValue'),
     }
   }
 

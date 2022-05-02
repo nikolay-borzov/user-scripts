@@ -13,6 +13,10 @@ const NAME_MAP = {
 }
 
 module.exports = {
+  /**
+   * @param {string} scriptId
+   * @returns {string}
+   */
   getName: (scriptId) => {
     if (!(scriptId in NAME_MAP)) {
       throw new Error(`No supported script with id=${scriptId}`)

@@ -1,28 +1,28 @@
 import { hasOwnProperty } from './helpers'
 
-export default (function () {
-  // based on https://github.com/greasemonkey/gm4-polyfill
-  const gmMethodMap = {
+/**
+ * @param {'GM_getValue' | 'GM_setValue' | 'GM_openInTab'} methodName
+ * @returns {undefined | ((args: unknown) => Promise<unknown>)}
+ */
+export function getGMPolyfillMethod(methodName) {
+  // Based on https://github.com/greasemonkey/gm4-polyfill
+  const GM_METHOD_MAP = {
     getValue: 'GM_getValue',
     setValue: 'GM_setValue',
     openInTab: 'GM_openInTab',
   }
 
-  return function polyfill(methodName) {
-    if (hasOwnProperty(gmMethodMap, methodName)) {
-      return typeof GM !== 'undefined' && methodName in GM
-        ? GM[methodName]
-        : function (...args) {
-            return new Promise((resolve, reject) => {
-              try {
-                resolve(window[gmMethodMap[methodName]](...args))
-              } catch (e) {
-                reject(e)
-              }
-            })
-          }
-    }
-
-    return null
+  if (hasOwnProperty(GM_METHOD_MAP, methodName)) {
+    return GM !== undefined && methodName in GM
+      ? GM[methodName]
+      : function (...arguments_) {
+          return new Promise((resolve, reject) => {
+            try {
+              resolve(window[GM_METHOD_MAP[methodName]](...arguments_))
+            } catch (error) {
+              reject(error)
+            }
+          })
+        }
   }
-})()
+}

@@ -1,7 +1,7 @@
-import pageHeader from '../blocks/page-header'
-import pager from '../blocks/pager'
+import { pageHeader } from '../blocks/page-header'
+import { pager } from '../blocks/pager'
 
-export default {
+export const search = {
   path: '/forum/search.php',
   maps: [pageHeader, pager],
 }

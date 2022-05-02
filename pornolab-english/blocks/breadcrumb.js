@@ -1,6 +1,6 @@
-import TOKENS from '../core/tokenTypes'
+import { TOKENS } from '../core/token-types'
 
-export default {
+export const breadcrumb = {
   '.nav:first': {
     'a:first': 'Forums index',
   },

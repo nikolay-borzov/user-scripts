@@ -9,9 +9,9 @@
 /** @type {Extractor} */
 export const moneyPic = {
   name: 'money-pic.ru',
-  linkRegEx: /^http:\/\/money-pic\.ru/,
+  linkRegExp: /^http:\/\/money-pic\.ru/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('-thumb', '')
+  async getURL(link) {
+    return link.thumbnailURL.replace('-thumb', '')
   },
 }

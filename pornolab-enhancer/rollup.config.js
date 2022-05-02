@@ -1,13 +1,13 @@
 const path = require('path')
-const { nodeResolve } = require('@rollup/plugin-node-resolve')
-const postcss = require('rollup-plugin-postcss')
 
+const { nodeResolve } = require('@rollup/plugin-node-resolve')
 // postCSS plugins
-const cssnext = require('postcss-cssnext')
 const assets = require('postcss-assets')
-const inlineSvg = require('postcss-inline-svg')
-const atImport = require('postcss-import')
+const cssnext = require('postcss-cssnext')
 const customProperties = require('postcss-custom-properties')
+const atImport = require('postcss-import')
+const inlineSvg = require('postcss-inline-svg')
+const postcss = require('rollup-plugin-postcss')
 
 const imagesPath = path.resolve(__dirname, 'icons')
 

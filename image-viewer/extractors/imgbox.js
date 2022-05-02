@@ -9,9 +9,9 @@
 /** @type {Extractor} */
 export const imgbox = {
   name: 'imgbox.com',
-  linkRegEx: /^http:\/\/imgbox\.com/,
+  linkRegExp: /^http:\/\/imgbox\.com/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('/thumbs', '/images').replace('_t', '_o')
+  async getURL(link) {
+    return link.thumbnailURL.replace('/thumbs', '/images').replace('_t', '_o')
   },
 }

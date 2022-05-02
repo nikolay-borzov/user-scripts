@@ -11,10 +11,10 @@ const DATE_PATTERN = /(\d{4})\.(\d{2})\.(\d{2})/
 /** @type {Extractor} */
 export const imageban = {
   name: 'ImageBan.ru',
-  linkRegEx: /\/\/imageban\.ru\/show/,
+  linkRegExp: /\/\/imageban\.ru\/show/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl
+  async getURL(link) {
+    return link.thumbnailURL
       .replace('thumbs', 'out')
       .replace(DATE_PATTERN, '$1/$2/$3')
   },
@@ -24,9 +24,9 @@ export const imageban = {
 /** @type {Extractor} */
 export const imagebanDirect = {
   name: 'ImageBan.ru (direct link)',
-  linkRegEx: /imageban\.ru\/out/,
+  linkRegExp: /imageban\.ru\/out/,
 
-  async getUrl(link) {
+  async getURL(link) {
     return link.url
   },
 }

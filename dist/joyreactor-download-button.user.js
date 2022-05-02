@@ -1,18 +1,20 @@
 // ==UserScript==
-// @name        JoyReactor Download Button
-// @description Adds download buttton to images
-// @namespace   https://github.com/nikolay-borzov
-// @version     1.2.0
-// @author      nikolay-borzov
-// @license     MIT
-// @icon        http://joyreactor.cc/favicon.ico
-// @homepageURL https://github.com/nikolay-borzov/user-scripts
-// @supportURL  https://github.com/nikolay-borzov/user-scripts/issues
-// @include     http://joyreactor.cc/*
-// @include     http://joyreactor.com/*
-// @run-at      document-end
-// @grant       GM_addStyle
+// @name         JoyReactor Download Button
+// @description  Adds download buttton to images
+// @namespace    https://github.com/nikolay-borzov
+// @version      1.2.0
+// @author       nikolay-borzov
+// @license      MIT
+// @icon         http://joyreactor.cc/favicon.ico
+// @homepageURL  https://github.com/nikolay-borzov/user-scripts
+// @homepage     https://github.com/nikolay-borzov/user-scripts
+// @supportURL   https://github.com/nikolay-borzov/user-scripts/issues
+// @include      http://joyreactor.cc/*
+// @include      http://joyreactor.com/*
+// @run-at       document-end
+// @grant        GM_addStyle
 // ==/UserScript==
+
 ;(function () {
   'use strict'
 
@@ -20,14 +22,13 @@
     'GM_addStyle' in window
       ? GM_addStyle // eslint-disable-line camelcase
       : (css) => {
-          const head = document.getElementsByTagName('head')[0]
+          const head = document.querySelectorAll('head')[0]
 
           if (head) {
             const style = document.createElement('style')
 
-            style.type = 'text/css'
             style.innerHTML = css
-            head.appendChild(style)
+            head.append(style)
 
             return css
           }
@@ -61,6 +62,7 @@
 
     if (gifLink) {
       gifLink.setAttribute('download', '')
+
       return
     }
 
@@ -71,6 +73,7 @@
       imgURL = imgLink.href
     } else {
       const img = imgContainer.querySelector('img')
+
       if (img) {
         imgURL = img.src
       }
@@ -81,11 +84,12 @@
     }
 
     const link = document.createElement('a')
+
     link.classList.add('download-link')
     link.setAttribute('href', imgURL)
     link.setAttribute('download', '')
 
-    imgContainer.appendChild(link)
+    imgContainer.append(link)
   }
 
   dom.on(

@@ -10,9 +10,9 @@
 /** @type {Extractor} */
 export const imgbum = {
   name: 'imgbum.net',
-  linkRegEx: /^http:\/\/imgbum\.net/,
+  linkRegExp: /^http:\/\/imgbum\.net/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('-thumb', '')
+  async getURL(link) {
+    return link.thumbnailURL.replace('-thumb', '')
   },
 }

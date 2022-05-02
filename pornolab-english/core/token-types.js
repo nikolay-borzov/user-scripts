@@ -1,4 +1,4 @@
-export default {
+export const TOKENS = {
   placeholder: 'placeholder',
   value: 'value',
   function: 'function',

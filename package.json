@@ -2,7 +2,6 @@
   "name": "user-scripts",
   "version": "1.0.0",
   "description": "User scripts for Tampermonkey",
-  "author": "nikolay-borzov",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,6 +11,11 @@
     "user.js",
     "userscript"
   ],
+  "author": {
+    "name": "Nikolay Borzov",
+    "email": "nikolay.n.borzov@gmail.com"
+  },
+  "private": true,
   "main": "index.js",
   "scripts": {
     "build": "node build/build.js",
@@ -28,40 +32,66 @@
     "update-browserslist-db": "npx browserslist@latest --update-db",
     "prepare": "husky install"
   },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix"
-    ]
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "semi": false
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "body-case": [
+        2,
+        "always",
+        "sentence-case"
+      ],
+      "subject-case": [
+        2,
+        "always",
+        "sentence-case"
+      ]
+    }
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^13.2.1",
+    "@commitlint/cli": "^16.2.4",
+    "@commitlint/config-conventional": "^16.2.4",
+    "@rollup/plugin-node-resolve": "^13.3.0",
     "@types/tampermonkey": "^4.0.5",
+    "@types/yargs": "^17.0.10",
     "blissfuljs": "^1.0.6",
-    "eslint": "^8.13.0",
+    "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-config-prettier-standard": "^4.0.1",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-ava": "^13.2.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-n": "^15.1.0",
+    "eslint-plugin-jsdoc": "^39.2.9",
+    "eslint-plugin-n": "^15.2.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-standard": "^4.1.0",
+    "eslint-plugin-unicorn": "^42.0.0",
+    "eslint-plugin-userscripts": "^0.2.3",
     "husky": "^7.0.4",
-    "lint-staged": "^12.4.0",
-    "postcss": "^8.4.12",
+    "lint-staged": "^12.4.1",
+    "postcss": "^8.4.13",
     "postcss-assets": "^6.0.0",
     "postcss-cssnext": "^3.1.0",
     "postcss-custom-properties": "^12.1.7",
     "postcss-import": "^14.1.0",
     "postcss-inline-svg": "^5.0.0",
     "prettier": "^2.6.2",
-    "rollup": "^2.70.2",
+    "prettier-config-standard": "^5.0.0",
+    "rollup": "^2.71.1",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-eslint-bundle": "^6.0.0",
     "rollup-plugin-filesize": "^9.1.2",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-userscript-metablock": "^0.3.1",
-    "stylelint": "^14.7.1",
+    "stylelint": "^14.8.1",
     "stylelint-config-property-sort-order-smacss": "^9.0.0",
     "stylelint-config-standard": "^25.0.0",
     "stylelint-order": "^5.0.0",

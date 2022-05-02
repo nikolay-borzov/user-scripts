@@ -1,6 +1,6 @@
-import pageHeader from '../blocks/page-header'
+import { pageHeader } from '../blocks/page-header'
 
-export default {
+export const main = {
   path: '/forum/index.php',
   maps: [pageHeader],
 }

@@ -1,4 +1,4 @@
-import { getUrlFromPage } from './helpers'
+import { getURLFromPage } from './helpers'
 
 /** @typedef {import('../url-extractor').Extractor} Extractor */
 
@@ -17,8 +17,8 @@ import { getUrlFromPage } from './helpers'
 export const imagevenueLegacy = {
   name: 'ImageVenue.com',
   // Exclude image on https://www.imagevenue.com/
-  linkRegEx: /(imagevenue.com\/img.php|www.imagevenue.com\/\\w+$)/,
-  imageUrlRegEx: /data-toggle="full">\W*<img src="(?<url>[^"]*)/im,
+  linkRegExp: /(imagevenue.com\/img.php|www.imagevenue.com\/\\w+$)/,
+  imageURLRegExp: /data-toggle="full">\W*<img src="(?<url>[^"]*)/im,
 
-  getUrl: getUrlFromPage,
+  getURL: getURLFromPage,
 }

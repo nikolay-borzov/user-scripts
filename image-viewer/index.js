@@ -1,9 +1,10 @@
 import { $ } from '../libs/bliss'
-import config from './config'
-import initViewer from './viewer'
+
+import { initHostConfig } from './config'
+import { initViewer } from './viewer'
 
 $.ready().then(async () => {
-  const hostConfig = await config.init()
+  const hostConfig = await initHostConfig()
 
   initViewer(hostConfig.enabledHosts)
 })

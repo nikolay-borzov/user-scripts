@@ -1,13 +1,14 @@
 /**
- * Lightweight wrapper around native DOM methods
+ * Lightweight wrapper around native DOM methods.
  */
-export default {
+export const dom = {
   /**
-   * Event delegation
+   * Event delegation.
+   *
    * @param {Element} parent
    * @param {string} eventName
    * @param {string} selector
-   * @param {function} callback
+   * @param {(matchingChild: Element) => void} callback
    */
   on(parent, eventName, selector, callback) {
     parent.addEventListener(eventName, function (event) {

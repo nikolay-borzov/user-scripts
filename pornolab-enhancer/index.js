@@ -1,27 +1,25 @@
 import { addStyle } from '../common/api'
 
-import config from './features/config'
-import tags from './features/tags'
+import { initConfig } from './features/config'
+import { initDownload } from './features/download'
+import { initFindSimilar } from './features/find-similar'
 import pagerCSS from './features/pager/styles.css'
-import download from './features/download'
-import findSimilar from './features/find-similar'
+import { initTags } from './features/tags'
 
-config.init().then((params) => {
-  const KEYS = config.KEYS
-
-  if (params[KEYS.tags]) {
-    tags()
+initConfig().then(async (config) => {
+  if (config.tags) {
+    await initTags()
   }
 
-  if (params[KEYS.pager]) {
+  if (config.pager) {
     addStyle(pagerCSS)
   }
 
-  if (params[KEYS.download]) {
-    download()
+  if (config.download) {
+    await initDownload()
   }
 
-  if (params[KEYS.similar]) {
-    findSimilar()
+  if (config.similar) {
+    await initFindSimilar()
   }
 })

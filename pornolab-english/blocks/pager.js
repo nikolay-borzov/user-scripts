@@ -1,4 +1,4 @@
-import TOKENS from '../core/tokenTypes'
+import { TOKENS } from '../core/token-types'
 
 const activePager = {
   '.menu-root': 'Pages',
@@ -8,7 +8,7 @@ const activePager = {
   },
 }
 
-export default {
+export const pager = {
   '#main_content_wrap': {
     'table:first p.small:first > b': $.extend(
       {

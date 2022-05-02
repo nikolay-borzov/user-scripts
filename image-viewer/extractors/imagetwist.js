@@ -14,14 +14,14 @@
 /** @type {Extractor} */
 export const imagetwist = {
   name: 'ImageTwist',
-  linkRegEx: /imagetwist\.com/,
+  linkRegExp: /imagetwist\.com/,
 
-  async getUrl(link) {
-    const imageName = link.url.split('/').pop().replace('.html', '')
-    const extension = imageName.split('.').pop()
-    const imageUrl = link.thumbnailUrl
+  async getURL(link) {
+    const imageName = link.url.split('/').pop()?.replace('.html', '')
+    const extension = imageName?.split('.').pop()
+    const imageUrl = link.thumbnailURL
       .replace('/th/', '/i/')
-      .slice(0, -extension.length)
+      .slice(0, -(extension?.length ?? 0))
 
     return `${imageUrl}${extension}/${imageName}`
   },
@@ -32,19 +32,19 @@ export const imagetwist = {
   Keep this rule for old links
 */
 
-const HOST_REPLACE_REG_EX = /(picturelol|picshick|imageshimage)/
+const HOST_REPLACE_REG_EXP = /(picturelol|picshick|imageshimage)/
 
 /** @type {Extractor} */
 export const imagetwistBased = {
   name: 'ImageTwist based (legacy)',
   hosts: ['Picturelol.com', 'PicShick.com', 'Imageshimage.com'],
-  linkRegEx: /^https?:\/\/(picturelol|picshick|imageshimage)\.com/,
+  linkRegExp: /^https?:\/\/(picturelol|picshick|imageshimage)\.com/,
 
-  async getUrl(link) {
+  async getURL(link) {
     const imageName = link.url.split('/').pop()
-    const imageUrl = link.thumbnailUrl
+    const imageUrl = link.thumbnailURL
       .replace('/th/', '/i/')
-      .replace(HOST_REPLACE_REG_EX, 'imagetwist')
+      .replace(HOST_REPLACE_REG_EXP, 'imagetwist')
 
     return `${imageUrl}/${imageName}`
   },

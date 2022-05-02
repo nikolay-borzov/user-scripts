@@ -24,6 +24,5 @@
     "GM_getValue",
     "GM.getValue"
   ],
-  "run-at": "document-start",
-  "compatible": ["chrome", "firefox"]
+  "run-at": "document-start"
 }

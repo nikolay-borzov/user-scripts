@@ -1,9 +1,8 @@
-import TOKENS from '../core/tokenTypes'
-
-import pageHeader from '../blocks/page-header'
-import pager from '../blocks/pager'
-import breadcrumb from '../blocks/breadcrumb'
-import torrentInfo from '../blocks/torrent-info'
+import { breadcrumb } from '../blocks/breadcrumb'
+import { pageHeader } from '../blocks/page-header'
+import { pager } from '../blocks/pager'
+import { torrentInfo } from '../blocks/torrent-info'
+import { TOKENS } from '../core/token-types'
 
 const topicHeader = {
   '.w100.border.bw_TRL': {
@@ -50,7 +49,7 @@ const topicHeader = {
   '#topic_main': {},
 } */
 
-export default {
+export const topic = {
   path: '/forum/viewtopic.php',
   maps: [pageHeader, pager, breadcrumb, torrentInfo, topicHeader],
 }

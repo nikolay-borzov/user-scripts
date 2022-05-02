@@ -23,11 +23,11 @@ export const pixsense = {
     'www.vestimage.site',
     'www.chaosimg.site',
   ],
-  linkRegEx:
+  linkRegExp:
     /^http:\/\/www\.(iceimg\.net|pixsense\.net|vestimage\.site|chaosimg\.site)/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl
+  async getURL(link) {
+    return link.thumbnailURL
       .replace(HOST_REPLACE_REG_EX, 'fortstore.net')
       .replace('small-', '')
       .replace('/small/', '/big/')

@@ -7,32 +7,24 @@ const request = getRequest()
  * @typedef {import('../url-extractor').Extractor} Extractor
  */
 
-/** @param {string} pageUrl */
-async function getPageHtml(pageUrl) {
-  const response = await request(pageUrl)
-
-  return response.responseText
-}
-
 /**
+ * Extracts full image URL from image host page content.
+ *
  * @param {Link} link
  * @param {Extractor} extractor
+ * @returns {Promise<string | undefined>}
  */
-export async function getUrlFromPage(link, extractor) {
+export async function getURLFromPage(link, extractor) {
   const html = await getPageHtml(link.url)
 
-  const match = extractor.imageUrlRegEx.exec(html)
+  const match = extractor.imageURLRegExp?.exec(html)
 
   let url
 
   if (match) {
-    // First try to get named capturing group 'url'
-    if (match.groups) {
-      url = match.groups.url
-    } else {
-      // Otherwise get first group match
-      url = match[1]
-    }
+    /* First try to get named capturing group 'url'.
+       Otherwise get first group match */
+    url = match.groups ? match.groups.url : match[1]
   }
 
   if (!url) {
@@ -40,4 +32,16 @@ export async function getUrlFromPage(link, extractor) {
   }
 
   return url
+}
+
+/**
+ * Loads page's source content.
+ *
+ * @param {string} pageURL
+ * @returns {Promise<string>}
+ */
+async function getPageHtml(pageURL) {
+  const response = await request(pageURL)
+
+  return response.responseText
 }

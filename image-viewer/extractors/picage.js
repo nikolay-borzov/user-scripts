@@ -7,9 +7,9 @@
 /** @type {Extractor} */
 export const picage = {
   name: 'picage.ru',
-  linkRegEx: /^http:\/\/picage\.ru/,
+  linkRegExp: /^http:\/\/picage\.ru/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('picage', 'pic4you').replace('-thumb', '')
+  async getURL(link) {
+    return link.thumbnailURL.replace('picage', 'pic4you').replace('-thumb', '')
   },
 }

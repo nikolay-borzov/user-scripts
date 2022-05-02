@@ -1,4 +1,4 @@
-import TOKENS from '../core/tokenTypes'
+import { TOKENS } from './token-types'
 
 const dateTimeMap = {
   день: 'day',
@@ -19,29 +19,30 @@ const dateTimeMap = {
 }
 
 function forEach($elements, callback) {
-  $elements.each((index, el) => callback($(el)))
+  $elements.each((index, element) => callback($(element)))
 }
 
 function replaceTextNodes($container, indexMap) {
-  const nodes = Array.from($container[0].childNodes).filter(
-    (n) => n.nodeType === 3 && n.data.trim().length
+  const nodes = [...$container[0].childNodes].filter(
+    (n) => n.nodeType === 3 && n.data.trim().length > 0
   )
+
   // Replace text node(s) at index
-  Object.entries(indexMap).forEach(([index, translation]) => {
+  for (const [index, translation] of Object.entries(indexMap)) {
     const node = nodes[index]
+
     if (node) {
-      if (typeof translation === 'object') {
-        node.data = replaceTextByMap(node.data, translation)
-      } else {
-        node.data = translation
-      }
+      node.data =
+        typeof translation === 'object'
+          ? replaceTextByMap(node.data, translation)
+          : translation
     }
-  })
+  }
 }
 
 function replaceText($container, map) {
   // Only nodes with textNode children
-  if ($container.children().length !== 0) {
+  if ($container.children().length > 0) {
     return
   }
 
@@ -57,9 +58,11 @@ function replaceTextByMap(text, map) {
 }
 
 const SUB_FORUM_SEPARATOR = ' / '
+
 function replaceSubForum(selector) {
   $(selector).each((index, node) => {
     const text = node.textContent
+
     if (text.includes(SUB_FORUM_SEPARATOR)) {
       node.textContent = text.split(SUB_FORUM_SEPARATOR)[1]
     }
@@ -109,14 +112,19 @@ export function translate(token, value, $container) {
     default:
       if ($.isPlainObject(value)) {
         $container = $container ? $(token, $container) : $(token)
-        if (!$container.length) return
-        Object.entries(value).forEach(([token, value]) => {
-          forEach($container, ($el) => translate(token, value, $el))
+
+        if ($container.length === 0) return
+
+        for (const [token, entryValue] of Object.entries(value)) {
+          forEach($container, ($element) =>
+            translate(token, entryValue, $element)
+          )
           // translate(token, value, $container)
-        })
+        }
       } else {
         const $element = $(token, $container)
-        if ($element.length) $element.html(value)
+
+        if ($element.length > 0) $element.html(value)
       }
       break
   }

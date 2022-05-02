@@ -3,9 +3,9 @@
 /** @type {Extractor} */
 export const nikapic = {
   name: 'nikapic.ru',
-  linkRegEx: /^http:\/\/nikapic\.ru/,
+  linkRegExp: /^http:\/\/nikapic\.ru/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('/small/', '/big/')
+  async getURL(link) {
+    return link.thumbnailURL.replace('/small/', '/big/')
   },
 }

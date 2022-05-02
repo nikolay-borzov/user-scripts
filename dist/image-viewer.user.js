@@ -1,31 +1,31 @@
 // ==UserScript==
-// @name        Image Viewer
-// @description Allows viewing full image without leaving the page
-// @namespace   https://github.com/nikolay-borzov
-// @version     1.1.9
-// @author      nikolay-borzov
-// @license     MIT
-// @icon        https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/image-viewer/icon.png
-// @homepageURL https://github.com/nikolay-borzov/user-scripts
-// @supportURL  https://github.com/nikolay-borzov/user-scripts/issues
-// @include     *
-// @connect     www.imagebam.com
-// @connect     imagevenue.com
-// @connect     www.turboimagehost.com
-// @connect     fastpic.ru
-// @connect     radikal.ru
-// @run-at      document-start
-// @compatible  chrome
-// @compatible  firefox
-// @grant       GM_addStyle
-// @grant       GM_xmlhttpRequest
-// @grant       GM.xmlHttpRequest
-// @grant       GM_setValue
-// @grant       GM.setValue
-// @grant       GM_getValue
-// @grant       GM.getValue
-// @grant       GM_registerMenuCommand
+// @name         Image Viewer
+// @description  Allows viewing full image without leaving the page
+// @namespace    https://github.com/nikolay-borzov
+// @version      1.1.9
+// @author       nikolay-borzov
+// @license      MIT
+// @icon         https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/image-viewer/icon.png
+// @homepageURL  https://github.com/nikolay-borzov/user-scripts
+// @homepage     https://github.com/nikolay-borzov/user-scripts
+// @supportURL   https://github.com/nikolay-borzov/user-scripts/issues
+// @include      *
+// @connect      www.imagebam.com
+// @connect      imagevenue.com
+// @connect      www.turboimagehost.com
+// @connect      fastpic.ru
+// @connect      radikal.ru
+// @run-at       document-start
+// @grant        GM_addStyle
+// @grant        GM_xmlhttpRequest
+// @grant        GM.xmlHttpRequest
+// @grant        GM_setValue
+// @grant        GM.setValue
+// @grant        GM_getValue
+// @grant        GM.getValue
+// @grant        GM_registerMenuCommand
 // ==/UserScript==
+
 ;(function () {
   'use strict'
 
@@ -42,44 +42,39 @@
     return Object.prototype.hasOwnProperty.call(object, property)
   }
 
-  const gmPolyfill = (function () {
-    const gmMethodMap = {
+  function getGMPolyfillMethod(methodName) {
+    const GM_METHOD_MAP = {
       getValue: 'GM_getValue',
       setValue: 'GM_setValue',
       openInTab: 'GM_openInTab',
     }
 
-    return function polyfill(methodName) {
-      if (hasOwnProperty(gmMethodMap, methodName)) {
-        return typeof GM !== 'undefined' && methodName in GM
-          ? GM[methodName]
-          : function (...args) {
-              return new Promise((resolve, reject) => {
-                try {
-                  resolve(window[gmMethodMap[methodName]](...args))
-                } catch (e) {
-                  reject(e)
-                }
-              })
-            }
-      }
-
-      return null
+    if (hasOwnProperty(GM_METHOD_MAP, methodName)) {
+      return GM !== undefined && methodName in GM
+        ? GM[methodName]
+        : function (...arguments_) {
+            return new Promise((resolve, reject) => {
+              try {
+                resolve(window[GM_METHOD_MAP[methodName]](...arguments_))
+              } catch (error) {
+                reject(error)
+              }
+            })
+          }
     }
-  })()
+  }
 
   const addStyle =
     'GM_addStyle' in window
       ? GM_addStyle // eslint-disable-line camelcase
       : (css) => {
-          const head = document.getElementsByTagName('head')[0]
+          const head = document.querySelectorAll('head')[0]
 
           if (head) {
             const style = document.createElement('style')
 
-            style.type = 'text/css'
             style.innerHTML = css
-            head.appendChild(style)
+            head.append(style)
 
             return css
           }
@@ -87,12 +82,12 @@
 
   let request$1
 
-  const getRequest = () => {
+  function getRequest() {
     if (!request$1) {
       const xmlHttpRequest =
-        typeof GM !== 'undefined' && 'xmlHttpRequest' in GM
+        GM !== undefined && 'xmlHttpRequest' in GM
           ? GM.xmlHttpRequest
-          : GM_xmlhttpRequest; // eslint-disable-line
+          : GM_xmlhttpRequest // eslint-disable-line camelcase
 
       request$1 = function (url, { method = 'GET' } = {}) {
         return new Promise((resolve, reject) => {
@@ -105,43 +100,34 @@
         })
       }
     }
+
     return request$1
   }
 
-  let store
+  let store$1
 
   const getStore = () => {
-    if (!store) {
-      store = {
-        get: gmPolyfill('getValue'),
-        set: gmPolyfill('setValue'),
+    if (!store$1) {
+      store$1 = {
+        get: getGMPolyfillMethod('getValue'),
+        set: getGMPolyfillMethod('setValue'),
       }
     }
 
-    return store
+    return store$1
   }
 
   const request = getRequest()
 
-  async function getPageHtml(pageUrl) {
-    const response = await request(pageUrl)
-
-    return response.responseText
-  }
-
-  async function getUrlFromPage(link, extractor) {
+  async function getURLFromPage(link, extractor) {
     const html = await getPageHtml(link.url)
 
-    const match = extractor.imageUrlRegEx.exec(html)
+    const match = extractor.imageURLRegExp?.exec(html)
 
     let url
 
     if (match) {
-      if (match.groups) {
-        url = match.groups.url
-      } else {
-        url = match[1]
-      }
+      url = match.groups ? match.groups.url : match[1]
     }
 
     if (!url) {
@@ -151,28 +137,36 @@
     return url
   }
 
+  async function getPageHtml(pageURL) {
+    const response = await request(pageURL)
+
+    return response.responseText
+  }
+
   const fastpic = {
     name: 'FastPic',
-    linkRegEx: /^http.?:\/\/fastpic\.ru\/view/,
-    imageUrlRegEx: /src="(?<url>[^"]+)" class="image img-fluid"/,
-    getUrl: getUrlFromPage,
+    linkRegExp: /^http.?:\/\/fastpic\.ru\/view/,
+
+    imageURLRegExp: /src="(?<url>[^"]+)" class="image img-fluid"/,
+    getURL: getURLFromPage,
   }
 
   const URL_PARTS_REGEXP = /i(\d+).+big(\/\d+\/\d+\/).+\/([^/]+)$/
 
   const fastpicDirect = {
     name: 'FastPic (direct link)',
-    linkRegEx: /fastpic\.ru\/big/,
+    linkRegExp: /fastpic\.ru\/big/,
 
-    async getUrl(link) {
+    async getURL(link) {
       let hostLink = link.url
 
       if (hostLink.includes('?')) {
         const urlObject = new URL(hostLink)
-        const params = new URLSearchParams(urlObject.search)
-        for (const param of params.values()) {
-          if (fastpicDirect.linkRegEx.test(param)) {
-            hostLink = param
+        const parameters = new URLSearchParams(urlObject.search)
+
+        for (const parameter of parameters.values()) {
+          if (fastpicDirect.linkRegExp.test(parameter)) {
+            hostLink = parameter
             break
           }
         }
@@ -182,25 +176,25 @@
 
       const url = `https://fastpic.ru/view/${index}${date}${filename}.html`
 
-      return fastpic.getUrl({ ...link, url }, fastpic)
+      return fastpic.getURL({ ...link, url }, fastpic)
     },
   }
 
   const imagebam = {
     name: 'ImageBam',
-    linkRegEx: /^http:\/\/www\.imagebam\.com\/image/,
-    imageUrlRegEx: /property="og:image" content="([^"]*)"/,
-    getUrl: getUrlFromPage,
+    linkRegExp: /^http:\/\/www\.imagebam\.com\/image/,
+    imageURLRegExp: /property="og:image" content="([^"]*)"/,
+    getURL: getURLFromPage,
   }
 
   const DATE_PATTERN = /(\d{4})\.(\d{2})\.(\d{2})/
 
   const imageban = {
     name: 'ImageBan.ru',
-    linkRegEx: /\/\/imageban\.ru\/show/,
+    linkRegExp: /\/\/imageban\.ru\/show/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl
+    async getURL(link) {
+      return link.thumbnailURL
         .replace('thumbs', 'out')
         .replace(DATE_PATTERN, '$1/$2/$3')
     },
@@ -208,40 +202,40 @@
 
   const imagebanDirect = {
     name: 'ImageBan.ru (direct link)',
-    linkRegEx: /imageban\.ru\/out/,
+    linkRegExp: /imageban\.ru\/out/,
 
-    async getUrl(link) {
+    async getURL(link) {
       return link.url
     },
   }
 
   const imagetwist = {
     name: 'ImageTwist',
-    linkRegEx: /imagetwist\.com/,
+    linkRegExp: /imagetwist\.com/,
 
-    async getUrl(link) {
-      const imageName = link.url.split('/').pop().replace('.html', '')
-      const extension = imageName.split('.').pop()
-      const imageUrl = link.thumbnailUrl
+    async getURL(link) {
+      const imageName = link.url.split('/').pop()?.replace('.html', '')
+      const extension = imageName?.split('.').pop()
+      const imageUrl = link.thumbnailURL
         .replace('/th/', '/i/')
-        .slice(0, -extension.length)
+        .slice(0, -(extension?.length ?? 0))
 
       return `${imageUrl}${extension}/${imageName}`
     },
   }
 
-  const HOST_REPLACE_REG_EX$2 = /(picturelol|picshick|imageshimage)/
+  const HOST_REPLACE_REG_EXP = /(picturelol|picshick|imageshimage)/
 
   const imagetwistBased = {
     name: 'ImageTwist based (legacy)',
     hosts: ['Picturelol.com', 'PicShick.com', 'Imageshimage.com'],
-    linkRegEx: /^https?:\/\/(picturelol|picshick|imageshimage)\.com/,
+    linkRegExp: /^https?:\/\/(picturelol|picshick|imageshimage)\.com/,
 
-    async getUrl(link) {
+    async getURL(link) {
       const imageName = link.url.split('/').pop()
-      const imageUrl = link.thumbnailUrl
+      const imageUrl = link.thumbnailURL
         .replace('/th/', '/i/')
-        .replace(HOST_REPLACE_REG_EX$2, 'imagetwist')
+        .replace(HOST_REPLACE_REG_EXP, 'imagetwist')
 
       return `${imageUrl}/${imageName}`
     },
@@ -250,72 +244,72 @@
   const imagevenueLegacy = {
     name: 'ImageVenue.com',
 
-    linkRegEx: /(imagevenue.com\/img.php|www.imagevenue.com\/\\w+$)/,
-    imageUrlRegEx: /data-toggle="full">\W*<img src="(?<url>[^"]*)/im,
+    linkRegExp: /(imagevenue.com\/img.php|www.imagevenue.com\/\\w+$)/,
+    imageURLRegExp: /data-toggle="full">\W*<img src="(?<url>[^"]*)/im,
 
-    getUrl: getUrlFromPage,
+    getURL: getURLFromPage,
   }
 
   const imgadult = {
     name: 'ImgAdult.com',
-    linkRegEx: /^https:\/\/imgadult\.com/,
+    linkRegExp: /^https:\/\/imgadult\.com/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('/small/', '/big/')
+    async getURL(link) {
+      return link.thumbnailURL.replace('/small/', '/big/')
     },
   }
 
   const imgbb = {
     name: 'imgbb.com',
-    linkRegEx: /^https:\/\/ibb\.co/,
+    linkRegExp: /^https:\/\/ibb\.co/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('//thumb', '//image')
+    async getURL(link) {
+      return link.thumbnailURL.replace('//thumb', '//image')
     },
   }
 
   const imgbox = {
     name: 'imgbox.com',
-    linkRegEx: /^http:\/\/imgbox\.com/,
+    linkRegExp: /^http:\/\/imgbox\.com/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('/thumbs', '/images').replace('_t', '_o')
+    async getURL(link) {
+      return link.thumbnailURL.replace('/thumbs', '/images').replace('_t', '_o')
     },
   }
 
   const imgbum = {
     name: 'imgbum.net',
-    linkRegEx: /^http:\/\/imgbum\.net/,
+    linkRegExp: /^http:\/\/imgbum\.net/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('-thumb', '')
+    async getURL(link) {
+      return link.thumbnailURL.replace('-thumb', '')
     },
   }
 
   const imgchilibum = {
     name: 'imgchilibum.ru',
-    linkRegEx: /^http:\/\/imgchilibum\.ru\/v/,
+    linkRegExp: /^http:\/\/imgchilibum\.ru\/v/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('_s/', '_b/')
+    async getURL(link) {
+      return link.thumbnailURL.replace('_s/', '_b/')
     },
   }
 
   const imgdrive = {
     name: 'ImgDrive.net',
-    linkRegEx: /^https:\/\/imgdrive\.net/,
+    linkRegExp: /^https:\/\/imgdrive\.net/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('small', 'big')
+    async getURL(link) {
+      return link.thumbnailURL.replace('small', 'big')
     },
   }
 
   const imgtaxi = {
     name: 'imgtaxi.com',
-    linkRegEx: /^https:\/\/imgtaxi\.com/,
+    linkRegExp: /^https:\/\/imgtaxi\.com/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl
+    async getURL(link) {
+      return link.thumbnailURL
         .replace('/small/', '/big/')
         .replace('/small-medium/', '/big/')
     },
@@ -323,46 +317,46 @@
 
   const imx = {
     name: 'IMX.to',
-    linkRegEx: /^https:\/\/imx\.to/,
+    linkRegExp: /^https:\/\/imx\.to/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('/imx', '/i.imx').replace('/u/t/', '/i/')
+    async getURL(link) {
+      return link.thumbnailURL.replace('/imx', '/i.imx').replace('/u/t/', '/i/')
     },
   }
 
   const lostpic = {
     name: 'Lostpic.net',
-    linkRegEx: /^http:\/\/lostpic\.net/,
+    linkRegExp: /^http:\/\/lostpic\.net/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('.th', '').replace('http:', 'https:')
+    async getURL(link) {
+      return link.thumbnailURL.replace('.th', '').replace('http:', 'https:')
     },
   }
 
   const moneyPic = {
     name: 'money-pic.ru',
-    linkRegEx: /^http:\/\/money-pic\.ru/,
+    linkRegExp: /^http:\/\/money-pic\.ru/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('-thumb', '')
+    async getURL(link) {
+      return link.thumbnailURL.replace('-thumb', '')
     },
   }
 
   const nikapic = {
     name: 'nikapic.ru',
-    linkRegEx: /^http:\/\/nikapic\.ru/,
+    linkRegExp: /^http:\/\/nikapic\.ru/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('/small/', '/big/')
+    async getURL(link) {
+      return link.thumbnailURL.replace('/small/', '/big/')
     },
   }
 
   const picage = {
     name: 'picage.ru',
-    linkRegEx: /^http:\/\/picage\.ru/,
+    linkRegExp: /^http:\/\/picage\.ru/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl
+    async getURL(link) {
+      return link.thumbnailURL
         .replace('picage', 'pic4you')
         .replace('-thumb', '')
     },
@@ -370,10 +364,10 @@
 
   const piccash = {
     name: 'PicCash.net',
-    linkRegEx: /^http:\/\/piccash\.net\//,
+    linkRegExp: /^http:\/\/piccash\.net\//,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('_thumb', '_full').replace('-thumb', '')
+    async getURL(link) {
+      return link.thumbnailURL.replace('_thumb', '_full').replace('-thumb', '')
     },
   }
 
@@ -389,11 +383,11 @@
       'payforpic.ru',
       'picforall.ru',
     ],
-    linkRegEx:
+    linkRegExp:
       /^http:\/\/(freescreens\.ru|imgclick\.ru|picclick\.ru|payforpic\.ru|picforall\.ru)/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl
+    async getURL(link) {
+      return link.thumbnailURL
         .replace(HOST_REPLACE_REG_EX$1, 'picpic.online')
         .replace('-thumb', '')
     },
@@ -410,11 +404,11 @@
       'www.vestimage.site',
       'www.chaosimg.site',
     ],
-    linkRegEx:
+    linkRegExp:
       /^http:\/\/www\.(iceimg\.net|pixsense\.net|vestimage\.site|chaosimg\.site)/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl
+    async getURL(link) {
+      return link.thumbnailURL
         .replace(HOST_REPLACE_REG_EX, 'fortstore.net')
         .replace('small-', '')
         .replace('/small/', '/big/')
@@ -423,610 +417,626 @@
 
   const radikal = {
     name: 'Radikal.ru',
-    linkRegEx: /https?:\/\/.\.radikal\.ru\//,
+    linkRegExp: /https?:\/\/.\.radikal\.ru\//,
 
-    async getUrl(link) {
+    async getURL(link) {
       return link.url
     },
   }
 
   const radikalLegacy = {
     name: 'Radikal.ru (legacy)',
-    linkRegEx: /^http:\/\/radikal\.ru\//,
-    imageUrlRegEx: /id="imgFullSize" src="(?<url>[^"]+)"/,
-    getUrl: getUrlFromPage,
+    linkRegExp: /^http:\/\/radikal\.ru\//,
+    imageURLRegExp: /id="imgFullSize" src="(?<url>[^"]+)"/,
+    getURL: getURLFromPage,
   }
 
   const stuffed = {
     name: 'stuffed.ru',
-    linkRegEx: /^http:\/\/stuffed\.ru/,
+    linkRegExp: /^http:\/\/stuffed\.ru/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('-thumb', '')
+    async getURL(link) {
+      return link.thumbnailURL.replace('-thumb', '')
     },
   }
 
   const turboimagehost = {
     name: 'TurboImageHost',
-    linkRegEx: /^https:\/\/www\.turboimagehost\.com\/p/,
-    imageUrlRegEx: /property="og:image" content="([^"]*)"/,
-    getUrl: getUrlFromPage,
+    linkRegExp: /^https:\/\/www\.turboimagehost\.com\/p/,
+    imageURLRegExp: /property="og:image" content="([^"]*)"/,
+    getURL: getURLFromPage,
   }
 
   const vfl = {
     name: 'VFL.ru',
-    linkRegEx: /^http:\/\/vfl\.ru/,
+    linkRegExp: /^http:\/\/vfl\.ru/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('_s', '')
+    async getURL(link) {
+      return link.thumbnailURL.replace('_s', '')
     },
   }
 
   const xxxscreens = {
     name: 'XXXScreens.com',
-    linkRegEx: /^http:\/\/xxxscreens\.com/,
+    linkRegExp: /^http:\/\/xxxscreens\.com/,
 
-    async getUrl(link) {
-      return link.thumbnailUrl.replace('small/', 'big/')
+    async getURL(link) {
+      return link.thumbnailURL.replace('small/', 'big/')
     },
   }
 
   const hostExtractors = /* #__PURE__ */ Object.freeze({
     __proto__: null,
-    fastpic: fastpic,
-    fastpicDirect: fastpicDirect,
-    imagebam: imagebam,
-    imageban: imageban,
-    imagebanDirect: imagebanDirect,
-    imagetwist: imagetwist,
-    imagetwistBased: imagetwistBased,
-    imagevenueLegacy: imagevenueLegacy,
-    imgadult: imgadult,
-    imgbb: imgbb,
-    imgbox: imgbox,
-    imgbum: imgbum,
-    imgchilibum: imgchilibum,
-    imgdrive: imgdrive,
-    imgtaxi: imgtaxi,
-    imx: imx,
-    lostpic: lostpic,
-    moneyPic: moneyPic,
-    nikapic: nikapic,
-    picage: picage,
-    piccash: piccash,
-    picforall: picforall,
-    pixsense: pixsense,
-    radikal: radikal,
-    radikalLegacy: radikalLegacy,
-    stuffed: stuffed,
-    turboimagehost: turboimagehost,
-    vfl: vfl,
-    xxxscreens: xxxscreens,
+    fastpic,
+    fastpicDirect,
+    imagebam,
+    imageban,
+    imagebanDirect,
+    imagetwist,
+    imagetwistBased,
+    imagevenueLegacy,
+    imgadult,
+    imgbb,
+    imgbox,
+    imgbum,
+    imgchilibum,
+    imgdrive,
+    imgtaxi,
+    imx,
+    lostpic,
+    moneyPic,
+    nikapic,
+    picage,
+    piccash,
+    picforall,
+    pixsense,
+    radikal,
+    radikalLegacy,
+    stuffed,
+    turboimagehost,
+    vfl,
+    xxxscreens,
   })
 
-  const urlExtractor = (function () {
-    function sortCaseInsensitive(array, getValue) {
-      return array
-        .map((value, index) => ({
-          index,
-          value: getValue(value).toLowerCase(),
-        }))
-        .sort((a, b) => {
-          if (a.value > b.value) {
-            return 1
-          }
-          if (a.value < b.value) {
-            return -1
-          }
-          return 0
-        })
-        .map((m) => array[m.index])
+  let extractorsActive = []
+
+  const extractors = Object.values(hostExtractors).filter(Boolean)
+
+  const extractorsByName = extractors.reduce((result, extractor) => {
+    result[extractor.name] = extractor
+
+    return result
+  }, {})
+
+  const urlExtractor = {
+    getImageHostsMetadata() {
+      const result = extractors.map(({ name, hosts }) => ({
+        name,
+        description: hosts ? hosts.join(', ') : '',
+      }))
+
+      return sortCaseInsensitive(result, ({ name }) => name)
+    },
+
+    getImageURL(link) {
+      const extractor = extractorsByName[link.host]
+
+      return extractor.getURL(link, extractor)
+    },
+
+    getHostNameMatcher(enabledHosts) {
+      extractorsActive = extractors.filter((extractor) =>
+        enabledHosts.includes(extractor.name)
+      )
+
+      let previousExtractor
+
+      return (url) => {
+        if (previousExtractor && previousExtractor.linkRegExp.test(url)) {
+          return previousExtractor.name
+        }
+
+        const extractor = extractorsActive.find((extractor) =>
+          extractor.linkRegExp.test(url)
+        )
+
+        if (extractor) {
+          previousExtractor = extractor
+
+          return extractor.name
+        }
+      }
+    },
+  }
+
+  function sortCaseInsensitive(items, getValue) {
+    return items
+      .map((value, index) => ({ index, value: getValue(value).toLowerCase() }))
+      .sort((a, b) => {
+        if (a.value > b.value) {
+          return 1
+        }
+        if (a.value < b.value) {
+          return -1
+        }
+
+        return 0
+      })
+      .map((m) => items[m.index])
+  }
+
+  const store = getStore()
+
+  const CLASSES$1 = {
+    open: 'iv-config-form--open',
+  }
+
+  let configMenu
+  const currentHost = unsafeWindow.location.host
+
+  async function initHostConfig() {
+    const config = await getHostConfig()
+
+    const handler = () => showMenu(config)
+
+    // eslint-disable-next-line camelcase
+    if (typeof GM_registerMenuCommand !== 'undefined') {
+      GM_registerMenuCommand('Image Viewer Settings', handler)
+    } else {
+      unsafeWindow.imageViewer = {
+        settings: handler,
+      }
     }
 
-    let extractorsActive = []
+    return config
+  }
 
-    const extractors = Object.values(hostExtractors).filter(Boolean)
+  async function getHostConfig() {
+    const hosts = urlExtractor.getImageHostsMetadata()
 
-    const extractorsByName = extractors.reduce((result, extractor) => {
-      result[extractor.name] = extractor
+    const storedConfig = await store.get(currentHost, { hosts: {} })
+    const enabledHosts = []
+
+    for (const host of hosts) {
+      const id = host.name
+      const isEnabled = id in storedConfig.hosts ? storedConfig.hosts[id] : true
+
+      host.isEnabled = isEnabled
+      storedConfig.hosts[id] = isEnabled
+
+      if (isEnabled) {
+        enabledHosts.push(id)
+      }
+    }
+
+    storedConfig.hosts = hosts.reduce((result, host) => {
+      result[host.name] = host.isEnabled
+
       return result
     }, {})
 
     return {
-      getImageHostsInfo() {
-        const result = extractors.map((e) => ({
-          name: e.name,
-          description: e.hosts ? e.hosts.join(', ') : '',
-        }))
-
-        return sortCaseInsensitive(result, (value) => value.name)
-      },
-
-      getImageUrl(link) {
-        const extractor = extractorsByName[link.host]
-
-        return extractor.getUrl(link, extractor)
-      },
-
-      getHostNameMatcher(enabledHosts) {
-        extractorsActive = extractors.filter((e) =>
-          enabledHosts.includes(e.name)
-        )
-
-        let prevExtractor = null
-
-        return (url) => {
-          if (prevExtractor && prevExtractor.linkRegEx.test(url)) {
-            return prevExtractor.name
-          }
-
-          const extractor = extractorsActive.find((e) => e.linkRegEx.test(url))
-
-          if (extractor) {
-            prevExtractor = extractor
-            return extractor.name
-          }
-
-          return null
-        }
-      },
+      hosts,
+      storedConfig,
+      enabledHosts,
     }
-  })()
+  }
 
-  const config = (function () {
-    const store = getStore()
+  function showMenu(config) {
+    createMenuElement(config).classList.add(CLASSES$1.open)
+  }
 
-    const CLASSES = {
-      open: 'iv-config-form--open',
-    }
-
-    let configMenu = null
-    const currentHost = unsafeWindow.location.host
-
-    function showMenu(config) {
-      createMenuElement(config).classList.add(CLASSES.open)
-    }
-
-    function createMenuElement(config) {
-      if (!configMenu) {
-        const rows = config.hosts.map(createConfigMenuRow)
-
-        configMenu = $.create('div', {
-          id: 'iv-config-form',
-          className: 'iv-config-form',
-          contents: [
-            createMenuHeader(),
-            {
-              tag: 'div',
-              className: 'iv-config-form__options',
-              contents: rows,
-            },
-          ],
-          delegate: {
-            change: {
-              '.js-iv-config-checkbox': (e) =>
-                updateHostConfig(
-                  config.storedConfig,
-                  e.target.value,
-                  e.target.checked
-                ),
-            },
-          },
-        })
-
-        document.body.appendChild(configMenu)
-      }
-
+  function createMenuElement(config) {
+    if (configMenu) {
       return configMenu
     }
 
-    function createMenuHeader() {
-      const closeButton = $.create('a', {
-        href: '#',
-        title: 'Close',
-        className: `iv-icon-button iv-icon-button--small iv-icon iv-icon--type-close`,
-        events: {
-          click: (e) => {
-            e.preventDefault()
-            configMenu.classList.remove(CLASSES.open)
-          },
+    const rows = config.hosts.map((host) => createConfigMenuRow(host))
+
+    configMenu = $.create('div', {
+      id: 'iv-config-form',
+      className: 'iv-config-form',
+      contents: [
+        createMenuHeader(),
+        {
+          tag: 'div',
+          className: 'iv-config-form__options',
+          contents: rows,
         },
-      })
+      ],
+      delegate: {
+        change: {
+          '.js-iv-config-checkbox': ({ target: { value, checked } }) =>
+            updateHostConfig(config.storedConfig, value, checked),
+        },
+      },
+    })
 
-      return {
-        tag: 'div',
-        className: 'iv-config-form__header',
-        contents: [
-          {
-            tag: 'span',
-            className: 'iv-config-form__header-title',
-            contents: `Settings for ${currentHost}`,
-          },
-          closeButton,
-        ],
-      }
-    }
+    document.body.append(configMenu)
 
-    function createConfigMenuRow(host) {
-      return $.create('label', {
-        className: 'iv-config-form__label',
-        title: host.description,
-        contents: [
-          {
-            tag: 'input',
-            type: 'checkbox',
-            className: 'iv-config-form__checkbox js-iv-config-checkbox',
-            checked: host.enabled,
-            value: host.name,
-          },
-          host.name,
-        ],
-      })
-    }
+    return configMenu
+  }
 
-    function updateHostConfig(config, hostName, isEnabled) {
-      config.hosts[hostName] = isEnabled
-      store.set(currentHost, config)
-    }
+  function createConfigMenuRow(host) {
+    return $.create('label', {
+      className: 'iv-config-form__label',
+      title: host.description,
+      contents: [
+        {
+          tag: 'input',
+          type: 'checkbox',
+          className: 'iv-config-form__checkbox js-iv-config-checkbox',
+          checked: host.isEnabled,
+          value: host.name,
+        },
+        host.name,
+      ],
+    })
+  }
 
-    async function getHostConfig() {
-      const hosts = urlExtractor.getImageHostsInfo()
-      const storedConfig = await store.get(currentHost, { hosts: {} })
-      const enabledHosts = []
-
-      hosts.forEach((host) => {
-        const id = host.name
-        const isEnabled =
-          id in storedConfig.hosts ? storedConfig.hosts[id] : true
-
-        host.enabled = isEnabled
-        storedConfig.hosts[id] = isEnabled
-
-        if (isEnabled) {
-          enabledHosts.push(id)
-        }
-      })
-
-      storedConfig.hosts = hosts.reduce((result, host) => {
-        result[host.name] = host.enabled
-        return result
-      }, {})
-
-      return {
-        hosts,
-        storedConfig,
-        enabledHosts,
-      }
-    }
+  function createMenuHeader() {
+    const closeButton = $.create('a', {
+      href: '#',
+      title: 'Close',
+      className: `iv-icon-button iv-icon-button--small iv-icon iv-icon--type-close`,
+      events: {
+        click: (event) => {
+          event.preventDefault()
+          configMenu.classList.remove(CLASSES$1.open)
+        },
+      },
+    })
 
     return {
-      async init() {
-        const config = await getHostConfig()
-
-        const handler = () => showMenu(config)
-
-        // eslint-disable-next-line
-        if (typeof GM_registerMenuCommand !== 'undefined') {
-          GM_registerMenuCommand('Image Viewer Settings', handler)
-        } else {
-          unsafeWindow.imageViewer = {
-            settings: handler,
-          }
-        }
-
-        return config
-      },
+      tag: 'div',
+      className: 'iv-config-form__header',
+      contents: [
+        {
+          tag: 'span',
+          className: 'iv-config-form__header-title',
+          contents: `Settings for ${currentHost}`,
+        },
+        closeButton,
+      ],
     }
-  })()
+  }
+
+  function updateHostConfig(config, hostName, isEnabled) {
+    config.hosts[hostName] = isEnabled
+    store.set(currentHost, config)
+  }
 
   const css_248z =
     "@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(1turn)}}.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{background-position:50%;background-repeat:no-repeat;background-size:contain;content:\"\";height:100%;left:50%;position:absolute;top:50%;transform:translate(-50%,-50%);width:100%;z-index:2}.iv-icon--hover:after{opacity:0;transition:opacity .35s ease}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{height:50px;width:50px}.iv-icon--type-loading:after{animation:spin 1s linear infinite;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z'/%3E%3C/svg%3E\")!important;opacity:1}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z'/%3E%3C/svg%3E\")}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg fill='%23fff' height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\")}.iv-icon--type-expand:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5m3 9h2v5h-5v-2h3v-3m-7 3v2H5v-5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-shrink:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M14 14h5v2h-3v3h-2v-5m-9 0h5v5H8v-3H5v-2m3-9h2v5H5V8h3V5m11 3v2h-5V5h2v3h3z'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42 3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.iv-image-link{border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);display:inline-flex;margin:3px;min-height:50px;min-width:50px;padding:4px;vertical-align:top}.iv-image-link img{margin:0}.iv-image-link>:not(img){align-items:center;display:flex;justify-content:center;width:100%}.iv-image-link:before{background-color:rgba(0,0,0,.5);bottom:4px;content:\"\";left:4px;opacity:0;position:absolute;right:4px;top:4px;transition:opacity .35s ease;z-index:1}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{background-color:rgba(0,0,0,.2);height:100%;left:0;top:0;width:100%}.iv-image-link img:after{height:35px;width:35px;z-index:0}.iv-image-view{background-color:rgba(0,0,0,.8);color:#fff;display:none;flex-direction:column;height:0;opacity:0;transition:opacity .35s ease-out;user-select:none}.iv-image-view--open body,html.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{bottom:0;display:flex;height:auto;left:0;opacity:1;position:fixed;right:0;top:0;z-index:3}.iv-image-view--single .single-hide{visibility:hidden}.iv-image-view__footer,.iv-image-view__header{background-color:rgba(0,0,0,.8);display:flex}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:2}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__header{justify-content:space-between}.iv-image-view__footer{justify-content:center}.iv-image-view__body{display:flex;height:100%;overflow:auto;position:relative}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-thumbnail-wrapper{display:flex;height:100%;left:0;position:absolute;top:0;width:100%;z-index:0}.iv-image-view__number{align-items:center;display:flex;font-size:18px;padding:0 40px}.iv-image-view__backdrop{height:100%;left:0;position:fixed;top:0;width:100%;z-index:1}.iv-image,.iv-thumbnail{margin:auto;max-height:100%;max-width:100%;object-fit:contain}.iv-image{opacity:1;transition:opacity .35s ease-out;z-index:2}.iv-thumbnail{filter:blur(5px)}.iv-icon--type-error .iv-image,.iv-image-view__image--loading .iv-image,.iv-image-view__image--thumbnail .iv-image{opacity:0}.iv-image-view__image--thumbnail .iv-thumbnail-wrapper{z-index:2}.iv-image-view--full-height .iv-image,.iv-image-view--full-height .iv-thumbnail{cursor:grab;max-height:none}.iv-image-view--full-height .iv-image--grabbing{cursor:grabbing}.iv-icon-button{height:50px;transition:all .35s ease-out;width:50px}.iv-icon-button--small{height:25px;width:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}.iv-config-form{background-color:rgba(0,0,0,.85);color:#fff;display:none;flex-direction:column;height:50%;left:10px;max-width:500px;padding:10px;top:10px;width:50%}.iv-config-form--open{display:flex;position:fixed;z-index:3}.iv-config-form__header{align-items:center;display:flex;padding:10px}.iv-config-form__header-title{flex-grow:1}.iv-config-form__options{display:flex;flex-flow:column wrap;flex-grow:1;overflow:auto}.iv-config-form__label{align-items:center;display:flex;flex:0 0 auto;margin:0;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0!important}"
 
-  const initViewer = (function () {
-    const CLASSES = {
-      imageLink: 'js-image-link',
-      imageLinkZoom: 'iv-icon--type-zoom',
-      imageLinkHover: 'iv-icon--hover',
-      brokenImage: 'iv-icon--type-image-broken',
-      loadingIcon: 'iv-icon--type-loading',
-      loading: 'iv-image-view__image--loading',
-      thumbnail: 'iv-image-view__image--thumbnail',
-      open: 'iv-image-view--open',
-      single: 'iv-image-view--single',
-      fullHeight: 'iv-image-view--full-height',
-      iconExpand: 'iv-icon--type-expand',
-      iconShrink: 'iv-icon--type-shrink',
-      grabbing: 'iv-image--grabbing',
-      buttonActive: 'iv-icon-button--active',
+  const CLASSES = {
+    imageLink: 'js-image-link',
+    imageLinkZoom: 'iv-icon--type-zoom',
+    imageLinkHover: 'iv-icon--hover',
+    brokenImage: 'iv-icon--type-image-broken',
+    loadingIcon: 'iv-icon--type-loading',
+    loading: 'iv-image-view__image--loading',
+    thumbnail: 'iv-image-view__image--thumbnail',
+    open: 'iv-image-view--open',
+    single: 'iv-image-view--single',
+    fullHeight: 'iv-image-view--full-height',
+    iconExpand: 'iv-icon--type-expand',
+    iconShrink: 'iv-icon--type-shrink',
+    grabbing: 'iv-image--grabbing',
+    buttonActive: 'iv-icon-button--active',
+  }
+
+  const SELECTORS = {
+    imageLink: `.${CLASSES.imageLink}`,
+  }
+
+  const EMPTY_SRC =
+    'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI='
+
+  const TRANSITION_DURATION = 350
+
+  function initViewer(enabledHosts) {
+    addStyle(css_248z)
+
+    const container = $('body')
+
+    const linkClasses = [
+      CLASSES.imageLink,
+      'iv-image-link',
+      'iv-icon',
+      'iv-icon--hover',
+      CLASSES.imageLinkZoom,
+      'iv-icon--size-button',
+    ]
+
+    const getHostName = urlExtractor.getHostNameMatcher(enabledHosts)
+
+    const imagesWithLinks = $$('a > img, a > var', container)
+      .map((img) => ({
+        link: img.parentElement,
+        thumbnailUrl: img.src || img.title,
+      }))
+      .filter(({ link }) => link.href)
+
+    for (const { link, thumbnailUrl } of imagesWithLinks) {
+      const hostName = getHostName(link.href)
+
+      if (hostName) {
+        link.dataset.ivHost = hostName
+        link.dataset.ivThumbnail = thumbnailUrl
+        link.classList.add(...linkClasses)
+      }
     }
 
-    const SELECTORS = {
-      imageLink: `.${CLASSES.imageLink}`,
-    }
+    $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
+  }
 
-    const EMPTY_SRC =
-      'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI='
+  const elements = {
+    container: undefined,
+    image: undefined,
+    imageThumbnail: undefined,
+    imageContainer: undefined,
+    imageNumber: undefined,
+    imageTotal: undefined,
+    buttons: {
+      next: undefined,
+      previous: undefined,
+      close: undefined,
+      toggleFullHeight: undefined,
+    },
+  }
 
-    const TRANSITION_DURATION = 350
+  const state = {
+    isFirstClick: true,
+    isOpened: false,
+    currentLink: undefined,
+    linksSet: [],
+    isSingle: false,
+    getCurrentLinkIndex() {
+      return this.currentLink === undefined
+        ? -1
+        : this.linksSet.indexOf(this.currentLink)
+    },
+    getLastLinkIndex() {
+      return this.linksSet.length - 1
+    },
+    dragPosition: 0,
+    dragging: false,
+  }
 
-    const elements = {
-      container: null,
-      image: null,
-      imageThumbnail: null,
-      imageContainer: null,
-      imageNumber: null,
-      imageTotal: null,
-      buttons: {
-        next: null,
-        previous: null,
-        close: null,
-        toggleFullHeight: null,
-      },
-    }
+  const image = {
+    async show(link) {
+      const container = elements.container
+      const img = elements.image
+      const thumbnail = elements.imageThumbnail
 
-    const state = {
-      firstClick: true,
-      open: false,
-      currentLink: null,
-      linksSet: [],
-      isSingle: false,
-      getCurrentLinkIndex() {
-        return this.linksSet.indexOf(this.currentLink)
-      },
-      getLastLinkIndex() {
-        return this.linksSet.length - 1
-      },
-      dragPosition: null,
-      dragging: false,
-    }
+      state.currentLink = link
 
-    const image = {
-      async show(link) {
-        const container = elements.container
-        const img = elements.image
-        const thumbnail = elements.imageThumbnail
+      if (state.isSingle) {
+        container.classList.add(CLASSES.single)
+      } else {
+        container.classList.remove(CLASSES.single)
+        elements.imageNumber.textContent = (
+          state.getCurrentLinkIndex() + 1
+        ).toString()
+      }
 
-        state.currentLink = link
+      if (!state.isOpened) {
+        document.documentElement.classList.add(CLASSES.open)
+        state.isOpened = true
+      }
 
-        if (state.isSingle) {
-          container.classList.add(CLASSES.single)
-        } else {
-          container.classList.remove(CLASSES.single)
-          elements.imageNumber.textContent = state.getCurrentLinkIndex() + 1
-        }
+      img.src = EMPTY_SRC
 
-        if (!state.open) {
-          document.documentElement.classList.add(CLASSES.open)
-          state.open = true
-        }
+      if (link.classList.contains(CLASSES.brokenImage)) {
+        container.classList.add(CLASSES.brokenImage)
 
-        img.src = EMPTY_SRC
+        return
+      }
 
-        if (link.classList.contains(CLASSES.brokenImage)) {
-          container.classList.add(CLASSES.brokenImage)
+      container.classList.remove(CLASSES.brokenImage)
+
+      container.classList.add(CLASSES.loading, CLASSES.loadingIcon)
+
+      const isSizeKnown = !!link.dataset.ivWidth
+      const thumbnailURL = link.dataset.ivThumbnail
+
+      if (!thumbnailURL || !link.dataset.ivHost) {
+        throw new Error(
+          '[image-viewer] Either thumbnail URL or host is not set'
+        )
+      }
+
+      if (isSizeKnown) {
+        thumbnail.width = Number(link.dataset.ivWidth)
+        thumbnail.src = thumbnailURL
+
+        container.classList.add(CLASSES.thumbnail)
+      }
+
+      let imageURL = link.dataset.ivImgUrl
+
+      if (!imageURL) {
+        imageURL = await urlExtractor.getImageURL({
+          url: link.href,
+          thumbnailURL,
+          host: link.dataset.ivHost,
+        })
+
+        if (!imageURL) {
+          image.markAsBroken(link)
 
           return
         }
 
-        container.classList.remove(CLASSES.brokenImage)
+        link.dataset.ivImgUrl = imageURL
+      }
 
-        container.classList.add(CLASSES.loading, CLASSES.loadingIcon)
-
-        const isSizeKnown = !!link.dataset.ivWidth
-        const thumbnailUrl = link.dataset.ivThumbnail
-
-        if (isSizeKnown) {
-          thumbnail.width = link.dataset.ivWidth
-          thumbnail.src = thumbnailUrl
-
-          container.classList.add(CLASSES.thumbnail)
-        }
-
-        let imageUrl = link.dataset.ivImgUrl
-
-        if (!imageUrl) {
-          imageUrl = await urlExtractor.getImageUrl({
-            url: link.href,
-            thumbnailUrl,
-            host: link.dataset.ivHost,
-          })
-
-          if (!imageUrl) {
-            image.markAsBroken(link)
-            return
-          }
-
-          link.dataset.ivImgUrl = imageUrl
-        }
-
-        try {
-          await image.preload(
-            imageUrl,
-            isSizeKnown ? null : image.setThumbnailSize
-          )
-
-          img.src = imageUrl
-
-          container.classList.remove(
-            CLASSES.thumbnail,
-            CLASSES.loading,
-            CLASSES.loadingIcon
-          )
-
-          setTimeout(image.hideThumbnail, TRANSITION_DURATION)
-        } catch (e) {
-          link.classList.remove(CLASSES.imageLink)
-          image.markAsBroken(link)
-
-          $.attributes(link, { target: '_blank' })
-        }
-      },
-
-      preload(url, onSizeGet) {
-        return new Promise((resolve, reject) => {
-          const imageObject = new Image()
-
-          imageObject.onload = resolve
-          imageObject.onerror = reject
-
-          imageObject.src = url
-
-          if (onSizeGet) {
-            image.getSize(imageObject).then(onSizeGet)
-          }
-        })
-      },
-
-      getSize(img) {
-        return new Promise((resolve) => {
-          const intervalId = setInterval(() => {
-            if (img.naturalWidth) {
-              clearInterval(intervalId)
-              resolve({ width: img.naturalWidth, complete: img.complete })
-            }
-          }, 10)
-        })
-      },
-
-      setThumbnailSize({ width, complete }) {
-        elements.imageThumbnail.width = width
-        elements.imageThumbnail.src = state.currentLink.dataset.ivThumbnail
-
-        if (!complete) {
-          elements.container.classList.add(CLASSES.thumbnail)
-        }
-
-        state.currentLink.dataset.ivWidth = width
-      },
-
-      hideThumbnail() {
-        elements.imageThumbnail.removeAttribute('width')
-        elements.imageThumbnail.src = EMPTY_SRC
-      },
-
-      hide() {
-        document.documentElement.classList.remove(CLASSES.open)
-        state.open = false
-        state.currentLink = null
-        elements.image.src = EMPTY_SRC
-        events.keyboard.unbind()
-      },
-
-      next() {
-        const currentIndex = state.getCurrentLinkIndex()
-        const newIndex =
-          currentIndex < state.getLastLinkIndex() ? currentIndex + 1 : 0
-
-        image.show(state.linksSet[newIndex])
-      },
-
-      previous() {
-        const currentIndex = state.getCurrentLinkIndex()
-        const newIndex =
-          currentIndex === 0 ? state.getLastLinkIndex() : currentIndex - 1
-
-        image.show(state.linksSet[newIndex])
-      },
-
-      toggleFullHeight() {
-        elements.container.classList.toggle(CLASSES.fullHeight)
-        elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconExpand)
-        elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconShrink)
-      },
-
-      markAsBroken(link) {
-        elements.container.classList.replace(
-          CLASSES.loadingIcon,
-          CLASSES.brokenImage
+      try {
+        await image.preload(
+          imageURL,
+          isSizeKnown ? undefined : image.setThumbnailSize
         )
-        elements.container.classList.remove(CLASSES.loading)
-        link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
+
+        img.src = imageURL
+
+        container.classList.remove(
+          CLASSES.thumbnail,
+          CLASSES.loading,
+          CLASSES.loadingIcon
+        )
+
+        setTimeout(image.hideThumbnail, TRANSITION_DURATION)
+      } catch {
+        link.classList.remove(CLASSES.imageLink)
+        image.markAsBroken(link)
+
+        $.attributes(link, { target: '_blank' })
+      }
+    },
+
+    preload(url, onSizeGet) {
+      return new Promise((resolve, reject) => {
+        const imageObject = new Image()
+
+        imageObject.addEventListener('load', () => resolve())
+        imageObject.addEventListener('error', reject)
+
+        imageObject.src = url
+
+        if (onSizeGet) {
+          image.getSize(imageObject).then(onSizeGet)
+        }
+      })
+    },
+
+    getSize(img) {
+      return new Promise((resolve) => {
+        const intervalId = setInterval(() => {
+          if (img.naturalWidth) {
+            clearInterval(intervalId)
+            resolve({ width: img.naturalWidth, isLoaded: img.complete })
+          }
+        }, 10)
+      })
+    },
+
+    setThumbnailSize({ width, isLoaded }) {
+      if (!state.currentLink) {
+        throw new Error('[image-viewer] currentLink is not set')
+      }
+
+      const thumbnailURL = state.currentLink.dataset.ivThumbnail
+
+      if (!thumbnailURL) {
+        throw new Error('[image-viewer] Thumbnail URL is not set')
+      }
+
+      elements.imageThumbnail.width = width
+      elements.imageThumbnail.src = thumbnailURL
+
+      if (!isLoaded) {
+        elements.container.classList.add(CLASSES.thumbnail)
+      }
+
+      state.currentLink.dataset.ivWidth = width.toString()
+    },
+
+    hideThumbnail() {
+      elements.imageThumbnail.removeAttribute('width')
+      elements.imageThumbnail.src = EMPTY_SRC
+    },
+
+    hide() {
+      document.documentElement.classList.remove(CLASSES.open)
+      state.isOpened = false
+      state.currentLink = undefined
+      elements.image.src = EMPTY_SRC
+      events.keyboard.unbind()
+    },
+
+    next() {
+      const currentIndex = state.getCurrentLinkIndex()
+      const newIndex =
+        currentIndex < state.getLastLinkIndex() ? currentIndex + 1 : 0
+
+      image.show(state.linksSet[newIndex])
+    },
+
+    previous() {
+      const currentIndex = state.getCurrentLinkIndex()
+      const newIndex =
+        currentIndex === 0 ? state.getLastLinkIndex() : currentIndex - 1
+
+      image.show(state.linksSet[newIndex])
+    },
+
+    toggleFullHeight() {
+      elements.container.classList.toggle(CLASSES.fullHeight)
+      elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconExpand)
+      elements.buttons.toggleFullHeight.classList.toggle(CLASSES.iconShrink)
+    },
+
+    markAsBroken(link) {
+      elements.container.classList.replace(
+        CLASSES.loadingIcon,
+        CLASSES.brokenImage
+      )
+      elements.container.classList.remove(CLASSES.loading)
+      link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
+    },
+  }
+
+  const events = {
+    linkClick(event) {
+      event.preventDefault()
+
+      if (state.isFirstClick) {
+        create.viewContainer()
+        state.isFirstClick = false
+      }
+
+      const link = event.target
+
+      state.linksSet = $$(SELECTORS.imageLink, link.parentElement ?? undefined)
+      state.isSingle = state.linksSet.length === 1
+
+      if (!state.isSingle) {
+        elements.imageTotal.textContent = state.linksSet.length.toString()
+      }
+
+      events.keyboard.bind()
+
+      image.show(link)
+    },
+
+    keyboard: {
+      bind() {
+        document.addEventListener('keydown', events.keyboard.handler, true)
       },
-    }
+      unbind() {
+        document.removeEventListener('keydown', events.keyboard.handler, true)
+      },
 
-    const events = {
-      linkClick(e) {
-        e.preventDefault()
-
-        if (state.firstClick) {
-          create.viewContainer()
-          state.firstClick = false
+      handler(event) {
+        if (event.defaultPrevented || event.repeat) {
+          return
         }
 
-        const link = e.target
-
-        state.linksSet = $$(SELECTORS.imageLink, link.parentNode)
-        state.isSingle = state.linksSet.length === 1
-
-        if (!state.isSingle) {
-          elements.imageTotal.textContent = state.linksSet.length
-        }
-
-        events.keyboard.bind()
-
-        image.show(link)
-      },
-
-      keyboard: {
-        bind() {
-          document.addEventListener('keydown', events.keyboard.handler, true)
-        },
-        unbind() {
-          document.removeEventListener('keydown', events.keyboard.handler, true)
-        },
-        handler(e) {
-          if (e.defaultPrevented || e.repeat) {
-            return
-          }
-
-          switch (e.key) {
-            case 'ArrowRight':
-              image.next()
-              break
-
-            case 'ArrowLeft':
-              image.previous()
-              break
-
-            case 'Escape':
-              image.hide()
-              break
-
-            case ' ':
-              image.toggleFullHeight()
-              break
-
-            default:
-              return
-          }
-
-          e.preventDefault()
-        },
-      },
-
-      mouse(e) {
-        switch (e.type) {
-          case 'mousedown':
-            state.dragging = true
-            state.dragPosition = e.clientY
-            elements.image.classList.add(CLASSES.grabbing)
+        switch (event.key) {
+          case 'ArrowRight':
+            image.next()
             break
 
-          case 'mousemove':
-            if (state.dragging) {
-              elements.imageContainer.scrollTop -=
-                e.clientY - state.dragPosition
-              state.dragPosition = e.clientY
-            }
+          case 'ArrowLeft':
+            image.previous()
             break
 
-          case 'mouseup':
-          case 'mouseout':
-            state.dragging = false
-            elements.image.classList.remove(CLASSES.grabbing)
+          case 'Escape':
+            image.hide()
             break
 
-          case 'dblclick':
+          case ' ':
             image.toggleFullHeight()
             break
 
@@ -1034,172 +1044,168 @@
             return
         }
 
-        e.preventDefault()
+        event.preventDefault()
       },
-    }
+    },
 
-    const create = {
-      viewContainer() {
-        elements.container = $.create('div', {
-          className: 'iv-image-view iv-icon iv-icon--size-button',
-          contents: [
-            create.viewContainerHeader(),
-            create.viewContainerBody(),
-            create.viewContainerFooter(),
-          ],
-        })
+    mouse(event) {
+      switch (event.type) {
+        case 'mousedown':
+          state.dragging = true
+          state.dragPosition = event.clientY
+          elements.image.classList.add(CLASSES.grabbing)
+          break
 
-        document.body.appendChild(elements.container)
-      },
-
-      viewContainerBody() {
-        elements.image = $.create('img', {
-          className: 'iv-image',
-          events: {
-            'mousedown mouseup mousemove mouseout dblclick': events.mouse,
-          },
-        })
-
-        elements.imageThumbnail = $.create('img', {
-          className: 'iv-thumbnail',
-        })
-
-        elements.imageContainer = $.create('div', {
-          className: 'iv-image-view__body',
-          contents: [
-            {
-              tag: 'div',
-              className: 'iv-image-view__backdrop',
-              events: {
-                click: image.hide,
-              },
-            },
-            {
-              tag: 'div',
-              className: 'iv-thumbnail-wrapper',
-              contents: elements.imageThumbnail,
-            },
-            elements.image,
-          ],
-        })
-
-        return elements.imageContainer
-      },
-
-      viewContainerHeader() {
-        elements.imageNumber = document.createElement('span')
-        elements.imageTotal = document.createElement('span')
-        const imageNumber = $.create('div', {
-          className: 'iv-image-view__number single-hide',
-          contents: [elements.imageNumber, '/', elements.imageTotal],
-        })
-
-        elements.buttons.close = create.toolbarButton(
-          'Close (Esc)',
-          'close',
-          image.hide
-        )
-
-        return {
-          tag: 'div',
-          className: 'iv-image-view__header-wrapper',
-          contents: {
-            tag: 'div',
-            className: 'iv-image-view__header',
-            contents: [imageNumber, elements.buttons.close],
-          },
-        }
-      },
-
-      viewContainerFooter() {
-        const buttons = elements.buttons
-        buttons.previous = create.toolbarButton(
-          'Previous (←)',
-          'previous',
-          image.previous,
-          'single-hide'
-        )
-        buttons.toggleFullHeight = create.toolbarButton(
-          'Toggle full height (Space)',
-          'expand',
-          image.toggleFullHeight
-        )
-        buttons.next = create.toolbarButton(
-          'Next (→)',
-          'next',
-          image.next,
-          'single-hide'
-        )
-
-        return {
-          tag: 'div',
-          className: 'iv-image-view__footer-wrapper',
-          contents: {
-            tag: 'div',
-            className: 'iv-image-view__footer',
-            contents: [
-              buttons.previous,
-              buttons.toggleFullHeight,
-              buttons.next,
-            ],
-          },
-        }
-      },
-
-      toolbarButton(title, icon, handler, className = '') {
-        return $.create('a', {
-          href: '#',
-          title: title,
-          className: `iv-icon-button iv-icon iv-icon--type-${icon} ${className}`,
-          events: {
-            click: (e) => {
-              e.preventDefault()
-              handler()
-            },
-          },
-        })
-      },
-    }
-
-    return function (enabledHosts) {
-      addStyle(css_248z)
-
-      const container = $('body')
-
-      const linkClasses = [
-        CLASSES.imageLink,
-        'iv-image-link',
-        'iv-icon',
-        'iv-icon--hover',
-        CLASSES.imageLinkZoom,
-        'iv-icon--size-button',
-      ]
-
-      const getHostName = urlExtractor.getHostNameMatcher(enabledHosts)
-
-      const imagesWithLinks = $$('a > img, a > var', container)
-
-      imagesWithLinks
-        .map((img) => {
-          return { link: img.parentNode, thumbnailUrl: img.src || img.title }
-        })
-        .filter(({ link }) => link.href)
-        .forEach(({ link, thumbnailUrl }) => {
-          const hostName = getHostName(link.href)
-
-          if (hostName) {
-            link.dataset.ivHost = hostName
-            link.dataset.ivThumbnail = thumbnailUrl
-            link.classList.add(...linkClasses)
+        case 'mousemove':
+          if (state.dragging) {
+            elements.imageContainer.scrollTop -=
+              event.clientY - state.dragPosition
+            state.dragPosition = event.clientY
           }
-        })
+          break
 
-      $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
-    }
-  })()
+        case 'mouseup':
+
+        // fall through
+        case 'mouseout':
+          state.dragging = false
+          elements.image.classList.remove(CLASSES.grabbing)
+          break
+
+        case 'dblclick':
+          image.toggleFullHeight()
+          break
+
+        default:
+          return
+      }
+
+      event.preventDefault()
+    },
+  }
+
+  const create = {
+    viewContainer() {
+      elements.container = $.create('div', {
+        className: 'iv-image-view iv-icon iv-icon--size-button',
+        contents: [
+          create.viewContainerHeader(),
+          create.viewContainerBody(),
+          create.viewContainerFooter(),
+        ],
+      })
+
+      document.body.append(elements.container)
+    },
+
+    viewContainerBody() {
+      elements.image = $.create('img', {
+        className: 'iv-image',
+        events: {
+          'mousedown mouseup mousemove mouseout dblclick': events.mouse,
+        },
+      })
+
+      elements.imageThumbnail = $.create('img', {
+        className: 'iv-thumbnail',
+      })
+
+      elements.imageContainer = $.create('div', {
+        className: 'iv-image-view__body',
+        contents: [
+          {
+            tag: 'div',
+            className: 'iv-image-view__backdrop',
+            events: {
+              click: image.hide,
+            },
+          },
+          {
+            tag: 'div',
+            className: 'iv-thumbnail-wrapper',
+            contents: elements.imageThumbnail,
+          },
+          elements.image,
+        ],
+      })
+
+      return elements.imageContainer
+    },
+
+    viewContainerHeader() {
+      elements.imageNumber = document.createElement('span')
+      elements.imageTotal = document.createElement('span')
+      const imageNumber = $.create('div', {
+        className: 'iv-image-view__number single-hide',
+        contents: [elements.imageNumber, '/', elements.imageTotal],
+      })
+
+      elements.buttons.close = create.toolbarButton(
+        'Close (Esc)',
+        'close',
+        image.hide
+      )
+
+      return {
+        tag: 'div',
+        className: 'iv-image-view__header-wrapper',
+        contents: {
+          tag: 'div',
+          className: 'iv-image-view__header',
+          contents: [imageNumber, elements.buttons.close],
+        },
+      }
+    },
+
+    viewContainerFooter() {
+      const buttons = elements.buttons
+
+      buttons.previous = create.toolbarButton(
+        'Previous (←)',
+        'previous',
+        image.previous,
+        'single-hide'
+      )
+      buttons.toggleFullHeight = create.toolbarButton(
+        'Toggle full height (Space)',
+        'expand',
+        image.toggleFullHeight
+      )
+      buttons.next = create.toolbarButton(
+        'Next (→)',
+        'next',
+        image.next,
+        'single-hide'
+      )
+
+      return {
+        tag: 'div',
+        className: 'iv-image-view__footer-wrapper',
+        contents: {
+          tag: 'div',
+          className: 'iv-image-view__footer',
+          contents: [buttons.previous, buttons.toggleFullHeight, buttons.next],
+        },
+      }
+    },
+
+    toolbarButton(title, icon, handler, className = '') {
+      return $.create('a', {
+        href: '#',
+        title,
+        className: `iv-icon-button iv-icon iv-icon--type-${icon} ${className}`,
+        events: {
+          click: (event) => {
+            event.preventDefault()
+            handler()
+          },
+        },
+      })
+    },
+  }
 
   $.ready().then(async () => {
-    const hostConfig = await config.init()
+    const hostConfig = await initHostConfig()
 
     initViewer(hostConfig.enabledHosts)
   })

@@ -1,4 +1,4 @@
-import { getUrlFromPage } from './helpers'
+import { getURLFromPage } from './helpers'
 
 /** @typedef {import('../url-extractor').Extractor} Extractor */
 
@@ -7,7 +7,7 @@ import { getUrlFromPage } from './helpers'
 /** @type {Extractor} */
 export const imagebam = {
   name: 'ImageBam',
-  linkRegEx: /^http:\/\/www\.imagebam\.com\/image/,
-  imageUrlRegEx: /property="og:image" content="([^"]*)"/,
-  getUrl: getUrlFromPage,
+  linkRegExp: /^http:\/\/www\.imagebam\.com\/image/,
+  imageURLRegExp: /property="og:image" content="([^"]*)"/,
+  getURL: getURLFromPage,
 }

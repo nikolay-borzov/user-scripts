@@ -9,9 +9,9 @@
 /** @type {Extractor} */
 export const imgbb = {
   name: 'imgbb.com',
-  linkRegEx: /^https:\/\/ibb\.co/,
+  linkRegExp: /^https:\/\/ibb\.co/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('//thumb', '//image')
+  async getURL(link) {
+    return link.thumbnailURL.replace('//thumb', '//image')
   },
 }

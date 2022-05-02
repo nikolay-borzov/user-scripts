@@ -1,6 +1,8 @@
-const yargs = require('yargs')
-const path = require('path')
 const fs = require('fs')
+const path = require('path')
+
+const yargs = require('yargs')
+
 const scripts = require('./scripts')
 
 module.exports = function getConfig() {

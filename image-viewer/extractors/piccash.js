@@ -9,9 +9,9 @@
 /** @type {Extractor} */
 export const piccash = {
   name: 'PicCash.net',
-  linkRegEx: /^http:\/\/piccash\.net\//,
+  linkRegExp: /^http:\/\/piccash\.net\//,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('_thumb', '_full').replace('-thumb', '')
+  async getURL(link) {
+    return link.thumbnailURL.replace('_thumb', '_full').replace('-thumb', '')
   },
 }

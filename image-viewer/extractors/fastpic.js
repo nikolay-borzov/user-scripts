@@ -1,4 +1,4 @@
-import { getUrlFromPage } from './helpers'
+import { getURLFromPage } from './helpers'
 
 /** @typedef {import('../url-extractor').Extractor} Extractor */
 
@@ -11,9 +11,10 @@ import { getUrlFromPage } from './helpers'
 /** @type {Extractor} */
 export const fastpic = {
   name: 'FastPic',
-  linkRegEx: /^http.?:\/\/fastpic\.ru\/view/,
-  imageUrlRegEx: /src="(?<url>[^"]+)" class="image img-fluid"/,
-  getUrl: getUrlFromPage,
+  linkRegExp: /^http.?:\/\/fastpic\.ru\/view/,
+  // TODO: There might be many matches (like https://fastpic.org/view/116/2022/0404/_203ed559db9fd49e5aa706cb9d1fae2a.jpg.html)
+  imageURLRegExp: /src="(?<url>[^"]+)" class="image img-fluid"/,
+  getURL: getURLFromPage,
 }
 
 /*
@@ -27,18 +28,19 @@ const URL_PARTS_REGEXP = /i(\d+).+big(\/\d+\/\d+\/).+\/([^/]+)$/
 /** @type {Extractor} */
 export const fastpicDirect = {
   name: 'FastPic (direct link)',
-  linkRegEx: /fastpic\.ru\/big/,
+  linkRegExp: /fastpic\.ru\/big/,
 
-  async getUrl(link) {
+  async getURL(link) {
     let hostLink = link.url
 
     // Get URL from query string param
     if (hostLink.includes('?')) {
       const urlObject = new URL(hostLink)
-      const params = new URLSearchParams(urlObject.search)
-      for (const param of params.values()) {
-        if (fastpicDirect.linkRegEx.test(param)) {
-          hostLink = param
+      const parameters = new URLSearchParams(urlObject.search)
+
+      for (const parameter of parameters.values()) {
+        if (fastpicDirect.linkRegExp.test(parameter)) {
+          hostLink = parameter
           break
         }
       }
@@ -48,6 +50,6 @@ export const fastpicDirect = {
 
     const url = `https://fastpic.ru/view/${index}${date}${filename}.html`
 
-    return fastpic.getUrl({ ...link, url }, fastpic)
+    return fastpic.getURL({ ...link, url }, fastpic)
   },
 }

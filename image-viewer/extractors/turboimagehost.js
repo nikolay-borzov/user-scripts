@@ -1,4 +1,4 @@
-import { getUrlFromPage } from './helpers'
+import { getURLFromPage } from './helpers'
 
 /** @typedef {import('../url-extractor').Extractor} Extractor */
 
@@ -11,7 +11,7 @@ import { getUrlFromPage } from './helpers'
 /** @type {Extractor} */
 export const turboimagehost = {
   name: 'TurboImageHost',
-  linkRegEx: /^https:\/\/www\.turboimagehost\.com\/p/,
-  imageUrlRegEx: /property="og:image" content="([^"]*)"/,
-  getUrl: getUrlFromPage,
+  linkRegExp: /^https:\/\/www\.turboimagehost\.com\/p/,
+  imageURLRegExp: /property="og:image" content="([^"]*)"/,
+  getURL: getURLFromPage,
 }

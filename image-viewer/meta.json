@@ -26,6 +26,5 @@
     "GM.getValue",
     "GM_registerMenuCommand"
   ],
-  "run-at": "document-start",
-  "compatible": ["chrome", "firefox"]
+  "run-at": "document-start"
 }

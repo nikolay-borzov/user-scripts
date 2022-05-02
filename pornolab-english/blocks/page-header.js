@@ -1,6 +1,6 @@
-import TOKENS from '../core/tokenTypes'
+import { TOKENS } from '../core/token-types'
 
-export default {
+export const pageHeader = {
   '#main-nav': {
     'a[href="./index.php"] b': 'Main page',
     'a[href="tracker.php"] b': 'Tracker',

@@ -1,6 +1,6 @@
-import pageHeader from '../blocks/page-header'
+import { pageHeader } from '../blocks/page-header'
 
-export default {
+export const privateMessages = {
   path: '/forum/privmsg.php',
   maps: [pageHeader],
 }

@@ -1,4 +1,4 @@
-import { getUrlFromPage } from './helpers'
+import { getURLFromPage } from './helpers'
 
 /** @typedef {import('../url-extractor').Extractor} Extractor */
 
@@ -11,9 +11,9 @@ import { getUrlFromPage } from './helpers'
 /** @type {Extractor} */
 export const radikal = {
   name: 'Radikal.ru',
-  linkRegEx: /https?:\/\/.\.radikal\.ru\//,
+  linkRegExp: /https?:\/\/.\.radikal\.ru\//,
 
-  async getUrl(link) {
+  async getURL(link) {
     return link.url
   },
 }
@@ -31,7 +31,7 @@ export const radikal = {
 /** @type {Extractor} */
 export const radikalLegacy = {
   name: 'Radikal.ru (legacy)',
-  linkRegEx: /^http:\/\/radikal\.ru\//,
-  imageUrlRegEx: /id="imgFullSize" src="(?<url>[^"]+)"/,
-  getUrl: getUrlFromPage,
+  linkRegExp: /^http:\/\/radikal\.ru\//,
+  imageURLRegExp: /id="imgFullSize" src="(?<url>[^"]+)"/,
+  getURL: getURLFromPage,
 }

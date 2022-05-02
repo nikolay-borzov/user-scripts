@@ -7,7 +7,8 @@ export function hasOwnProperty(object, property) {
 }
 
 /**
- * Resolves returned promise after specified timeout
+ * Resolves returned promise after specified timeout.
+ *
  * @param {number} ms
  * @returns {Promise<void>}
  */

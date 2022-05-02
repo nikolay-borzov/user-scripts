@@ -9,9 +9,9 @@
 /** @type {Extractor} */
 export const vfl = {
   name: 'VFL.ru',
-  linkRegEx: /^http:\/\/vfl\.ru/,
+  linkRegExp: /^http:\/\/vfl\.ru/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('_s', '')
+  async getURL(link) {
+    return link.thumbnailURL.replace('_s', '')
   },
 }

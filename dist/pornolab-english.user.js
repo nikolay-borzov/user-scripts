@@ -1,17 +1,19 @@
 // ==UserScript==
-// @name        Pornolab English
-// @description Translates basic content in English
-// @namespace   https://github.com/nikolay-borzov
-// @version     0.1.0
-// @author      nikolay-borzov
-// @license     MIT
-// @icon        http://static.pornolab.net/favicon.ico
-// @homepageURL https://github.com/nikolay-borzov/user-scripts
-// @supportURL  https://github.com/nikolay-borzov/user-scripts/issues
-// @include     *//pornolab.*
-// @run-at      document-end
-// @grant       none
+// @name         Pornolab English
+// @description  Translates basic content in English
+// @namespace    https://github.com/nikolay-borzov
+// @version      0.1.0
+// @author       nikolay-borzov
+// @license      MIT
+// @icon         http://static.pornolab.net/favicon.ico
+// @homepageURL  https://github.com/nikolay-borzov/user-scripts
+// @homepage     https://github.com/nikolay-borzov/user-scripts
+// @supportURL   https://github.com/nikolay-borzov/user-scripts/issues
+// @include      *//pornolab.*
+// @run-at       document-end
+// @grant        none
 // ==/UserScript==
+
 ;(function () {
   'use strict'
 
@@ -45,28 +47,28 @@
   }
 
   function forEach($elements, callback) {
-    $elements.each((index, el) => callback($(el)))
+    $elements.each((index, element) => callback($(element)))
   }
 
   function replaceTextNodes($container, indexMap) {
-    const nodes = Array.from($container[0].childNodes).filter(
-      (n) => n.nodeType === 3 && n.data.trim().length
+    const nodes = [...$container[0].childNodes].filter(
+      (n) => n.nodeType === 3 && n.data.trim().length > 0
     )
 
-    Object.entries(indexMap).forEach(([index, translation]) => {
+    for (const [index, translation] of Object.entries(indexMap)) {
       const node = nodes[index]
+
       if (node) {
-        if (typeof translation === 'object') {
-          node.data = replaceTextByMap(node.data, translation)
-        } else {
-          node.data = translation
-        }
+        node.data =
+          typeof translation === 'object'
+            ? replaceTextByMap(node.data, translation)
+            : translation
       }
-    })
+    }
   }
 
   function replaceText($container, map) {
-    if ($container.children().length !== 0) {
+    if ($container.children().length > 0) {
       return
     }
 
@@ -82,9 +84,11 @@
   }
 
   const SUB_FORUM_SEPARATOR = ' / '
+
   function replaceSubForum(selector) {
     $(selector).each((index, node) => {
       const text = node.textContent
+
       if (text.includes(SUB_FORUM_SEPARATOR)) {
         node.textContent = text.split(SUB_FORUM_SEPARATOR)[1]
       }
@@ -134,13 +138,18 @@
       default:
         if ($.isPlainObject(value)) {
           $container = $container ? $(token, $container) : $(token)
-          if (!$container.length) return
-          Object.entries(value).forEach(([token, value]) => {
-            forEach($container, ($el) => translate(token, value, $el))
-          })
+
+          if ($container.length === 0) return
+
+          for (const [token, entryValue] of Object.entries(value)) {
+            forEach($container, ($element) =>
+              translate(token, entryValue, $element)
+            )
+          }
         } else {
           const $element = $(token, $container)
-          if ($element.length) $element.html(value)
+
+          if ($element.length > 0) $element.html(value)
         }
         break
     }
@@ -214,6 +223,23 @@
     maps: [pageHeader],
   }
 
+  const privateMessages = {
+    path: '/forum/privmsg.php',
+    maps: [pageHeader],
+  }
+
+  const breadcrumb = {
+    '.nav:first': {
+      'a:first': 'Forums index',
+    },
+    [TOKENS.replaceSubForum]: '.nav a',
+  }
+
+  const profile = {
+    path: '/forum/profile.php',
+    maps: [pageHeader, breadcrumb],
+  }
+
   const activePager = {
     '.menu-root': 'Pages',
     '.menu-root + a': 'Previous',
@@ -248,11 +274,9 @@
     },
   }
 
-  const breadcrumb = {
-    '.nav:first': {
-      'a:first': 'Forums index',
-    },
-    [TOKENS.replaceSubForum]: '.nav a',
+  const search = {
+    path: '/forum/search.php',
+    maps: [pageHeader, pager],
   }
 
   const torrentInfo = {
@@ -357,29 +381,14 @@
     maps: [pageHeader, pager],
   }
 
-  const search = {
-    path: '/forum/search.php',
-    maps: [pageHeader, pager],
-  }
-
-  const privateMessages = {
-    path: '/forum/privmsg.php',
-    maps: [pageHeader],
-  }
-
-  const profile = {
-    path: '/forum/profile.php',
-    maps: [pageHeader, breadcrumb],
-  }
-
   const pages = [main, topic, tracker, search, privateMessages, profile]
 
   const pageMath = pages.find((page) => page.path === location.pathname)
 
   if (pageMath) {
-    pageMath.maps.forEach((map) => {
-      Object.entries(map).forEach(([token, value]) => translate(token, value))
-    })
+    for (const map of pageMath.maps) {
+      for (const [token, value] of Object.entries(map)) translate(token, value)
+    }
   } else {
     console.warn(`${location.pathname} is not translated yet`)
   }

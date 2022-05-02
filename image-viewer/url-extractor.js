@@ -3,85 +3,121 @@ import * as hostExtractors from './extractors/index'
 /**
  * @typedef {object} Link
  * @property {string} url
- * @property {string} thumbnailUrl
+ * @property {string} thumbnailURL
  * @property {string} host
  */
 
 /**
  * @typedef {object} Extractor
  * @property {string} name
- * @property {RegExp} linkRegEx
- * @property {RegExp} [imageUrlRegEx]
+ * @property {RegExp} linkRegExp
+ * @property {RegExp} [imageURLRegExp]
  * @property {string[]} [hosts]
- * @property {(link: Link, extractor: Extractor) => Promise<string | undefined>} getUrl
+ * @property {(link: Link, extractor: Extractor) => Promise<string | undefined>} getURL
  */
 
-export default (function () {
-  function sortCaseInsensitive(array, getValue) {
-    // Sorting with map
-    return array
-      .map((value, index) => ({ index, value: getValue(value).toLowerCase() }))
-      .sort((a, b) => {
-        if (a.value > b.value) {
-          return 1
-        }
-        if (a.value < b.value) {
-          return -1
-        }
-        return 0
-      })
-      .map((m) => array[m.index])
-  }
+/**
+ * @typedef {object} ImageHostMetadata
+ * @property {string} name
+ * @property {string} description
+ * @property {boolean} [isEnabled]
+ */
 
-  let extractorsActive = []
+/** @type {Extractor[]} */
+let extractorsActive = []
 
-  /** @type {Extractor[]} */
-  const extractors = Object.values(hostExtractors).filter(Boolean)
+/** @type {Extractor[]} */
+const extractors = Object.values(hostExtractors).filter(Boolean)
 
-  const extractorsByName = extractors.reduce((result, extractor) => {
+const extractorsByName = extractors.reduce(
+  (/** @type {Record<string, Extractor>} */ result, extractor) => {
     result[extractor.name] = extractor
+
     return result
-  }, {})
+  },
+  {}
+)
 
-  return {
-    getImageHostsInfo() {
-      const result = extractors.map((e) => ({
-        name: e.name,
-        description: e.hosts ? e.hosts.join(', ') : '',
-      }))
+export const urlExtractor = {
+  /**
+   * @returns {ImageHostMetadata[]}
+   */
+  getImageHostsMetadata() {
+    const result = extractors.map(({ name, hosts }) => ({
+      name,
+      description: hosts ? hosts.join(', ') : '',
+    }))
 
-      return sortCaseInsensitive(result, (value) => value.name)
-    },
+    return sortCaseInsensitive(result, ({ name }) => name)
+  },
 
-    getImageUrl(link) {
-      const extractor = extractorsByName[link.host]
+  /**
+   * Extracts full image URL from a link.
+   *
+   * @param {Link} link
+   */
+  getImageURL(link) {
+    const extractor = extractorsByName[link.host]
 
-      return extractor.getUrl(link, extractor)
-    },
+    return extractor.getURL(link, extractor)
+  },
 
-    getHostNameMatcher(enabledHosts) {
-      // Keep enabled extractors
-      extractorsActive = extractors.filter((e) => enabledHosts.includes(e.name))
+  /**
+   * Returns function to match URL to the Extractor's name.
+   *
+   * @param {string[]} enabledHosts
+   * @returns {(url: string) => string | undefined}
+   */
+  getHostNameMatcher(enabledHosts) {
+    // Keep enabled extractors
+    extractorsActive = extractors.filter((extractor) =>
+      enabledHosts.includes(extractor.name)
+    )
 
-      // It is often case when neighbor links are from the same image host. Therefore
-      // we can improve search by checking link URL with the previous extractor
-      // linkRegEx
-      let prevExtractor = null
+    /* It's often case when neighbor links are from the same image host.
+       Therefore we can improve search by checking link URL with the previous
+       extractor `linkRegExp` */
+    /** @type {Extractor} */
+    let previousExtractor
 
-      return (url) => {
-        if (prevExtractor && prevExtractor.linkRegEx.test(url)) {
-          return prevExtractor.name
-        }
-
-        const extractor = extractorsActive.find((e) => e.linkRegEx.test(url))
-
-        if (extractor) {
-          prevExtractor = extractor
-          return extractor.name
-        }
-
-        return null
+    return (url) => {
+      if (previousExtractor && previousExtractor.linkRegExp.test(url)) {
+        return previousExtractor.name
       }
-    },
-  }
-})()
+
+      const extractor = extractorsActive.find((extractor) =>
+        extractor.linkRegExp.test(url)
+      )
+
+      if (extractor) {
+        previousExtractor = extractor
+
+        return extractor.name
+      }
+    }
+  },
+}
+
+/**
+ * Sorts array of objects by `getValue` result case insensitive.
+ *
+ * @param {any[]} items
+ * @param {(item: any) => string} getValue Sort value getter.
+ * @returns {any[]}
+ */
+function sortCaseInsensitive(items, getValue) {
+  // Sorting with map
+  return items
+    .map((value, index) => ({ index, value: getValue(value).toLowerCase() }))
+    .sort((a, b) => {
+      if (a.value > b.value) {
+        return 1
+      }
+      if (a.value < b.value) {
+        return -1
+      }
+
+      return 0
+    })
+    .map((m) => items[m.index])
+}

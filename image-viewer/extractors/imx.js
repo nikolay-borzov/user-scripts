@@ -9,9 +9,9 @@
 /** @type {Extractor} */
 export const imx = {
   name: 'IMX.to',
-  linkRegEx: /^https:\/\/imx\.to/,
+  linkRegExp: /^https:\/\/imx\.to/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl.replace('/imx', '/i.imx').replace('/u/t/', '/i/')
+  async getURL(link) {
+    return link.thumbnailURL.replace('/imx', '/i.imx').replace('/u/t/', '/i/')
   },
 }

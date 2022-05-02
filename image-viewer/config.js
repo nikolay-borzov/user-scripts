@@ -1,155 +1,197 @@
 import { getStore } from '../common/api'
 import { $ } from '../libs/bliss'
-import urlExtractor from './url-extractor'
 
-export default (function () {
-  const store = getStore()
+import { urlExtractor } from './url-extractor'
 
-  const CLASSES = {
-    open: 'iv-config-form--open',
-  }
+/**
+ * @typedef {import('./url-extractor').ImageHostMetadata} ImageHostMetadata
+ */
 
-  let configMenu = null
-  const currentHost = unsafeWindow.location.host
+/**
+ * @typedef {object} StoredHostConfig
+ * @property {Record<string, boolean>} hosts Host ID to isEnabled map.
+ */
 
-  function showMenu(config) {
-    createMenuElement(config).classList.add(CLASSES.open)
-  }
+/**
+ * @typedef {object} HostConfig
+ * @property {ImageHostMetadata[]} hosts Hosts metadata.
+ * @property {StoredHostConfig} storedConfig
+ * @property {string[]} enabledHosts List of enabled Hosts IDs.
+ */
 
-  function createMenuElement(config) {
-    if (!configMenu) {
-      const rows = config.hosts.map(createConfigMenuRow)
+const store = getStore()
 
-      configMenu = $.create('div', {
-        id: 'iv-config-form',
-        className: 'iv-config-form',
-        contents: [
-          createMenuHeader(),
-          {
-            tag: 'div',
-            className: 'iv-config-form__options',
-            contents: rows,
-          },
-        ],
-        delegate: {
-          change: {
-            '.js-iv-config-checkbox': (e) =>
-              updateHostConfig(
-                config.storedConfig,
-                e.target.value,
-                e.target.checked
-              ),
-          },
-        },
-      })
+const CLASSES = {
+  open: 'iv-config-form--open',
+}
 
-      document.body.appendChild(configMenu)
+/** @type {HTMLDivElement} */
+let configMenu
+const currentHost = unsafeWindow.location.host
+
+/**
+ * Initializes host specific config.
+ * Adds menu command or global function to open settings menu.
+ *
+ * @returns {Promise<HostConfig>} Host specific config.
+ */
+export async function initHostConfig() {
+  const config = await getHostConfig()
+
+  const handler = () => showMenu(config)
+
+  // TODO: Move to `api.js`?
+  // eslint-disable-next-line camelcase
+  if (typeof GM_registerMenuCommand !== 'undefined') {
+    GM_registerMenuCommand('Image Viewer Settings', handler)
+  } else {
+    unsafeWindow.imageViewer = {
+      settings: handler,
     }
+  }
 
+  return config
+}
+
+/**
+ * @returns {Promise<HostConfig>} Per-host settings object.
+ */
+async function getHostConfig() {
+  const hosts = urlExtractor.getImageHostsMetadata()
+  /** @type {StoredHostConfig} */
+  const storedConfig = await store.get(currentHost, { hosts: {} })
+  const enabledHosts = []
+
+  for (const host of hosts) {
+    const id = host.name
+    const isEnabled = id in storedConfig.hosts ? storedConfig.hosts[id] : true
+
+    host.isEnabled = isEnabled
+    storedConfig.hosts[id] = isEnabled
+
+    if (isEnabled) {
+      enabledHosts.push(id)
+    }
+  }
+
+  storedConfig.hosts = hosts.reduce((result, host) => {
+    result[host.name] = host.isEnabled
+
+    return result
+  }, {})
+
+  return {
+    hosts,
+    storedConfig,
+    enabledHosts,
+  }
+}
+
+/**
+ * Displays per-host config menu.
+ *
+ * @param {HostConfig} config
+ */
+function showMenu(config) {
+  createMenuElement(config).classList.add(CLASSES.open)
+}
+
+/**
+ * @param {HostConfig} config
+ * @returns {HTMLDivElement}
+ */
+function createMenuElement(config) {
+  if (configMenu) {
     return configMenu
   }
 
-  function createMenuHeader() {
-    const closeButton = $.create('a', {
-      href: '#',
-      title: 'Close',
-      className: `iv-icon-button iv-icon-button--small iv-icon iv-icon--type-close`,
-      events: {
-        click: (e) => {
-          e.preventDefault()
-          configMenu.classList.remove(CLASSES.open)
-        },
+  const rows = config.hosts.map((host) => createConfigMenuRow(host))
+
+  configMenu = $.create('div', {
+    id: 'iv-config-form',
+    className: 'iv-config-form',
+    contents: [
+      createMenuHeader(),
+      {
+        tag: 'div',
+        className: 'iv-config-form__options',
+        contents: rows,
       },
-    })
+    ],
+    delegate: {
+      change: {
+        '.js-iv-config-checkbox': ({ target: { value, checked } }) =>
+          updateHostConfig(config.storedConfig, value, checked),
+      },
+    },
+  })
 
-    return {
-      tag: 'div',
-      className: 'iv-config-form__header',
-      contents: [
-        {
-          tag: 'span',
-          className: 'iv-config-form__header-title',
-          contents: `Settings for ${currentHost}`,
-        },
-        closeButton,
-      ],
-    }
-  }
+  document.body.append(configMenu)
 
-  function createConfigMenuRow(host) {
-    return $.create('label', {
-      className: 'iv-config-form__label',
-      title: host.description,
-      contents: [
-        {
-          tag: 'input',
-          type: 'checkbox',
-          className: 'iv-config-form__checkbox js-iv-config-checkbox',
-          checked: host.enabled,
-          value: host.name,
-        },
-        host.name,
-      ],
-    })
-  }
+  return configMenu
+}
 
-  function updateHostConfig(config, hostName, isEnabled) {
-    config.hosts[hostName] = isEnabled
-    store.set(currentHost, config)
-  }
+/**
+ * @param {ImageHostMetadata} host
+ * @returns {HTMLLabelElement}
+ */
+function createConfigMenuRow(host) {
+  return $.create('label', {
+    className: 'iv-config-form__label',
+    title: host.description,
+    contents: [
+      {
+        tag: 'input',
+        type: 'checkbox',
+        className: 'iv-config-form__checkbox js-iv-config-checkbox',
+        checked: host.isEnabled,
+        value: host.name,
+      },
+      host.name,
+    ],
+  })
+}
 
-  /**
-   * Receives per domain settings
-   */
-  async function getHostConfig() {
-    const hosts = urlExtractor.getImageHostsInfo()
-    const storedConfig = await store.get(currentHost, { hosts: {} })
-    const enabledHosts = []
-
-    hosts.forEach((host) => {
-      const id = host.name
-      const isEnabled = id in storedConfig.hosts ? storedConfig.hosts[id] : true
-
-      host.enabled = isEnabled
-      storedConfig.hosts[id] = isEnabled
-
-      if (isEnabled) {
-        enabledHosts.push(id)
-      }
-    })
-
-    storedConfig.hosts = hosts.reduce((result, host) => {
-      result[host.name] = host.enabled
-      return result
-    }, {})
-
-    return {
-      hosts,
-      storedConfig,
-      enabledHosts,
-    }
-  }
+/**
+ * @returns {Record<string, unknown>}
+ */
+function createMenuHeader() {
+  /** @type {HTMLAnchorElement} */
+  const closeButton = $.create('a', {
+    href: '#',
+    title: 'Close',
+    className: `iv-icon-button iv-icon-button--small iv-icon iv-icon--type-close`,
+    events: {
+      /** @param {MouseEvent} event */
+      click: (event) => {
+        event.preventDefault()
+        configMenu.classList.remove(CLASSES.open)
+      },
+    },
+  })
 
   return {
-    /**
-     * Adds menu command or global function to open settings menu
-     * @param {object} config
-     */
-    async init() {
-      const config = await getHostConfig()
-
-      const handler = () => showMenu(config)
-
-      // eslint-disable-next-line
-      if (typeof GM_registerMenuCommand !== 'undefined') {
-        GM_registerMenuCommand('Image Viewer Settings', handler)
-      } else {
-        unsafeWindow.imageViewer = {
-          settings: handler,
-        }
-      }
-
-      return config
-    },
+    tag: 'div',
+    className: 'iv-config-form__header',
+    contents: [
+      {
+        tag: 'span',
+        className: 'iv-config-form__header-title',
+        contents: `Settings for ${currentHost}`,
+      },
+      closeButton,
+    ],
   }
-})()
+}
+
+/**
+ * Updates and saves config to the Store.
+ *
+ * @param {StoredHostConfig} config
+ * @param {string} hostName
+ * @param {boolean} isEnabled
+ */
+function updateHostConfig(config, hostName, isEnabled) {
+  config.hosts[hostName] = isEnabled
+  store.set(currentHost, config)
+}

@@ -10,10 +10,10 @@
 /** @type {Extractor} */
 export const imgtaxi = {
   name: 'imgtaxi.com',
-  linkRegEx: /^https:\/\/imgtaxi\.com/,
+  linkRegExp: /^https:\/\/imgtaxi\.com/,
 
-  async getUrl(link) {
-    return link.thumbnailUrl
+  async getURL(link) {
+    return link.thumbnailURL
       .replace('/small/', '/big/')
       .replace('/small-medium/', '/big/')
   },

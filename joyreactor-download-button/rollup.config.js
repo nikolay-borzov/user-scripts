@@ -1,9 +1,9 @@
 const path = require('path')
-const postcss = require('rollup-plugin-postcss')
 
 // postCSS plugins
 const cssnext = require('postcss-cssnext')
 const inlineSvg = require('postcss-inline-svg')
+const postcss = require('rollup-plugin-postcss')
 
 module.exports = {
   input: {
