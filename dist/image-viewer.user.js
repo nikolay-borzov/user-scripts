@@ -1,20 +1,21 @@
 // ==UserScript==
 // @name         Image Viewer
+// @version      1.1.9
 // @description  Allows viewing full image without leaving the page
 // @namespace    https://github.com/nikolay-borzov
-// @version      1.1.9
 // @author       nikolay-borzov
 // @license      MIT
 // @icon         https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/image-viewer/icon.png
 // @homepageURL  https://github.com/nikolay-borzov/user-scripts
 // @homepage     https://github.com/nikolay-borzov/user-scripts
 // @supportURL   https://github.com/nikolay-borzov/user-scripts/issues
-// @include      *
+// @match        *://*/*
 // @connect      www.imagebam.com
 // @connect      imagevenue.com
 // @connect      www.turboimagehost.com
 // @connect      fastpic.ru
 // @connect      radikal.ru
+// @noframes
 // @run-at       document-start
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest

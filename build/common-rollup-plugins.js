@@ -27,6 +27,32 @@ export function getCommonPlugins(scriptDirectory) {
     }),
     metablock({
       file: path.resolve(scriptDirectory, 'meta.json'),
+      override: {
+        author: 'nikolay-borzov',
+        license: 'MIT',
+        namespace: 'https://github.com/nikolay-borzov',
+        homepageURL: 'https://github.com/nikolay-borzov/user-scripts',
+        supportURL: 'https://github.com/nikolay-borzov/user-scripts/issues',
+        noframes: true,
+      },
+      order: [
+        'name',
+        'version',
+        'description',
+        'namespace',
+        'author',
+        'license',
+        'icon',
+        'homepageURL',
+        'supportURL',
+        'include',
+        'match',
+        'connect',
+        'noframes',
+        'run-at',
+      ],
+      validator: 'warn',
+      manager: 'tampermonkey',
     }),
     eslintBundle({
       eslintOptions: {

@@ -30,6 +30,7 @@ async function run() {
       ...input,
       output,
       watch: {
+        clearScreen: true,
         chokidar: {
           cwd: root,
           ignoreInitial: true,

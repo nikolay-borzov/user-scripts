@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name         JoyReactor Download Button
+// @version      1.2.0
 // @description  Adds download buttton to images
 // @namespace    https://github.com/nikolay-borzov
-// @version      1.2.0
 // @author       nikolay-borzov
 // @license      MIT
 // @icon         http://joyreactor.cc/favicon.ico
 // @homepageURL  https://github.com/nikolay-borzov/user-scripts
 // @homepage     https://github.com/nikolay-borzov/user-scripts
 // @supportURL   https://github.com/nikolay-borzov/user-scripts/issues
-// @include      http://joyreactor.cc/*
-// @include      http://joyreactor.com/*
+// @match        http://joyreactor.cc/*
+// @match        http://joyreactor.com/*
+// @noframes
 // @run-at       document-end
 // @grant        GM_addStyle
 // ==/UserScript==

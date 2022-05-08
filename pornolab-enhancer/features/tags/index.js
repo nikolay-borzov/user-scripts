@@ -153,8 +153,6 @@ function createTagsRow(tagGroups) {
     ) => {
       result.push(...createTagLinks(tagsGroup))
 
-      console.log(createTagLinks(tagsGroup))
-
       if (index + 1 !== tagGroups.length) {
         result.push(TAGS_GROUP_SEPARATOR)
       }

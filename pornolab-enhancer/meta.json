@@ -1,20 +1,9 @@
 {
   "name": "Pornolab Enhancer",
-  "namespace": "https://github.com/nikolay-borzov",
   "version": "1.12.2",
   "description": "Improves User Experience",
-  "author": "nikolay-borzov",
-  "license": "MIT",
   "icon": "https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/pornolab-enhancer/resources/icon.png",
-  "homepageURL": "https://github.com/nikolay-borzov/user-scripts",
-  "supportURL": "https://github.com/nikolay-borzov/user-scripts/issues",
-  "include": "*//pornolab.*",
-  "connect": [
-    "www.imagebam.com",
-    "imagevenue.com",
-    "www.turboimagehost.com",
-    "imgbox.com"
-  ],
+  "match": ["*://pornolab.net/*", "*://pornolab.lib/*"],
   "grant": [
     "GM_addStyle",
     "GM_xmlhttpRequest",

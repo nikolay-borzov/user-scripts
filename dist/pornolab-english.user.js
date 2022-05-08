@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Pornolab English
+// @version      0.1.0
 // @description  Translates basic content in English
 // @namespace    https://github.com/nikolay-borzov
-// @version      0.1.0
 // @author       nikolay-borzov
 // @license      MIT
 // @icon         http://static.pornolab.net/favicon.ico
@@ -10,6 +10,7 @@
 // @homepage     https://github.com/nikolay-borzov/user-scripts
 // @supportURL   https://github.com/nikolay-borzov/user-scripts/issues
 // @include      *//pornolab.*
+// @noframes
 // @run-at       document-end
 // @grant        none
 // ==/UserScript==

@@ -1,19 +1,17 @@
 // ==UserScript==
 // @name         Pornolab Enhancer
+// @version      1.12.2
 // @description  Improves User Experience
 // @namespace    https://github.com/nikolay-borzov
-// @version      1.12.2
 // @author       nikolay-borzov
 // @license      MIT
 // @icon         https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/pornolab-enhancer/resources/icon.png
 // @homepageURL  https://github.com/nikolay-borzov/user-scripts
 // @homepage     https://github.com/nikolay-borzov/user-scripts
 // @supportURL   https://github.com/nikolay-borzov/user-scripts/issues
-// @include      *//pornolab.*
-// @connect      www.imagebam.com
-// @connect      imagevenue.com
-// @connect      www.turboimagehost.com
-// @connect      imgbox.com
+// @match        *://pornolab.net/*
+// @match        *://pornolab.lib/*
+// @noframes
 // @run-at       document-start
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
@@ -467,8 +465,6 @@
   function createTagsRow(tagGroups) {
     const tags = tagGroups.reduce((result, tagsGroup, index) => {
       result.push(...createTagLinks(tagsGroup))
-
-      console.log(createTagLinks(tagsGroup))
 
       if (index + 1 !== tagGroups.length) {
         result.push(TAGS_GROUP_SEPARATOR)

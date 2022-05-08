@@ -1,14 +1,9 @@
 {
   "name": "Image Viewer",
-  "namespace": "https://github.com/nikolay-borzov",
   "version": "1.1.9",
-  "description": "Allows viewing full image without leaving the page",
-  "author": "nikolay-borzov",
-  "license": "MIT",
+  "description": "View full image without leaving the page",
   "icon": "https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/image-viewer/icon.png",
-  "homepageURL": "https://github.com/nikolay-borzov/user-scripts",
-  "supportURL": "https://github.com/nikolay-borzov/user-scripts/issues",
-  "include": "*",
+  "match": "*://*/*",
   "connect": [
     "www.imagebam.com",
     "imagevenue.com",

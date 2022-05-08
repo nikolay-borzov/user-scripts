@@ -10,7 +10,7 @@ User scripts for Tampermonkey and ~~Greasemonkey~~
 
 Allows viewing full-size images from image hosts (e.g. Fastpic) w/o leaving the page.
 
-:bulb: By default, script applies to all sites. I recommend enabling it only for specific sites. In Tampermonkey on script's settings tab uncheck `Original includes` and add your host's masks in `User includes` (e.g. \*.myforum.\*)
+:bulb: By default, script applies to all sites. I recommend enabling it only for specific sites. In Tampermonkey on script's settings tab uncheck `Original matches` and add your host's [masks](https://developer.chrome.com/docs/extensions/mv3/match_patterns/) in `User matches` (e.g. `https://myforum.net/*`)
 
 ## Controls
 
