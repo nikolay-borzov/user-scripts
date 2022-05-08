@@ -1,15 +1,17 @@
-const path = require('path')
+import path from 'node:path'
 
-const cleanup = require('rollup-plugin-cleanup')
-const { eslintBundle } = require('rollup-plugin-eslint-bundle')
-const fileSize = require('rollup-plugin-filesize')
-const metablock = require('rollup-plugin-userscript-metablock')
+import cleanup from 'rollup-plugin-cleanup'
+import { eslintBundle } from 'rollup-plugin-eslint-bundle'
+import fileSize from 'rollup-plugin-filesize'
+import metablock from 'rollup-plugin-userscript-metablock'
 
 /**
- * @param {string} scriptFolder
+ * Returns rollup plugins common for all userscripts.
+ *
+ * @param {string} scriptDirectory Userscript directory.
  * @returns {import('rollup').Plugin[]}
  */
-module.exports = (scriptFolder) => {
+export function getCommonPlugins(scriptDirectory) {
   return [
     cleanup({
       /* Keep comments:
@@ -24,7 +26,7 @@ module.exports = (scriptFolder) => {
       showMinifiedSize: false,
     }),
     metablock({
-      file: path.resolve(scriptFolder, 'meta.json'),
+      file: path.resolve(scriptDirectory, 'meta.json'),
     }),
     eslintBundle({
       eslintOptions: {

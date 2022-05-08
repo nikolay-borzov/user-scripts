@@ -1,48 +1,47 @@
-const path = require('path')
+import path from 'node:path'
+import url from 'node:url'
 
-const { nodeResolve } = require('@rollup/plugin-node-resolve')
+import { nodeResolve } from '@rollup/plugin-node-resolve'
 // postCSS plugins
-const assets = require('postcss-assets')
-const cssnext = require('postcss-cssnext')
-const customProperties = require('postcss-custom-properties')
-const atImport = require('postcss-import')
-const inlineSvg = require('postcss-inline-svg')
-const postcss = require('rollup-plugin-postcss')
+import assets from 'postcss-assets'
+import cssnext from 'postcss-cssnext'
+import customProperties from 'postcss-custom-properties'
+import atImport from 'postcss-import'
+import inlineSvg from 'postcss-inline-svg'
+import postcss from 'rollup-plugin-postcss'
 
-const imagesPath = path.resolve(__dirname, 'icons')
+const imagesPath = path.resolve(
+  path.dirname(url.fileURLToPath(import.meta.url)),
+  'icons'
+)
 
 /** @type {import('rollup').RollupOptions} */
-module.exports = {
-  input: {
-    plugins: [
-      postcss({
-        inject: false,
-        config: {
-          from: undefined,
-        },
-        minimize: {
-          // cssnano
-          autoprefixer: false,
-          reduceIdents: false, // prevent animation breaking
-        },
-        plugins: [
-          atImport(),
-          customProperties({
-            preserve: false,
-          }),
-          cssnext(),
-          assets({
-            loadPaths: [imagesPath],
-          }),
-          inlineSvg({
-            paths: [imagesPath],
-          }),
-        ],
-      }),
+export default {
+  plugins: [
+    postcss({
+      inject: false,
+      minimize: {
+        // cssnano
+        autoprefixer: false,
+        reduceIdents: false, // prevent animation breaking
+      },
+      plugins: [
+        atImport(),
+        customProperties({
+          preserve: false,
+        }),
+        cssnext(),
+        assets({
+          loadPaths: [imagesPath],
+        }),
+        inlineSvg({
+          paths: [imagesPath],
+        }),
+      ],
+    }),
 
-      nodeResolve({
-        mainFields: ['jsnext', 'main', 'browser'],
-      }),
-    ],
-  },
+    nodeResolve({
+      mainFields: ['jsnext', 'main', 'browser'],
+    }),
+  ],
 }

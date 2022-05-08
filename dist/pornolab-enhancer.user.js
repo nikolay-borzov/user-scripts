@@ -25,8 +25,6 @@
 // ==/UserScript==
 
 ;(function () {
-  'use strict'
-
   function hasOwnProperty(object, property) {
     return Object.prototype.hasOwnProperty.call(object, property)
   }

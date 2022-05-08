@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-default-export -- It's okay for a config
 export default {
   /**
    * @param {string[]} filenames

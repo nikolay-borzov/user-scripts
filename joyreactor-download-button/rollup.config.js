@@ -1,30 +1,32 @@
-const path = require('path')
+import path from 'node:path'
+import url from 'node:url'
 
 // postCSS plugins
-const cssnext = require('postcss-cssnext')
-const inlineSvg = require('postcss-inline-svg')
-const postcss = require('rollup-plugin-postcss')
+import cssnext from 'postcss-cssnext'
+import inlineSvg from 'postcss-inline-svg'
+import postcss from 'rollup-plugin-postcss'
 
-module.exports = {
-  input: {
-    plugins: [
-      postcss({
-        inject: false,
-        config: {
-          from: undefined,
-        },
-        minimize: {
-          // cssnano
-          autoprefixer: false,
-          reduceIdents: false, // prevent animation breaking
-        },
-        plugins: [
-          cssnext(),
-          inlineSvg({
-            paths: [path.resolve(__dirname, 'icons')],
-          }),
-        ],
-      }),
-    ],
-  },
+const imagesPath = path.resolve(
+  path.dirname(url.fileURLToPath(import.meta.url)),
+  'icons'
+)
+
+/** @type {import('rollup').RollupOptions} */
+export default {
+  plugins: [
+    postcss({
+      inject: false,
+      minimize: {
+        // cssnano
+        autoprefixer: false,
+        reduceIdents: false, // prevent animation breaking
+      },
+      plugins: [
+        cssnext(),
+        inlineSvg({
+          paths: [imagesPath],
+        }),
+      ],
+    }),
+  ],
 }

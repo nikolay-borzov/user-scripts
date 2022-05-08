@@ -16,8 +16,6 @@
 // ==/UserScript==
 
 ;(function () {
-  'use strict'
-
   const addStyle =
     'GM_addStyle' in window
       ? GM_addStyle // eslint-disable-line camelcase

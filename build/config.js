@@ -1,17 +1,35 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'node:fs'
+import path from 'node:path'
+import url from 'node:url'
 
-const yargs = require('yargs')
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
 
-const scripts = require('./scripts')
+import { getScriptIDs, getScriptName } from './scripts.js'
 
-module.exports = function getConfig() {
-  const argv = yargs
+/**
+ * @typedef {import('rollup').RollupOptions}  RollupOptions
+ */
+
+/**
+ * @typedef {object} ScriptBuildConfig
+ * @property {string} scriptName
+ * @property {RollupOptions} rollupOptions
+ * @property {boolean} [watch]
+ */
+
+/**
+ * Creates build config based on command line parameters.
+ *
+ * @returns {Promise<ScriptBuildConfig>}
+ */
+export async function getConfig() {
+  const argv = await yargs(hideBin(process.argv))
     .option('script', {
       alias: 's',
       demandOption: true,
       describe: 'Script ID',
-      choices: scripts.getIds(),
+      choices: getScriptIDs(),
     })
     .option('watch', {
       alias: 'w',
@@ -19,20 +37,21 @@ module.exports = function getConfig() {
       type: 'boolean',
     }).argv
 
-  const scriptName = scripts.getName(argv.script)
+  const scriptName = getScriptName(argv.script)
 
+  const currentDirectory = path.dirname(url.fileURLToPath(import.meta.url))
   const configPath = `../${scriptName}/rollup.config.js`
-  const rollupOptions = fs.existsSync(path.resolve(__dirname, configPath))
-    ? require(`../${scriptName}/rollup.config`)
-    : {
-        input: {
-          plugins: [],
-        },
-      }
+
+  /** @type {RollupOptions} */
+  let rollupOptions = {}
+
+  if (fs.existsSync(path.resolve(currentDirectory, configPath))) {
+    ;({ default: rollupOptions } = await import(configPath))
+  }
 
   return {
-    watch: argv.watch,
     scriptName,
     rollupOptions,
+    watch: argv.watch,
   }
 }

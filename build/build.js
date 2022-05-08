@@ -1,79 +1,108 @@
-const path = require('path')
+import os from 'node:os'
+import path from 'node:path'
+import url from 'node:url'
 
-const rollup = require('rollup')
+import { rollup, watch } from 'rollup'
 
-const getCommonPlugins = require('./common-rollup-plugins')
-const getConfig = require('./config')
+import { getCommonPlugins } from './common-rollup-plugins.js'
+import { getConfig } from './config.js'
 
-const config = getConfig()
-const root = path.resolve(__dirname, '../')
-const scriptFolder = path.resolve(root, `${config.scriptName}`)
-const commonPlugins = getCommonPlugins(scriptFolder)
+/**
+ * @typedef {import('rollup').RollupOptions} RollupOptions
+ * @typedef {import('rollup').OutputOptions} OutputOptions
+ */
 
-config.rollupOptions.input.plugins = [
-  ...config.rollupOptions.input.plugins,
-  ...commonPlugins,
-]
-// Set input and output
-config.rollupOptions.input.input = path.resolve(scriptFolder, 'index.js')
-config.rollupOptions.output = {
-  file: path.resolve(root, `dist/${config.scriptName}.user.js`),
-  format: 'iife',
-  sourcemap: false,
-  // Add empty line between Meta block and script's iife
-  banner: `
-  `,
-}
+const root = path.resolve(
+  path.dirname(url.fileURLToPath(import.meta.url)),
+  '../'
+)
 
-const { input, output } = config.rollupOptions
+async function run() {
+  const config = await getConfig()
 
-// TODO: Add more verbose info
-async function build() {
-  try {
-    console.log('Building...')
+  const { output, input } = createRollupOptions(config)
 
-    const bundle = await rollup.rollup(input)
+  const buildStartMessage = `🕓 Building ${config.scriptName}...`
+  const buildFinishMessage = `✅ Building ${config.scriptName} finished!${os.EOL}`
 
-    await bundle.write(output)
-    await bundle.close()
-
-    console.log('✔ Building done!')
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-if (config.watch) {
-  const watchEmitter = rollup.watch({
-    ...input,
-    output,
-    watch: {
-      chokidar: {
-        cwd: root,
-        ignoreInitial: true,
-        usePolling: true,
-        interval: 500,
+  if (config.watch) {
+    const watchEmitter = watch({
+      ...input,
+      output,
+      watch: {
+        chokidar: {
+          cwd: root,
+          ignoreInitial: true,
+          usePolling: true,
+          interval: 500,
+        },
       },
-    },
-  })
-
-  if (watchEmitter) {
-    watchEmitter.on('event', (event) => {
-      switch (event.code) {
-        case 'START':
-          console.log('Watching')
-          break
-
-        case 'BUNDLE_END':
-          event.result.close()
-          break
-
-        case 'ERROR':
-          console.log(`Watcher error: ${event.error}`)
-          break
-      }
     })
+
+    console.log(`Watching ${config.scriptName}`, os.EOL)
+
+    if (watchEmitter) {
+      watchEmitter.on('event', (event) => {
+        switch (event.code) {
+          case 'START':
+            console.log(buildStartMessage)
+            break
+
+          case 'END':
+            console.log(buildFinishMessage)
+            break
+
+          case 'BUNDLE_END':
+            event.result.close()
+            break
+
+          case 'ERROR':
+            console.log(`Watcher error: ${event.error}`)
+            break
+        }
+      })
+    }
+  } else {
+    try {
+      console.log(buildStartMessage)
+
+      const bundle = await rollup(input)
+
+      await bundle.write(output)
+      await bundle.close()
+
+      console.log(buildFinishMessage)
+    } catch (error) {
+      console.error(error)
+    }
   }
-} else {
-  build()
 }
+
+/**
+ * @param {import('./config').ScriptBuildConfig} config
+ * @returns {{ input: RollupOptions; output: OutputOptions }}
+ */
+function createRollupOptions({ scriptName, rollupOptions }) {
+  const scriptDirectory = path.resolve(root, `${scriptName}`)
+
+  const commonPlugins = getCommonPlugins(scriptDirectory)
+
+  return {
+    input: {
+      ...rollupOptions,
+      plugins: [...(rollupOptions.plugins ?? []), ...commonPlugins],
+      input: path.resolve(scriptDirectory, 'index.js'),
+    },
+    output: {
+      file: path.resolve(root, `dist/${scriptName}.user.js`),
+      format: 'iife',
+      strict: false,
+      sourcemap: false,
+      // Add empty line between Meta block and script's iife
+      banner: `
+      `,
+    },
+  }
+}
+
+run()

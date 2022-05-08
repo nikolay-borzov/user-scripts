@@ -12,18 +12,21 @@ const NAME_MAP = {
   [IDS.iv]: 'image-viewer',
 }
 
-module.exports = {
-  /**
-   * @param {string} scriptId
-   * @returns {string}
-   */
-  getName: (scriptId) => {
-    if (!(scriptId in NAME_MAP)) {
-      throw new Error(`No supported script with id=${scriptId}`)
-    }
+/**
+ * @param {string} scriptId
+ * @returns {string}
+ */
+export function getScriptName(scriptId) {
+  if (!(scriptId in NAME_MAP)) {
+    throw new Error(`No supported script with id=${scriptId}`)
+  }
 
-    return NAME_MAP[scriptId]
-  },
+  return NAME_MAP[scriptId]
+}
 
-  getIds: () => Object.values(IDS),
+/**
+ * @returns {string[]}
+ */
+export function getScriptIDs() {
+  return Object.values(IDS)
 }

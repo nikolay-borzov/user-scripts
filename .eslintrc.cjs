@@ -1,7 +1,8 @@
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
   root: true,
 
-  ignorePatterns: ['**/*.*', '!**/*.js', 'node_modules', 'libs'],
+  ignorePatterns: ['**/*.*', '!**/*.js', 'node_modules', 'libs', 'dist'],
 
   parserOptions: {
     ecmaVersion: 'latest',
@@ -28,8 +29,6 @@ module.exports = {
     },
     userscriptVersions: {
       tampermonkey: '4.x',
-      // TODO: uncomment when https://github.com/Yash-Singh1/eslint-plugin-userscripts/issues/40 fixed
-      // greasemonkey: '4.x',
     },
   },
 
@@ -74,9 +73,6 @@ module.exports = {
 
     // I like reduce
     'unicorn/no-array-reduce': 'off',
-
-    // TODO: Disabled until migrated to ESM
-    'unicorn/prefer-module': 'off',
 
     /* eslint-plugin-import */
 
@@ -125,6 +121,23 @@ module.exports = {
         /* eslint-plugin-unicorn */
 
         'unicorn/prefer-module': 'off',
+      },
+    },
+    // Config ESM files
+    {
+      files: ['lint-staged.config.js', 'rollup.config.js'],
+      rules: {
+        'import/no-default-export': 'off',
+      },
+    },
+    // Build ESM files
+    {
+      files: ['build/*.js', 'rollup.config.js'],
+      rules: {
+        /* eslint-plugin-import */
+
+        // Require extension for imports. Required by Node.js with `type: "module"`
+        'import/extensions': ['error', 'always', { ignorePackages: true }],
       },
     },
   ],

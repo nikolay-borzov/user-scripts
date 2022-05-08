@@ -15,8 +15,6 @@
 // ==/UserScript==
 
 ;(function () {
-  'use strict'
-
   const TOKENS = {
     placeholder: 'placeholder',
     value: 'value',
