@@ -8,11 +8,8 @@
                      payforpic.ru
                      picforall.ru
   thumbnail:  http://freescreens.ru/allimage/4/532639-thumb.jpeg
-  image:      http://picpic.online/allimage/4/532639.jpeg
+  image:      http://freescreens.ru/allimage/4/532639.jpeg
 */
-
-const HOST_REPLACE_REG_EX =
-  /(freescreens\.ru|imgclick\.ru|picclick\.ru|payforpic\.ru|picforall\.ru)/
 
 /** @type {Extractor} */
 export const picforall = {
@@ -23,13 +20,12 @@ export const picforall = {
     'picclick.ru',
     'payforpic.ru',
     'picforall.ru',
+    'imgbase.ru',
   ],
   linkRegExp:
     /^http:\/\/(freescreens\.ru|imgclick\.ru|picclick\.ru|payforpic\.ru|picforall\.ru)/,
 
   async getURL(link) {
-    return link.thumbnailURL
-      .replace(HOST_REPLACE_REG_EX, 'picpic.online' /* or 'p0xpicmoney.ru' */)
-      .replace('-thumb', '')
+    return link.thumbnailURL.replace('-thumb', '')
   },
 }

@@ -2,12 +2,16 @@ import { getURLFromPage } from './helpers'
 
 /** @typedef {import('../url-extractor').Extractor} Extractor */
 
-// TODO: Doesn't work anymore because imagebam block image requests outside its domain
+/*
+  link:       https://www.imagebam.com/image/561a4d65163499
+  thumbnail:  http://thumbnails28.imagebam.com/6517/561a4d65163499.gif
+  image:      https://images3.imagebam.com/cf/52/50/561a4d65163499.jpg
+ */
 
 /** @type {Extractor} */
 export const imagebam = {
   name: 'ImageBam',
   linkRegExp: /^http:\/\/www\.imagebam\.com\/image/,
-  imageURLRegExp: /property="og:image" content="([^"]*)"/,
+  imageURLRegExp: /src="(?<url>[^"]+)".+class="main-image/,
   getURL: getURLFromPage,
 }

@@ -2,7 +2,7 @@ import * as hostExtractors from './extractors/index'
 
 /**
  * @typedef {object} Link
- * @property {string} url
+ * @property {string} url Image view page URL.
  * @property {string} thumbnailURL
  * @property {string} host
  */
@@ -10,9 +10,10 @@ import * as hostExtractors from './extractors/index'
 /**
  * @typedef {object} Extractor
  * @property {string} name
- * @property {RegExp} linkRegExp
- * @property {RegExp} [imageURLRegExp]
- * @property {string[]} [hosts]
+ * @property {RegExp} linkRegExp Regular Expression to match view image page link.
+ * @property {RegExp} [imageURLRegExp] Regular Expression to match full image URL on the image view page.
+ * @property {string[]} [hosts] List of image hosts handled by the extractor.
+ * @property {boolean} [hotLinkingDisabled] Whether full image cannot be loaded on hosts different from the image host.
  * @property {(link: Link, extractor: Extractor) => Promise<string | undefined>} getURL
  */
 
@@ -60,6 +61,14 @@ export const urlExtractor = {
     const extractor = extractorsByName[link.host]
 
     return extractor.getURL(link, extractor)
+  },
+
+  /**
+   * @param {string} host
+   * @returns {boolean}
+   */
+  isHotLinkingDisabled(host) {
+    return extractorsByName[host].hotLinkingDisabled ?? false
   },
 
   /**

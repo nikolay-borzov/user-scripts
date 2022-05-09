@@ -1,5 +1,14 @@
 # Image Viewer Changelog
 
+## 1.2.0
+
+## Fixed
+
+- Support `fastpic.org`. Also improve full image URL RegExp for case when there many matches for `class="image img-fluid"`
+- Support `https://imgbox.com`
+- Add workaround for `imagetwist` hot linking restriction
+- Update full image URL RegExp for `imagebam`
+
 ## 1.1.9 - 2020-11-28
 
 ## Fixed

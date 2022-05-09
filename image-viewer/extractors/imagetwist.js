@@ -15,6 +15,7 @@
 export const imagetwist = {
   name: 'ImageTwist',
   linkRegExp: /imagetwist\.com/,
+  hotLinkingDisabled: true,
 
   async getURL(link) {
     const imageName = link.url.split('/').pop()?.replace('.html', '')

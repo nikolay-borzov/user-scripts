@@ -1,4 +1,4 @@
-import { addStyle } from '../common/api'
+import { addStyle, request } from '../common/api'
 import { $, $$ } from '../libs/bliss'
 
 import imageViewCSS from './styles.css'
@@ -192,9 +192,10 @@ const image = {
 
     const isSizeKnown = !!link.dataset.ivWidth
     const thumbnailURL = link.dataset.ivThumbnail
+    const imageHost = link.dataset.ivHost
 
     // Quit if required data is not set
-    if (!thumbnailURL || !link.dataset.ivHost) {
+    if (!thumbnailURL || !imageHost) {
       throw new Error('[image-viewer] Either thumbnail URL or host is not set')
     }
 
@@ -215,7 +216,7 @@ const image = {
       imageURL = await urlExtractor.getImageURL({
         url: link.href,
         thumbnailURL,
-        host: link.dataset.ivHost,
+        host: imageHost,
       })
 
       if (!imageURL) {
@@ -227,14 +228,17 @@ const image = {
       link.dataset.ivImgUrl = imageURL
     }
 
-    // Preload image
     try {
-      await image.preload(
-        imageURL,
-        isSizeKnown ? undefined : image.setThumbnailSize
-      )
+      if (urlExtractor.isHotLinkingDisabled(imageHost)) {
+        img.src = await image.loadAsBlob(imageURL)
+      } else {
+        await image.preload(
+          imageURL,
+          isSizeKnown ? undefined : image.setThumbnailSize
+        )
 
-      img.src = imageURL
+        img.src = imageURL
+      }
 
       container.classList.remove(
         CLASSES.thumbnail,
@@ -274,6 +278,23 @@ const image = {
         image.getSize(imageObject).then(onSizeGet)
       }
     })
+  },
+
+  /**
+   * Loads image as blob through xmlHttpRequest to bypass strict-origin-when-cross-origin.
+   * (@see https://stackoverflow.com/a/52691157/1606662).
+   *
+   * @param {string} url
+   * @returns {Promise<string>} Base64 URL.
+   */
+  async loadAsBlob(url) {
+    const response = await request({
+      url,
+      headers: { referer: url, origin: url },
+      responseType: 'blob',
+    })
+
+    return window.URL.createObjectURL(response.response)
   },
 
   /**
@@ -371,7 +392,7 @@ const image = {
  */
 const events = {
   /**
-   * Image link click.
+   * Click on link to show image viewer on the page.
    *
    * @param {Event & { target: HTMLAnchorElement }} event
    */

@@ -9,7 +9,7 @@
 /** @type {Extractor} */
 export const imgbox = {
   name: 'imgbox.com',
-  linkRegExp: /^http:\/\/imgbox\.com/,
+  linkRegExp: /^https?:\/\/imgbox\.com/,
 
   async getURL(link) {
     return link.thumbnailURL.replace('/thumbs', '/images').replace('_t', '_o')
