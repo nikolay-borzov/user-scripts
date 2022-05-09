@@ -1,4 +1,4 @@
-import { getStore } from '../common/api'
+import { store, registerMenuCommand } from '../common/api'
 import { $ } from '../libs/bliss'
 
 import { urlExtractor } from './url-extractor'
@@ -19,8 +19,6 @@ import { urlExtractor } from './url-extractor'
  * @property {string[]} enabledHosts List of enabled Hosts IDs.
  */
 
-const store = getStore()
-
 const CLASSES = {
   open: 'iv-config-form--open',
 }
@@ -38,17 +36,7 @@ const currentHost = unsafeWindow.location.host
 export async function initHostConfig() {
   const config = await getHostConfig()
 
-  const handler = () => showMenu(config)
-
-  // TODO: Move to `api.js`?
-  // eslint-disable-next-line camelcase
-  if (typeof GM_registerMenuCommand !== 'undefined') {
-    GM_registerMenuCommand('Image Viewer Settings', handler)
-  } else {
-    unsafeWindow.imageViewer = {
-      settings: handler,
-    }
-  }
+  await registerMenuCommand('Settings', () => showMenu(config))
 
   return config
 }
@@ -74,11 +62,14 @@ async function getHostConfig() {
     }
   }
 
-  storedConfig.hosts = hosts.reduce((result, host) => {
-    result[host.name] = host.isEnabled
+  storedConfig.hosts = hosts.reduce(
+    (/** @type {Record<string, boolean>} */ result, host) => {
+      result[host.name] = host.isEnabled
 
-    return result
-  }, {})
+      return result
+    },
+    {}
+  )
 
   return {
     hosts,
@@ -120,6 +111,7 @@ function createMenuElement(config) {
     ],
     delegate: {
       change: {
+        /** @type {(event: Event & { target: HTMLInputElement }) => void} */
         '.js-iv-config-checkbox': ({ target: { value, checked } }) =>
           updateHostConfig(config.storedConfig, value, checked),
       },

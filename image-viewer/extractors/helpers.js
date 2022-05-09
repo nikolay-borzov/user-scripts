@@ -1,6 +1,4 @@
-import { getRequest } from '../../common/api'
-
-const request = getRequest()
+import { request } from '../../common/api'
 
 /**
  * @typedef {import('../url-extractor').Link} Link
@@ -41,7 +39,7 @@ export async function getURLFromPage(link, extractor) {
  * @returns {Promise<string>}
  */
 async function getPageHtml(pageURL) {
-  const response = await request(pageURL)
+  const response = await request({ url: pageURL })
 
   return response.responseText
 }

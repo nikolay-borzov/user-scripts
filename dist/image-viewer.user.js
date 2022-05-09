@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Viewer
 // @version      1.1.9
-// @description  Allows viewing full image without leaving the page
+// @description  View full image without leaving the page
 // @namespace    https://github.com/nikolay-borzov
 // @author       nikolay-borzov
 // @license      MIT
@@ -25,6 +25,7 @@
 // @grant        GM_getValue
 // @grant        GM.getValue
 // @grant        GM_registerMenuCommand
+// @grant        GM.registerMenuCommand
 // ==/UserScript==
 
 ;(function () {
@@ -37,29 +38,41 @@
   // eslint-disable-next-line
   const $$ = Bliss.$;
 
-  function hasOwnProperty(object, property) {
-    return Object.prototype.hasOwnProperty.call(object, property)
+  const GM_METHOD_MAP = {
+    GM_addStyle: 'addStyle',
+    GM_deleteValue: 'deleteValue',
+    GM_getResourceURL: 'getResourceUrl',
+    GM_getValue: 'getValue',
+    GM_listValues: 'listValues',
+    GM_notification: 'notification',
+    GM_openInTab: 'openInTab',
+    GM_registerMenuCommand: 'registerMenuCommand',
+    GM_setClipboard: 'setClipboard',
+    GM_setValue: 'setValue',
+    GM_xmlhttpRequest: 'xmlHttpRequest',
+    GM_getResourceText: 'getResourceText',
   }
 
-  function getGMPolyfillMethod(methodName) {
-    const GM_METHOD_MAP = {
-      getValue: 'GM_getValue',
-      setValue: 'GM_setValue',
-      openInTab: 'GM_openInTab',
+  function getGM4PolyfilledMethod(methodName) {
+    const gm4MethodName = GM_METHOD_MAP[methodName]
+
+    if (GM !== undefined && gm4MethodName in GM) {
+      return GM[gm4MethodName]
+    } else if (methodName in window) {
+      return function (...arguments_) {
+        return new Promise((resolve, reject) => {
+          try {
+            // eslint-disable-next-line unicorn/no-null
+            resolve(window[methodName].apply(null, arguments_))
+          } catch (error) {
+            reject(error)
+          }
+        })
+      }
     }
 
-    if (hasOwnProperty(GM_METHOD_MAP, methodName)) {
-      return GM !== undefined && methodName in GM
-        ? GM[methodName]
-        : function (...arguments_) {
-            return new Promise((resolve, reject) => {
-              try {
-                resolve(window[GM_METHOD_MAP[methodName]](...arguments_))
-              } catch (error) {
-                reject(error)
-              }
-            })
-          }
+    return async function () {
+      throw new Error(`Method ${methodName} is not available. Missing @grant?`)
     }
   }
 
@@ -68,55 +81,32 @@
       ? GM_addStyle // eslint-disable-line camelcase
       : (css) => {
           const head = document.querySelectorAll('head')[0]
+          const style = document.createElement('style')
 
-          if (head) {
-            const style = document.createElement('style')
+          style.innerHTML = css
+          head.append(style)
 
-            style.innerHTML = css
-            head.append(style)
-
-            return css
-          }
+          return style
         }
 
-  let request$1
+  const request = getGM4PolyfilledMethod('GM_xmlhttpRequest')
 
-  function getRequest() {
-    if (!request$1) {
-      const xmlHttpRequest =
-        GM !== undefined && 'xmlHttpRequest' in GM
-          ? GM.xmlHttpRequest
-          : GM_xmlhttpRequest // eslint-disable-line camelcase
+  const store = {
+    get: getGM4PolyfilledMethod('GM_getValue'),
 
-      request$1 = function (url, { method = 'GET' } = {}) {
-        return new Promise((resolve, reject) => {
-          xmlHttpRequest({
-            url,
-            method,
-            onload: resolve,
-            onerror: reject,
-          })
-        })
-      }
-    }
+    set: getGM4PolyfilledMethod('GM_setValue'),
 
-    return request$1
+    async patch(name, value) {
+      const oldValue = await store.get(name)
+
+      store.set(name, {
+        ...oldValue,
+        ...value,
+      })
+    },
   }
 
-  let store$1
-
-  const getStore = () => {
-    if (!store$1) {
-      store$1 = {
-        get: getGMPolyfillMethod('getValue'),
-        set: getGMPolyfillMethod('setValue'),
-      }
-    }
-
-    return store$1
-  }
-
-  const request = getRequest()
+  const registerMenuCommand = getGM4PolyfilledMethod('GM_registerMenuCommand')
 
   async function getURLFromPage(link, extractor) {
     const html = await getPageHtml(link.url)
@@ -137,7 +127,7 @@
   }
 
   async function getPageHtml(pageURL) {
-    const response = await request(pageURL)
+    const response = await request({ url: pageURL })
 
     return response.responseText
   }
@@ -564,8 +554,6 @@
       .map((m) => items[m.index])
   }
 
-  const store = getStore()
-
   const CLASSES$1 = {
     open: 'iv-config-form--open',
   }
@@ -576,16 +564,7 @@
   async function initHostConfig() {
     const config = await getHostConfig()
 
-    const handler = () => showMenu(config)
-
-    // eslint-disable-next-line camelcase
-    if (typeof GM_registerMenuCommand !== 'undefined') {
-      GM_registerMenuCommand('Image Viewer Settings', handler)
-    } else {
-      unsafeWindow.imageViewer = {
-        settings: handler,
-      }
-    }
+    await registerMenuCommand('Settings', () => showMenu(config))
 
     return config
   }

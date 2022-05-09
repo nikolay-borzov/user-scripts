@@ -20,7 +20,7 @@ import * as hostExtractors from './extractors/index'
  * @typedef {object} ImageHostMetadata
  * @property {string} name
  * @property {string} description
- * @property {boolean} [isEnabled]
+ * @property {boolean} isEnabled
  */
 
 /** @type {Extractor[]} */

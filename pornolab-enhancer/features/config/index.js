@@ -1,5 +1,5 @@
 /* global Menu */
-import { addStyle, getStore } from '../../../common/api'
+import { addStyle, store } from '../../../common/api'
 import { $ } from '../../../libs/bliss'
 
 import configCSS from './styles.css'
@@ -16,8 +16,6 @@ import configCSS from './styles.css'
  * @typedef {object} Config
  * @property {ConfigFeatures} features
  */
-
-const store = getStore()
 
 /** @typedef {ConfigFeatures} */
 const FEATURES_DEFAULT = {
@@ -58,7 +56,7 @@ function createMenuLink(features) {
     href: '#config-form',
   })
 
-  $.contents(container, ['· ', menuLink])
+  $.contents(container, menuLink)
 
   // Show menu on click
   const $menuLink = jQuery(menuLink)
@@ -120,8 +118,11 @@ function createConfigForm(features) {
     delegate: {
       change: {
         /** @param {Event & { target: HTMLInputElement }} event */
-        '.js-config-checkbox': ({ target: { value, checked } }) =>
-          store.set(value, checked),
+        '.js-config-checkbox': async ({ target: { value, checked } }) => {
+          await store.patch('features', {
+            [value]: checked,
+          })
+        },
       },
     },
     events: {

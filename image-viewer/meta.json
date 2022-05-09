@@ -19,7 +19,8 @@
     "GM.setValue",
     "GM_getValue",
     "GM.getValue",
-    "GM_registerMenuCommand"
+    "GM_registerMenuCommand",
+    "GM.registerMenuCommand"
   ],
   "run-at": "document-start"
 }

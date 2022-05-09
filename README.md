@@ -8,7 +8,7 @@ User scripts for Tampermonkey and ~~Greasemonkey~~
 
 [![IV file size][iv-size]][iv-url] [![IV OpenUserJS][open-user-js-image]][iv-open-user-js-url] [![IV GreasyFork][greasy-fork-image]][iv-greasy-fork-url]
 
-Allows viewing full-size images from image hosts (e.g. Fastpic) w/o leaving the page.
+View full-size images from image hosts (e.g. Fastpic) w/o leaving the page.
 
 :bulb: By default, script applies to all sites. I recommend enabling it only for specific sites. In Tampermonkey on script's settings tab uncheck `Original matches` and add your host's [masks](https://developer.chrome.com/docs/extensions/mv3/match_patterns/) in `User matches` (e.g. `https://myforum.net/*`)
 
@@ -28,7 +28,7 @@ Allows viewing full-size images from image hosts (e.g. Fastpic) w/o leaving the 
 
 ## Config
 
-Available through Tampermonkey menu or via `imageViewer.settings()` console command.
+Available through the "Settings" script command at the Tampermonkey menu.
 
 # JoyReactor Download Button
 
@@ -63,7 +63,7 @@ Adds quick download button to the top of the page
 
 ### Config menu
 
-Disable/enable certain features. Available through menu link "PLE"
+Disable/enable certain features. Available through the site menu link "PLE"
 
 ## Attributions
 
