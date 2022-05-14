@@ -1,4 +1,3 @@
-import path from 'node:path'
 import url from 'node:url'
 
 import { nodeResolve } from '@rollup/plugin-node-resolve'
@@ -10,10 +9,7 @@ import atImport from 'postcss-import'
 import inlineSvg from 'postcss-inline-svg'
 import postcss from 'rollup-plugin-postcss'
 
-const imagesPath = path.resolve(
-  path.dirname(url.fileURLToPath(import.meta.url)),
-  'icons'
-)
+const imagesPath = url.fileURLToPath(new URL('icons', import.meta.url))
 
 /** @type {import('rollup').RollupOptions} */
 export default {

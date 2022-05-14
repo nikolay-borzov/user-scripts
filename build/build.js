@@ -12,10 +12,7 @@ import { getConfig } from './config.js'
  * @typedef {import('rollup').OutputOptions} OutputOptions
  */
 
-const root = path.resolve(
-  path.dirname(url.fileURLToPath(import.meta.url)),
-  '../'
-)
+const root = url.fileURLToPath(new URL('..', import.meta.url))
 
 async function run() {
   const config = await getConfig()
@@ -99,9 +96,6 @@ function createRollupOptions({ scriptName, rollupOptions }) {
       format: 'iife',
       strict: false,
       sourcemap: false,
-      // Add empty line between Meta block and script's iife
-      banner: `
-      `,
     },
   }
 }

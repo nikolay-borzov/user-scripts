@@ -1,5 +1,9 @@
 # Pornolab Enhancer Changelog
 
+## 1.12.3 - 2022-05-14
+
+- Update Bliss.js to v1.0.6
+
 ## 1.12.2 - 2018-08-23
 
 ## Fixed
