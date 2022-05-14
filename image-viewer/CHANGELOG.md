@@ -1,5 +1,9 @@
 # Image Viewer Changelog
 
+## 1.2.1
+
+- Update Bliss.js to v1.0.6
+
 ## 1.2.0
 
 ## Fixed

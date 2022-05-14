@@ -1,6 +1,6 @@
 {
   "name": "Image Viewer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "View full image without leaving the page",
   "icon": "https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/image-viewer/icon.png",
   "match": "*://*/*",
