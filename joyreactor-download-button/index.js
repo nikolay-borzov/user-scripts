@@ -1,5 +1,5 @@
-import { addStyle } from '../common/api'
-import { dom } from '../common/dom'
+import { addStyle } from '../common/api.js'
+import { dom } from '../common/dom.js'
 
 import css from './styles.css'
 

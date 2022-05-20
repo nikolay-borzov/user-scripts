@@ -1,4 +1,4 @@
-import * as hostExtractors from './extractors/index'
+import * as hostExtractors from './extractors/index.js'
 
 /**
  * @typedef {object} Link
@@ -9,16 +9,21 @@ import * as hostExtractors from './extractors/index'
 
 /**
  * @typedef {object} Extractor
+ * @property {string} id
  * @property {string} name
  * @property {RegExp} linkRegExp Regular Expression to match view image page link.
  * @property {RegExp} [imageURLRegExp] Regular Expression to match full image URL on the image view page.
  * @property {string[]} [hosts] List of image hosts handled by the extractor.
- * @property {boolean} [hotLinkingDisabled] Whether full image cannot be loaded on hosts different from the image host.
+ * @property {'default' | 'new-tab' | 'origin-download'} [viewMode='default'] Full image view mode.
+ * - 'default' or undefined - View on the page by hotlinking the image.
+ * - 'new-tab' - Open image in the new browser tab.
+ * - 'origin-download' - Load image from the host as blob (overcomes hotlinking restriction).
  * @property {(link: Link, extractor: Extractor) => Promise<string | undefined>} getURL
  */
 
 /**
  * @typedef {object} ImageHostMetadata
+ * @property {string} id
  * @property {string} name
  * @property {string} description
  * @property {boolean} isEnabled
@@ -30,9 +35,9 @@ let extractorsActive = []
 /** @type {Extractor[]} */
 const extractors = Object.values(hostExtractors).filter(Boolean)
 
-const extractorsByName = extractors.reduce(
+const extractorsByID = extractors.reduce(
   (/** @type {Record<string, Extractor>} */ result, extractor) => {
-    result[extractor.name] = extractor
+    result[extractor.id] = extractor
 
     return result
   },
@@ -44,7 +49,8 @@ export const urlExtractor = {
    * @returns {ImageHostMetadata[]}
    */
   getImageHostsMetadata() {
-    const result = extractors.map(({ name, hosts }) => ({
+    const result = extractors.map(({ id, name, hosts }) => ({
+      id,
       name,
       description: hosts ? hosts.join(', ') : '',
     }))
@@ -57,41 +63,48 @@ export const urlExtractor = {
    *
    * @param {Link} link
    */
-  getImageURL(link) {
-    const extractor = extractorsByName[link.host]
+  async getImageURL(link) {
+    const extractor = extractorsByID[link.host]
 
-    return extractor.getURL(link, extractor)
+    const imageURL = await extractor.getURL(link, extractor)
+
+    if (!imageURL) {
+      console.error(
+        `[image-viewer] Failed to get URL for ${link.host}:${link.url}`
+      )
+    }
+
+    return imageURL
   },
 
   /**
-   * @param {string} host
-   * @returns {boolean}
+   * @param {string} hostId
    */
-  isHotLinkingDisabled(host) {
-    return extractorsByName[host].hotLinkingDisabled ?? false
+  getExtractorByHost(hostId) {
+    return extractorsByID[hostId]
   },
 
   /**
    * Returns function to match URL to the Extractor's name.
    *
    * @param {string[]} enabledHosts
-   * @returns {(url: string) => string | undefined}
+   * @returns {(url: string) => Extractor | undefined}
    */
-  getHostNameMatcher(enabledHosts) {
+  getHostExtractorMatcher(enabledHosts) {
     // Keep enabled extractors
     extractorsActive = extractors.filter((extractor) =>
-      enabledHosts.includes(extractor.name)
+      enabledHosts.includes(extractor.id)
     )
 
     /* It's often case when neighbor links are from the same image host.
-       Therefore we can improve search by checking link URL with the previous
+       Therefore we can speed up search by checking link URL with the previous
        extractor `linkRegExp` */
     /** @type {Extractor} */
     let previousExtractor
 
     return (url) => {
       if (previousExtractor && previousExtractor.linkRegExp.test(url)) {
-        return previousExtractor.name
+        return previousExtractor
       }
 
       const extractor = extractorsActive.find((extractor) =>
@@ -101,7 +114,7 @@ export const urlExtractor = {
       if (extractor) {
         previousExtractor = extractor
 
-        return extractor.name
+        return extractor
       }
     }
   },

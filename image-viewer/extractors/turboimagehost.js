@@ -1,17 +1,11 @@
-import { getURLFromPage } from './helpers'
+import { getURLFromPage } from './helpers.js'
 
-/** @typedef {import('../url-extractor').Extractor} Extractor */
-
-/*
-  link:       https://www.turboimagehost.com/p/38487267/horrorvillian.jpg.html
-  thumbnail:  https://s7d1.turboimg.net/t1/38487267_horrorvillian.jpg
-  image:      https://s7d1.turboimg.net/sp/444009b30201bb2432d005ee9c0e648c/horrorvillian.jpg
-*/
-
-/** @type {Extractor} */
+/** @type {import('../url-extractor').Extractor} */
 export const turboimagehost = {
-  name: 'TurboImageHost',
-  linkRegExp: /^https:\/\/www\.turboimagehost\.com\/p/,
-  imageURLRegExp: /property="og:image" content="([^"]*)"/,
+  id: 'turboimagehost',
+  name: 'TurboImageHost.com',
+  linkRegExp: /turboimagehost\.com\/p/,
+  imageURLRegExp: /rel="image_src" href="(?<url>http[^"]+)"/,
+  viewMode: 'new-tab',
   getURL: getURLFromPage,
 }

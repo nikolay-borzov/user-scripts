@@ -1,17 +1,42 @@
 {
   "name": "Image Viewer",
-  "version": "1.2.1",
-  "description": "View full image without leaving the page",
+  "version": "1.3.0",
+  "description": "View full image without leaving the page or on a new tab without ads",
   "icon": "https://raw.githubusercontent.com/nikolay-borzov/user-scripts/master/image-viewer/icon.png",
   "match": "*://*/*",
+  "exclude": [
+    "http://imgbb.co/*",
+    "https://adult-images.ru/*",
+    "https://fastpic.org/*",
+    "https://freescreens.ru/*",
+    "https://imageban.ru/*",
+    "https://imagetwist.com/*",
+    "https://imgadult.com/*",
+    "https://imgbase.ru/*",
+    "https://imgbox.com/*",
+    "https://imgbum.ru/*",
+    "https://imgclick.ru/*",
+    "https://imgdrive.net/*",
+    "https://imgtaxi.com/*",
+    "https://payforpic.ru/*",
+    "https://piccash.net/*",
+    "https://picclick.ru/*",
+    "https://picforall.ru/*",
+    "https://vfl.ru/*",
+    "https://www.imagebam.com/*",
+    "https://www.imagevenue.com/*",
+    "https://www.turboimagehost.com/*"
+  ],
   "connect": [
-    "imagebam.com",
-    "imagevenue.com",
-    "www.turboimagehost.com",
-    "fastpic.ru",
     "fastpic.org",
-    "radikal.ru",
-    "imagetwist.com"
+    "fastpic.ru",
+    "ibb.co",
+    "imagebam.com",
+    "imagetwist.com",
+    "imagevenue.com",
+    "imgdrive.net",
+    "imgtaxi.com",
+    "www.turboimagehost.com"
   ],
   "grant": [
     "GM_addStyle",
@@ -22,7 +47,9 @@
     "GM_getValue",
     "GM.getValue",
     "GM_registerMenuCommand",
-    "GM.registerMenuCommand"
+    "GM.registerMenuCommand",
+    "GM_openInTab",
+    "GM.openInTab"
   ],
   "run-at": "document-start"
 }

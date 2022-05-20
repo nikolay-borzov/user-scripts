@@ -1,5 +1,5 @@
-import { breadcrumb } from '../blocks/breadcrumb'
-import { pageHeader } from '../blocks/page-header'
+import { breadcrumb } from '../blocks/breadcrumb.js'
+import { pageHeader } from '../blocks/page-header.js'
 
 export const profile = {
   path: '/forum/profile.php',

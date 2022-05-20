@@ -1,7 +1,7 @@
-import { store, registerMenuCommand } from '../common/api'
-import { $ } from '../libs/bliss'
+import { store, registerMenuCommand } from '../common/api.js'
+import { $ } from '../libs/bliss.js'
 
-import { urlExtractor } from './url-extractor'
+import { urlExtractor } from './url-extractor.js'
 
 /**
  * @typedef {import('./url-extractor').ImageHostMetadata} ImageHostMetadata
@@ -47,11 +47,13 @@ export async function initHostConfig() {
 async function getHostConfig() {
   const hosts = urlExtractor.getImageHostsMetadata()
   /** @type {StoredHostConfig} */
-  const storedConfig = await store.get(currentHost, { hosts: {} })
+  const storedConfig = await store.getValue(currentHost, { hosts: {} })
   const enabledHosts = []
 
+  // TODO: Remove not supported hosts from `storedConfig`
+
   for (const host of hosts) {
-    const id = host.name
+    const id = host.id
     const isEnabled = id in storedConfig.hosts ? storedConfig.hosts[id] : true
 
     host.isEnabled = isEnabled
@@ -64,7 +66,7 @@ async function getHostConfig() {
 
   storedConfig.hosts = hosts.reduce(
     (/** @type {Record<string, boolean>} */ result, host) => {
-      result[host.name] = host.isEnabled
+      result[host.id] = host.isEnabled
 
       return result
     },
@@ -137,7 +139,7 @@ function createConfigMenuRow(host) {
         type: 'checkbox',
         className: 'iv-config-form__checkbox js-iv-config-checkbox',
         checked: host.isEnabled,
-        value: host.name,
+        value: host.id,
       },
       host.name,
     ],
@@ -185,5 +187,5 @@ function createMenuHeader() {
  */
 function updateHostConfig(config, hostName, isEnabled) {
   config.hosts[hostName] = isEnabled
-  store.set(currentHost, config)
+  store.setValue(currentHost, config)
 }

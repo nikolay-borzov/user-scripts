@@ -1,6 +1,6 @@
 /* global Menu */
-import { addStyle, store } from '../../../common/api'
-import { $ } from '../../../libs/bliss'
+import { addStyle, store } from '../../../common/api.js'
+import { $ } from '../../../libs/bliss.js'
 
 import configCSS from './styles.css'
 
@@ -31,7 +31,7 @@ const FEATURES_DEFAULT = {
 export async function initConfig() {
   const features = {
     ...FEATURES_DEFAULT,
-    ...(await store.get('features')),
+    ...(await store.getValue('features')),
   }
 
   await $.ready()

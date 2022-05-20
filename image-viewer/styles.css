@@ -68,6 +68,12 @@
   background-image: svg-load('zoom-in.svg', fill=#fff);
 }
 
+.iv-icon--type-open-in-new::after {
+  background-image: svg-load('open-in-new.svg', fill=#fff);
+  width: 40px;
+  height: 40px;
+}
+
 .iv-icon--type-next::after {
   background-image: svg-load('next.svg', fill=#fff);
 }

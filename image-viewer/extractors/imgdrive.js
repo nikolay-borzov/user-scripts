@@ -1,17 +1,13 @@
-/** @typedef {import('../url-extractor').Extractor} Extractor */
-
-/*
-  link:       https://imgdrive.net/img-5b4b4ac468dd6.html
-  thumbnail:  https://imgdrive.net/images/small/2018/07/15/5b4b4ac468d9b.jpg
-  image:      https://imgdrive.net/images/big/2018/07/15/5b4b4ac468d9b.jpg
-*/
-
-/** @type {Extractor} */
+/** @type {import('../url-extractor').Extractor} */
 export const imgdrive = {
+  id: 'imgdrive',
   name: 'ImgDrive.net',
-  linkRegExp: /^https:\/\/imgdrive\.net/,
+  linkRegExp: /\/imgdrive\.net/,
+  viewMode: 'origin-download',
 
   async getURL(link) {
-    return link.thumbnailURL.replace('small', 'big')
+    return link.thumbnailURL
+      .replace('/small/', '/big/')
+      .replace('/small-medium/', '/big/')
   },
 }

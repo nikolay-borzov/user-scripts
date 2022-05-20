@@ -1,7 +1,7 @@
-import { $ } from '../libs/bliss'
+import { $ } from '../libs/bliss.js'
 
-import { initHostConfig } from './config'
-import { initViewer } from './viewer'
+import { initHostConfig } from './config.js'
+import { initViewer } from './viewer.js'
 
 $.ready().then(async () => {
   const hostConfig = await initHostConfig()

@@ -1,4 +1,4 @@
-import { TOKENS } from '../core/token-types'
+import { TOKENS } from '../core/token-types.js'
 
 export const breadcrumb = {
   '.nav:first': {

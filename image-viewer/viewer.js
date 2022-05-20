@@ -1,14 +1,16 @@
-import { addStyle, request } from '../common/api'
-import { $, $$ } from '../libs/bliss'
+import { addStyle, request, openInTab } from '../common/api.js'
+import { $, $$ } from '../libs/bliss.js'
 
 import imageViewCSS from './styles.css'
-import { urlExtractor } from './url-extractor'
+import { urlExtractor } from './url-extractor.js'
 
 const CLASSES = {
   imageLink: 'js-image-link',
-  imageLinkZoom: 'iv-icon--type-zoom',
+  imageLinkOpenInNew: 'js-image-link-open-in-new',
+  zoomIcon: 'iv-icon--type-zoom',
+  openInNewIcon: 'iv-icon--type-open-in-new',
   imageLinkHover: 'iv-icon--hover',
-  brokenImage: 'iv-icon--type-image-broken',
+  brokenImageIcon: 'iv-icon--type-image-broken',
   loadingIcon: 'iv-icon--type-loading',
   loading: 'iv-image-view__image--loading',
   thumbnail: 'iv-image-view__image--thumbnail',
@@ -23,6 +25,7 @@ const CLASSES = {
 
 const SELECTORS = {
   imageLink: `.${CLASSES.imageLink}`,
+  imageOpenInNewLink: `.${CLASSES.imageLinkOpenInNew}`,
 }
 
 const EMPTY_SRC =
@@ -42,37 +45,51 @@ export function initViewer(enabledHosts) {
 
   // Save metadata to image link element
 
-  const linkClasses = [
-    CLASSES.imageLink,
+  const linkCommonClasses = [
     'iv-image-link',
     'iv-icon',
     'iv-icon--hover',
-    CLASSES.imageLinkZoom,
     'iv-icon--size-button',
   ]
 
-  const getHostName = urlExtractor.getHostNameMatcher(enabledHosts)
+  const getExtractor = urlExtractor.getHostExtractorMatcher(enabledHosts)
 
   /** @type {{ link: HTMLAnchorElement; thumbnailUrl: string }[]} */
   const imagesWithLinks = $$('a > img, a > var', container)
     .map((img) => ({
       link: img.parentElement,
-      thumbnailUrl: img.src || img.title,
+      thumbnailUrl: img.src ?? img.title,
     }))
     .filter(({ link }) => link.href)
 
   for (const { link, thumbnailUrl } of imagesWithLinks) {
-    const hostName = getHostName(link.href)
+    const extractor = getExtractor(link.href)
 
-    if (hostName) {
-      link.dataset.ivHost = hostName
-      link.dataset.ivThumbnail = thumbnailUrl
-      link.classList.add(...linkClasses)
+    if (!extractor) {
+      continue
     }
+
+    link.dataset.ivHost = extractor.id
+    link.dataset.ivThumbnail = thumbnailUrl
+
+    let viewModeClasses
+
+    if (extractor.viewMode === 'new-tab') {
+      viewModeClasses = [CLASSES.imageLinkOpenInNew, CLASSES.openInNewIcon]
+      link.setAttribute('title', 'Open in new tab')
+    } else {
+      viewModeClasses = [CLASSES.imageLink, CLASSES.zoomIcon]
+      link.setAttribute('title', 'Open viewer')
+    }
+
+    link.classList.add(...linkCommonClasses, ...viewModeClasses)
   }
 
   // @ts-ignore -- Assume target is a link
-  $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
+  $.delegate(container, 'click', {
+    [SELECTORS.imageLink]: events.openViewerLinkClick,
+    [SELECTORS.imageOpenInNewLink]: events.openInTabLinkClick,
+  })
 }
 
 /**
@@ -149,14 +166,55 @@ const state = {
  */
 const image = {
   /**
-   * Displays viewer for the image link.
+   * Return full image URL.
+   *
+   * @param {HTMLAnchorElement} link
+   * @returns {Promise<string | undefined>}
+   */
+  async getFullSizeURL(link) {
+    let imageURL = link.dataset.ivImgUrl
+
+    if (imageURL) {
+      return imageURL
+    }
+
+    const thumbnailURL = link.dataset.ivThumbnail
+    const imageHost = link.dataset.ivHost
+
+    // Type guard
+    if (!thumbnailURL || !imageHost) {
+      throw new Error('[image-viewer] Either thumbnail URL or host is not set')
+    }
+
+    imageURL = await urlExtractor.getImageURL({
+      url: link.href,
+      thumbnailURL,
+      host: imageHost,
+    })
+
+    if (!imageURL) {
+      image.markAsBroken(link)
+
+      return
+    }
+
+    link.dataset.ivImgUrl = imageURL
+
+    return imageURL
+  },
+
+  /**
+   * Displays viewer for the image.
    *
    * @param {HTMLAnchorElement} link
    */
-  async show(link) {
-    const container = elements.container
-    const img = elements.image
-    const thumbnail = elements.imageThumbnail
+  async showInViewer(link) {
+    const {
+      container,
+      image: img,
+      imageThumbnail: thumbnail,
+      imageNumber,
+    } = elements
 
     state.currentLink = link
 
@@ -165,9 +223,7 @@ const image = {
       container.classList.add(CLASSES.single)
     } else {
       container.classList.remove(CLASSES.single)
-      elements.imageNumber.textContent = (
-        state.getCurrentLinkIndex() + 1
-      ).toString()
+      imageNumber.textContent = (state.getCurrentLinkIndex() + 1).toString()
     }
 
     // Open image view
@@ -179,22 +235,22 @@ const image = {
     // Clear previous
     img.src = EMPTY_SRC
 
-    if (link.classList.contains(CLASSES.brokenImage)) {
-      container.classList.add(CLASSES.brokenImage)
+    if (link.classList.contains(CLASSES.brokenImageIcon)) {
+      container.classList.add(CLASSES.brokenImageIcon)
 
       // Do not try to load broken image
       return
     }
 
-    container.classList.remove(CLASSES.brokenImage)
+    container.classList.remove(CLASSES.brokenImageIcon)
     // Show loading indicator
     container.classList.add(CLASSES.loading, CLASSES.loadingIcon)
 
-    const isSizeKnown = !!link.dataset.ivWidth
+    const isSizeKnown = Boolean(link.dataset.ivWidth)
     const thumbnailURL = link.dataset.ivThumbnail
     const imageHost = link.dataset.ivHost
 
-    // Quit if required data is not set
+    // Type guard
     if (!thumbnailURL || !imageHost) {
       throw new Error('[image-viewer] Either thumbnail URL or host is not set')
     }
@@ -209,27 +265,16 @@ const image = {
       // Thumbnail is hidden after image is loaded
     }
 
-    let imageURL = link.dataset.ivImgUrl
+    const imageURL = await image.getFullSizeURL(link)
 
-    // Get full image URL
     if (!imageURL) {
-      imageURL = await urlExtractor.getImageURL({
-        url: link.href,
-        thumbnailURL,
-        host: imageHost,
-      })
-
-      if (!imageURL) {
-        image.markAsBroken(link)
-
-        return
-      }
-
-      link.dataset.ivImgUrl = imageURL
+      return
     }
 
     try {
-      if (urlExtractor.isHotLinkingDisabled(imageHost)) {
+      const extractor = urlExtractor.getExtractorByHost(imageHost)
+
+      if (extractor.viewMode === 'origin-download') {
         img.src = await image.loadAsBlob(imageURL)
       } else {
         await image.preload(
@@ -246,14 +291,14 @@ const image = {
         CLASSES.loadingIcon
       )
 
-      // Hide thumbnail after timeout. Useful for images with transparency
+      // Hide thumbnail after timeout. Needed for images with transparency
       setTimeout(image.hideThumbnail, TRANSITION_DURATION)
     } catch {
       // Prevent opening failed image again
       link.classList.remove(CLASSES.imageLink)
       image.markAsBroken(link)
       // Open link in new tab on next click
-      $.attributes(link, { target: '_blank' })
+      link.setAttribute('target', '_blank')
     }
   },
 
@@ -288,13 +333,18 @@ const image = {
    * @returns {Promise<string>} Base64 URL.
    */
   async loadAsBlob(url) {
+    const origin = new URL(url).origin
+
     const response = await request({
       url,
-      headers: { referer: url, origin: url },
+      headers: {
+        referer: origin,
+        origin,
+      },
       responseType: 'blob',
     })
 
-    return window.URL.createObjectURL(response.response)
+    return URL.createObjectURL(response.response)
   },
 
   /**
@@ -357,7 +407,7 @@ const image = {
     const newIndex =
       currentIndex < state.getLastLinkIndex() ? currentIndex + 1 : 0
 
-    image.show(state.linksSet[newIndex])
+    image.showInViewer(state.linksSet[newIndex])
   },
 
   previous() {
@@ -365,7 +415,7 @@ const image = {
     const newIndex =
       currentIndex === 0 ? state.getLastLinkIndex() : currentIndex - 1
 
-    image.show(state.linksSet[newIndex])
+    image.showInViewer(state.linksSet[newIndex])
   },
 
   toggleFullHeight() {
@@ -380,10 +430,11 @@ const image = {
   markAsBroken(link) {
     elements.container.classList.replace(
       CLASSES.loadingIcon,
-      CLASSES.brokenImage
+      CLASSES.brokenImageIcon
     )
     elements.container.classList.remove(CLASSES.loading)
-    link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
+    link.classList.replace(CLASSES.zoomIcon, CLASSES.brokenImageIcon)
+    link.setAttribute('title', '')
   },
 }
 
@@ -396,7 +447,7 @@ const events = {
    *
    * @param {Event & { target: HTMLAnchorElement }} event
    */
-  linkClick(event) {
+  openViewerLinkClick(event) {
     event.preventDefault()
 
     // Lazily create viewer container
@@ -418,7 +469,28 @@ const events = {
 
     events.keyboard.bind()
 
-    image.show(link)
+    image.showInViewer(link)
+  },
+
+  /**
+   * Click on link to open full image in a new tab.
+   *
+   * @param {Event & { target: HTMLAnchorElement }} event
+   */
+  async openInTabLinkClick(event) {
+    event.preventDefault()
+
+    const link = event.target
+
+    link.classList.replace(CLASSES.openInNewIcon, CLASSES.loadingIcon)
+
+    const imageURL = await image.getFullSizeURL(event.target)
+
+    link.classList.replace(CLASSES.loadingIcon, CLASSES.openInNewIcon)
+
+    if (imageURL) {
+      openInTab(imageURL, false)
+    }
   },
 
   keyboard: {

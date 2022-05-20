@@ -1,6 +1,6 @@
-import { addStyle } from '../../../common/api'
-import { regExp } from '../../../common/reg-exp'
-import { $ } from '../../../libs/bliss'
+import { addStyle } from '../../../common/api.js'
+import { regExp } from '../../../common/reg-exp.js'
+import { $ } from '../../../libs/bliss.js'
 
 import findSimilarCSS from './styles.css'
 

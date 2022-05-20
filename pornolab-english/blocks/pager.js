@@ -1,4 +1,4 @@
-import { TOKENS } from '../core/token-types'
+import { TOKENS } from '../core/token-types.js'
 
 const activePager = {
   '.menu-root': 'Pages',

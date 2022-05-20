@@ -1,5 +1,5 @@
-import { pageHeader } from '../blocks/page-header'
-import { pager } from '../blocks/pager'
+import { pageHeader } from '../blocks/page-header.js'
+import { pager } from '../blocks/pager.js'
 
 export const tracker = {
   path: '/forum/tracker.php',

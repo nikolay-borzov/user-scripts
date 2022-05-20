@@ -1,8 +1,8 @@
-import { breadcrumb } from '../blocks/breadcrumb'
-import { pageHeader } from '../blocks/page-header'
-import { pager } from '../blocks/pager'
-import { torrentInfo } from '../blocks/torrent-info'
-import { TOKENS } from '../core/token-types'
+import { breadcrumb } from '../blocks/breadcrumb.js'
+import { pageHeader } from '../blocks/page-header.js'
+import { pager } from '../blocks/pager.js'
+import { torrentInfo } from '../blocks/torrent-info.js'
+import { TOKENS } from '../core/token-types.js'
 
 const topicHeader = {
   '.w100.border.bw_TRL': {

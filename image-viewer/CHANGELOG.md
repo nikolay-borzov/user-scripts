@@ -1,5 +1,28 @@
 # Image Viewer Changelog
 
+## 1.3.0
+
+## Changed
+
+- Disable `image-viewer` script for image host pages
+- BREAKING: Image host IDs has changed. Config is reset to default enabled
+- [Internal] Simplify host links RegExp - remove `http` prefix
+
+## Added
+
+- Set image link title to either "Open in new tab" or "Open viewer" as additional clue for click action
+- When a host disallow hotlinking and current workaround doesn't work open full image in a new tab. Use "open in new" icon for such image links
+- [Internal] Full image URL extracting logic tests
+
+## Fixed
+
+- `vfl`, `imagevenue`, `imagebam`, `imgbb` links handling
+
+## Removed
+
+- Discontinued image hosts extractors
+- `fastpic` direct URL as query string param support
+
 ## 1.2.1
 
 - Update Bliss.js to v1.0.6

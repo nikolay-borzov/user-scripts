@@ -1,7 +1,6 @@
-import { addStyle } from '../../../common/api'
-import { hasOwnProperty } from '../../../common/helpers'
-import { regExp } from '../../../common/reg-exp'
-import { $ } from '../../../libs/bliss'
+import { addStyle } from '../../../common/api.js'
+import { regExp } from '../../../common/reg-exp.js'
+import { $ } from '../../../libs/bliss.js'
 
 import tagsCSS from './styles.css'
 
@@ -182,7 +181,7 @@ function createTagLinks(tags) {
 
       const tagkey = tag.toLowerCase()
 
-      if (hasOwnProperty(TAG_ICON_MAP, tagkey)) {
+      if (Object.hasOwn(TAG_ICON_MAP, tagkey)) {
         className = `${className} tag-with-icon icon-${TAG_ICON_MAP[tagkey]}`
       }
 

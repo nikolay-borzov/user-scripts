@@ -2,7 +2,14 @@
 module.exports = {
   root: true,
 
-  ignorePatterns: ['**/*.*', '!**/*.js', 'node_modules', 'libs', 'dist'],
+  ignorePatterns: [
+    '**/*.*',
+    '!**/*.js',
+    'node_modules',
+    'coverage',
+    'libs',
+    'dist',
+  ],
 
   parserOptions: {
     ecmaVersion: 'latest',
@@ -76,6 +83,8 @@ module.exports = {
 
     /* eslint-plugin-import */
 
+    // Require extension for imports. Required by Node.js with `type: "module"`
+    'import/extensions': ['error', 'always', { ignorePackages: true }],
     // Force using only named exports. Default export allowed for a module main export
     'import/no-default-export': 'error',
     // Sort imports
@@ -131,14 +140,20 @@ module.exports = {
       },
     },
     // Build ESM files
-    {
-      files: ['build/*.js', 'rollup.config.js'],
-      rules: {
-        /* eslint-plugin-import */
+    //{
+    //  files: ['build/*.js', 'rollup.config.js'],
+    //  rules: {
+    //    /* eslint-plugin-import */
 
-        // Require extension for imports. Required by Node.js with `type: "module"`
-        'import/extensions': ['error', 'always', { ignorePackages: true }],
-      },
+    //    // Require extension for imports. Required by Node.js with `type: "module"`
+    //    'import/extensions': ['error', 'always', { ignorePackages: true }],
+    //  },
+    //},
+    // Test files
+    {
+      files: '**/*.test.js',
+      plugins: ['ava'],
+      extends: ['plugin:ava/recommended'],
     },
   ],
 }

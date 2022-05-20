@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Image Viewer
-// @version      1.2.1
-// @description  View full image without leaving the page
+// @version      1.3.0
+// @description  View full image without leaving the page or on a new tab without ads
 // @namespace    https://github.com/nikolay-borzov
 // @author       nikolay-borzov
 // @license      MIT
@@ -10,15 +10,38 @@
 // @homepage     https://github.com/nikolay-borzov/user-scripts
 // @supportURL   https://github.com/nikolay-borzov/user-scripts/issues
 // @match        *://*/*
-// @connect      imagebam.com
-// @connect      imagevenue.com
-// @connect      www.turboimagehost.com
-// @connect      fastpic.ru
 // @connect      fastpic.org
-// @connect      radikal.ru
+// @connect      fastpic.ru
+// @connect      ibb.co
+// @connect      imagebam.com
 // @connect      imagetwist.com
+// @connect      imagevenue.com
+// @connect      imgdrive.net
+// @connect      imgtaxi.com
+// @connect      www.turboimagehost.com
 // @noframes
 // @run-at       document-start
+// @exclude      http://imgbb.co/*
+// @exclude      https://adult-images.ru/*
+// @exclude      https://fastpic.org/*
+// @exclude      https://freescreens.ru/*
+// @exclude      https://imageban.ru/*
+// @exclude      https://imagetwist.com/*
+// @exclude      https://imgadult.com/*
+// @exclude      https://imgbase.ru/*
+// @exclude      https://imgbox.com/*
+// @exclude      https://imgbum.ru/*
+// @exclude      https://imgclick.ru/*
+// @exclude      https://imgdrive.net/*
+// @exclude      https://imgtaxi.com/*
+// @exclude      https://payforpic.ru/*
+// @exclude      https://piccash.net/*
+// @exclude      https://picclick.ru/*
+// @exclude      https://picforall.ru/*
+// @exclude      https://vfl.ru/*
+// @exclude      https://www.imagebam.com/*
+// @exclude      https://www.imagevenue.com/*
+// @exclude      https://www.turboimagehost.com/*
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 // @grant        GM.xmlHttpRequest
@@ -28,7 +51,10 @@
 // @grant        GM.getValue
 // @grant        GM_registerMenuCommand
 // @grant        GM.registerMenuCommand
+// @grant        GM_openInTab
+// @grant        GM.openInTab
 // ==/UserScript==
+
 ;(function () {
   /* global Bliss */
   // eslint-disable-next-line -- blissfuljs v1.0.6 Shy https://blissfuljs.com/
@@ -76,40 +102,84 @@
     }
   }
 
-  const addStyle =
-    'GM_addStyle' in window
-      ? GM_addStyle // eslint-disable-line camelcase
-      : (css) => {
-          const head = document.querySelectorAll('head')[0]
-          const style = document.createElement('style')
+  let addStyle = (css) => {
+    addStyle =
+      'GM_addStyle' in window
+        ? GM_addStyle // eslint-disable-line camelcase
+        : (css) => {
+            const head = document.querySelectorAll('head')[0]
+            const style = document.createElement('style')
 
-          style.innerHTML = css
-          head.append(style)
+            style.innerHTML = css
+            head.append(style)
 
-          return style
-        }
+            return style
+          }
 
-  const request = getGM4PolyfilledMethod('GM_xmlhttpRequest')
+    return addStyle(css)
+  }
+
+  let request = (details) => {
+    request = getGM4PolyfilledMethod('GM_xmlhttpRequest')
+
+    return request(details)
+  }
 
   const store = {
-    get: getGM4PolyfilledMethod('GM_getValue'),
+    getValue: (name, defaultValue) => {
+      store.getValue = getGM4PolyfilledMethod('GM_getValue')
 
-    set: getGM4PolyfilledMethod('GM_setValue'),
+      return store.getValue(name, defaultValue)
+    },
+
+    setValue: (name, value) => {
+      store.setValue = getGM4PolyfilledMethod('GM_setValue')
+
+      return store.setValue(name, value)
+    },
 
     async patch(name, value) {
-      const oldValue = await store.get(name)
+      const oldValue = await store.getValue(name)
 
-      store.set(name, {
+      store.setValue(name, {
         ...oldValue,
         ...value,
       })
     },
   }
 
-  const registerMenuCommand = getGM4PolyfilledMethod('GM_registerMenuCommand')
+  let registerMenuCommand = (name, onClick, accessKey) => {
+    registerMenuCommand = getGM4PolyfilledMethod('GM_registerMenuCommand')
 
-  async function getURLFromPage(link, extractor) {
-    const html = await getPageHtml(link.url)
+    return registerMenuCommand(name, onClick, accessKey)
+  }
+
+  let openInTab = (url, openInBackground) => {
+    openInTab = getGM4PolyfilledMethod('GM_openInTab')
+
+    return openInTab(url, openInBackground)
+  }
+
+  const imgbum = {
+    id: 'imgbum',
+    name: 'imgbum.ru',
+    linkRegExp: /\/imgbum\.(net|ru)/,
+
+    async getURL(link) {
+      return link.thumbnailURL.replace('-thumb', '')
+    },
+  }
+
+  const adultImages = {
+    id: 'adult-images',
+    name: 'Adult-Images.ru',
+    linkRegExp: /\/(adult-images|money-pic)\.ru/,
+
+    getURL: imgbum.getURL,
+  }
+
+  async function getURLFromPage(link, extractor, requestDetails) {
+    const html = await getPageHtml({ url: link.url, ...requestDetails })
 
     const match = extractor.imageURLRegExp?.exec(html)
 
@@ -120,21 +190,24 @@
     }
 
     if (!url) {
-      console.warn(`[image-viewer] Unable to get URL from page ${link.url}`)
+      console.error(
+        `[image-viewer] Failed to get URL from page source: ${link.url}`
+      )
     }
 
     return url
   }
 
-  async function getPageHtml(pageURL) {
-    const response = await request({ url: pageURL })
+  async function getPageHtml(requestDetails) {
+    const response = await request(requestDetails)
 
     return response.responseText
   }
 
   const fastpic = {
+    id: 'fastpic',
     name: 'FastPic',
-    linkRegExp: /^http.?:\/\/fastpic\.(?:ru|org)\/view/,
+    linkRegExp: /fastpic\.(?:ru|org)\/view/,
     imageURLRegExp: /src="(?<url>http[^"]+)" class="image img-fluid"/,
     getURL: getURLFromPage,
   }
@@ -142,26 +215,13 @@
   const URL_PARTS_REGEXP = /i(\d+).+\.(ru|org)\/big(\/\d+\/\d+\/).+\/([^/]+)$/
 
   const fastpicDirect = {
+    id: 'fastpicDirect',
     name: 'FastPic (direct link)',
     linkRegExp: /fastpic\.(?:ru|org)\/big/,
 
     async getURL(link) {
-      let hostLink = link.url
-
-      if (hostLink.includes('?')) {
-        const urlObject = new URL(hostLink)
-        const parameters = new URLSearchParams(urlObject.search)
-
-        for (const parameter of parameters.values()) {
-          if (fastpicDirect.linkRegExp.test(parameter)) {
-            hostLink = parameter
-            break
-          }
-        }
-      }
-
       const [, index, domain, date, filename] =
-        URL_PARTS_REGEXP.exec(hostLink) || []
+        URL_PARTS_REGEXP.exec(link.url) || []
 
       const url = `https://fastpic.${domain}/view/${index}${date}${filename}.html`
 
@@ -170,17 +230,24 @@
   }
 
   const imagebam = {
+    id: 'imagebam',
     name: 'ImageBam',
-    linkRegExp: /^http:\/\/www\.imagebam\.com\/image/,
+    linkRegExp: /www\.imagebam\.com\//,
     imageURLRegExp: /src="(?<url>[^"]+)".+class="main-image/,
-    getURL: getURLFromPage,
+
+    async getURL(link, extractor) {
+      return getURLFromPage(link, extractor, {
+        cookie: 'nsfw_inter=1',
+      })
+    },
   }
 
   const DATE_PATTERN = /(\d{4})\.(\d{2})\.(\d{2})/
 
   const imageban = {
+    id: 'imageban',
     name: 'ImageBan.ru',
-    linkRegExp: /\/\/imageban\.ru\/show/,
+    linkRegExp: /imageban\.ru\/show/,
 
     async getURL(link) {
       return link.thumbnailURL
@@ -190,6 +257,7 @@
   }
 
   const imagebanDirect = {
+    id: 'imagebanDirect',
     name: 'ImageBan.ru (direct link)',
     linkRegExp: /imageban\.ru\/out/,
 
@@ -199,16 +267,17 @@
   }
 
   const imagetwist = {
+    id: 'imagetwist',
     name: 'ImageTwist',
     linkRegExp: /imagetwist\.com/,
-    hotLinkingDisabled: true,
+    viewMode: 'origin-download',
 
     async getURL(link) {
       const imageName = link.url.split('/').pop()?.replace('.html', '')
-      const extension = imageName?.split('.').pop()
+      const extension = imageName?.split('.').pop() ?? ''
       const imageUrl = link.thumbnailURL
         .replace('/th/', '/i/')
-        .slice(0, -(extension?.length ?? 0))
+        .slice(0, -extension.length)
 
       return `${imageUrl}${extension}/${imageName}`
     },
@@ -217,9 +286,11 @@
   const HOST_REPLACE_REG_EXP = /(picturelol|picshick|imageshimage)/
 
   const imagetwistBased = {
+    id: 'imagetwistBased',
     name: 'ImageTwist based (legacy)',
     hosts: ['Picturelol.com', 'PicShick.com', 'Imageshimage.com'],
-    linkRegExp: /^https?:\/\/(picturelol|picshick|imageshimage)\.com/,
+    linkRegExp: /(picturelol|picshick|imageshimage)\.com/,
+    viewMode: 'origin-download',
 
     async getURL(link) {
       const imageName = link.url.split('/').pop()
@@ -231,18 +302,18 @@
     },
   }
 
-  const imagevenueLegacy = {
+  const imagevenue = {
+    id: 'imagevenue,',
     name: 'ImageVenue.com',
-
-    linkRegExp: /(imagevenue.com\/img.php|www.imagevenue.com\/\\w+$)/,
+    linkRegExp: /imagevenue\.com\//,
     imageURLRegExp: /data-toggle="full">\W*<img src="(?<url>[^"]*)/im,
-
     getURL: getURLFromPage,
   }
 
   const imgadult = {
-    name: 'ImgAdult.com',
-    linkRegExp: /^https:\/\/imgadult\.com/,
+    id: 'imgadult',
+    name: 'ImgAdult',
+    linkRegExp: /\/imgadult\.com/,
 
     async getURL(link) {
       return link.thumbnailURL.replace('/small/', '/big/')
@@ -250,53 +321,35 @@
   }
 
   const imgbb = {
-    name: 'imgbb.com',
-    linkRegExp: /^https:\/\/ibb\.co/,
+    id: 'imgbb',
+    name: 'ImgBB',
+    linkRegExp: /\/ibb\.co/,
+    imageURLRegExp: /rel="image_src" href="(?<url>http[^"]+)"/,
 
     async getURL(link) {
-      return link.thumbnailURL.replace('//thumb', '//image')
+      if (link.thumbnailURL.includes('//thumb')) {
+        return link.thumbnailURL.replace('//thumb', '//image')
+      }
+
+      return getURLFromPage(link, imgbb)
     },
   }
 
   const imgbox = {
-    name: 'imgbox.com',
-    linkRegExp: /^https?:\/\/imgbox\.com/,
+    id: 'imgbox',
+    name: 'imgbox',
+    linkRegExp: /\/imgbox\.com/,
 
     async getURL(link) {
       return link.thumbnailURL.replace('/thumbs', '/images').replace('_t', '_o')
     },
   }
 
-  const imgbum = {
-    name: 'imgbum.net',
-    linkRegExp: /^http:\/\/imgbum\.net/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('-thumb', '')
-    },
-  }
-
-  const imgchilibum = {
-    name: 'imgchilibum.ru',
-    linkRegExp: /^http:\/\/imgchilibum\.ru\/v/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('_s/', '_b/')
-    },
-  }
-
   const imgdrive = {
+    id: 'imgdrive',
     name: 'ImgDrive.net',
-    linkRegExp: /^https:\/\/imgdrive\.net/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('small', 'big')
-    },
-  }
-
-  const imgtaxi = {
-    name: 'imgtaxi.com',
-    linkRegExp: /^https:\/\/imgtaxi\.com/,
+    linkRegExp: /\/imgdrive\.net/,
+    viewMode: 'origin-download',
 
     async getURL(link) {
       return link.thumbnailURL
@@ -305,56 +358,18 @@
     },
   }
 
-  const imx = {
-    name: 'IMX.to',
-    linkRegExp: /^https:\/\/imx\.to/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('/imx', '/i.imx').replace('/u/t/', '/i/')
-    },
-  }
-
-  const lostpic = {
-    name: 'Lostpic.net',
-    linkRegExp: /^http:\/\/lostpic\.net/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('.th', '').replace('http:', 'https:')
-    },
-  }
-
-  const moneyPic = {
-    name: 'money-pic.ru',
-    linkRegExp: /^http:\/\/money-pic\.ru/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('-thumb', '')
-    },
-  }
-
-  const nikapic = {
-    name: 'nikapic.ru',
-    linkRegExp: /^http:\/\/nikapic\.ru/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('/small/', '/big/')
-    },
-  }
-
-  const picage = {
-    name: 'picage.ru',
-    linkRegExp: /^http:\/\/picage\.ru/,
-
-    async getURL(link) {
-      return link.thumbnailURL
-        .replace('picage', 'pic4you')
-        .replace('-thumb', '')
-    },
+  const imgtaxi = {
+    id: 'imgtaxi',
+    name: 'ImgTaxi.com',
+    linkRegExp: /\/imgtaxi\.com/,
+    viewMode: 'origin-download',
+    getURL: imgdrive.getURL,
   }
 
   const piccash = {
-    name: 'PicCash.net',
-    linkRegExp: /^http:\/\/piccash\.net\//,
+    id: 'piccash',
+    name: 'PicCash',
+    linkRegExp: /\/piccash\.net/,
 
     async getURL(link) {
       return link.thumbnailURL.replace('_thumb', '_full').replace('-thumb', '')
@@ -362,7 +377,8 @@
   }
 
   const picforall = {
-    name: 'PicForAll.ru',
+    id: 'picforall',
+    name: 'PicForAll',
     hosts: [
       'freescreens.ru',
       'imgclick.ru',
@@ -372,87 +388,34 @@
       'imgbase.ru',
     ],
     linkRegExp:
-      /^http:\/\/(freescreens\.ru|imgclick\.ru|picclick\.ru|payforpic\.ru|picforall\.ru)/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('-thumb', '')
-    },
-  }
-
-  const HOST_REPLACE_REG_EX =
-    /(iceimg\.net|pixsense\.net|vestimage\.site|chaosimg\.site)/
-
-  const pixsense = {
-    name: 'PixSense',
-    hosts: [
-      'www.iceimg.net',
-      'www.pixsense.net',
-      'www.vestimage.site',
-      'www.chaosimg.site',
-    ],
-    linkRegExp:
-      /^http:\/\/www\.(iceimg\.net|pixsense\.net|vestimage\.site|chaosimg\.site)/,
-
-    async getURL(link) {
-      return link.thumbnailURL
-        .replace(HOST_REPLACE_REG_EX, 'fortstore.net')
-        .replace('small-', '')
-        .replace('/small/', '/big/')
-    },
-  }
-
-  const radikal = {
-    name: 'Radikal.ru',
-    linkRegExp: /https?:\/\/.\.radikal\.ru\//,
-
-    async getURL(link) {
-      return link.url
-    },
-  }
-
-  const radikalLegacy = {
-    name: 'Radikal.ru (legacy)',
-    linkRegExp: /^http:\/\/radikal\.ru\//,
-    imageURLRegExp: /id="imgFullSize" src="(?<url>[^"]+)"/,
-    getURL: getURLFromPage,
-  }
-
-  const stuffed = {
-    name: 'stuffed.ru',
-    linkRegExp: /^http:\/\/stuffed\.ru/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('-thumb', '')
-    },
+      /\/(freescreens|imgclick|picclick|payforpic|picforall|imgbase)\.ru/,
+    getURL: imgbum.getURL,
   }
 
   const turboimagehost = {
-    name: 'TurboImageHost',
-    linkRegExp: /^https:\/\/www\.turboimagehost\.com\/p/,
-    imageURLRegExp: /property="og:image" content="([^"]*)"/,
+    id: 'turboimagehost',
+    name: 'TurboImageHost.com',
+    linkRegExp: /turboimagehost\.com\/p/,
+    imageURLRegExp: /rel="image_src" href="(?<url>http[^"]+)"/,
+    viewMode: 'new-tab',
     getURL: getURLFromPage,
   }
 
+  const REMOVE_SUFFIX_REGEXP = /_.?(.+)$/
+
   const vfl = {
-    name: 'VFL.ru',
+    id: 'vfl',
+    name: 'VFL.Ru',
     linkRegExp: /^http:\/\/vfl\.ru/,
 
     async getURL(link) {
-      return link.thumbnailURL.replace('_s', '')
-    },
-  }
-
-  const xxxscreens = {
-    name: 'XXXScreens.com',
-    linkRegExp: /^http:\/\/xxxscreens\.com/,
-
-    async getURL(link) {
-      return link.thumbnailURL.replace('small/', 'big/')
+      return link.thumbnailURL.replace(REMOVE_SUFFIX_REGEXP, '$1')
     },
   }
 
   const hostExtractors = /* #__PURE__ */ Object.freeze({
     __proto__: null,
+    adultImages,
     fastpic,
     fastpicDirect,
     imagebam,
@@ -460,43 +423,33 @@
     imagebanDirect,
     imagetwist,
     imagetwistBased,
-    imagevenueLegacy,
+    imagevenue,
     imgadult,
     imgbb,
     imgbox,
     imgbum,
-    imgchilibum,
     imgdrive,
     imgtaxi,
-    imx,
-    lostpic,
-    moneyPic,
-    nikapic,
-    picage,
     piccash,
     picforall,
-    pixsense,
-    radikal,
-    radikalLegacy,
-    stuffed,
     turboimagehost,
     vfl,
-    xxxscreens,
   })
 
   let extractorsActive = []
 
   const extractors = Object.values(hostExtractors).filter(Boolean)
 
-  const extractorsByName = extractors.reduce((result, extractor) => {
-    result[extractor.name] = extractor
+  const extractorsByID = extractors.reduce((result, extractor) => {
+    result[extractor.id] = extractor
 
     return result
   }, {})
 
   const urlExtractor = {
     getImageHostsMetadata() {
-      const result = extractors.map(({ name, hosts }) => ({
+      const result = extractors.map(({ id, name, hosts }) => ({
+        id,
         name,
         description: hosts ? hosts.join(', ') : '',
       }))
@@ -504,26 +457,34 @@
       return sortCaseInsensitive(result, ({ name }) => name)
     },
 
-    getImageURL(link) {
-      const extractor = extractorsByName[link.host]
+    async getImageURL(link) {
+      const extractor = extractorsByID[link.host]
 
-      return extractor.getURL(link, extractor)
+      const imageURL = await extractor.getURL(link, extractor)
+
+      if (!imageURL) {
+        console.error(
+          `[image-viewer] Failed to get URL for ${link.host}:${link.url}`
+        )
+      }
+
+      return imageURL
     },
 
-    isHotLinkingDisabled(host) {
-      return extractorsByName[host].hotLinkingDisabled ?? false
+    getExtractorByHost(hostId) {
+      return extractorsByID[hostId]
     },
 
-    getHostNameMatcher(enabledHosts) {
+    getHostExtractorMatcher(enabledHosts) {
       extractorsActive = extractors.filter((extractor) =>
-        enabledHosts.includes(extractor.name)
+        enabledHosts.includes(extractor.id)
       )
 
       let previousExtractor
 
       return (url) => {
         if (previousExtractor && previousExtractor.linkRegExp.test(url)) {
-          return previousExtractor.name
+          return previousExtractor
         }
 
         const extractor = extractorsActive.find((extractor) =>
@@ -533,7 +494,7 @@
         if (extractor) {
           previousExtractor = extractor
 
-          return extractor.name
+          return extractor
         }
       }
     },
@@ -573,11 +534,11 @@
   async function getHostConfig() {
     const hosts = urlExtractor.getImageHostsMetadata()
 
-    const storedConfig = await store.get(currentHost, { hosts: {} })
+    const storedConfig = await store.getValue(currentHost, { hosts: {} })
     const enabledHosts = []
 
     for (const host of hosts) {
-      const id = host.name
+      const id = host.id
       const isEnabled = id in storedConfig.hosts ? storedConfig.hosts[id] : true
 
       host.isEnabled = isEnabled
@@ -589,7 +550,7 @@
     }
 
     storedConfig.hosts = hosts.reduce((result, host) => {
-      result[host.name] = host.isEnabled
+      result[host.id] = host.isEnabled
 
       return result
     }, {})
@@ -646,7 +607,7 @@
           type: 'checkbox',
           className: 'iv-config-form__checkbox js-iv-config-checkbox',
           checked: host.isEnabled,
-          value: host.name,
+          value: host.id,
         },
         host.name,
       ],
@@ -682,17 +643,19 @@
 
   function updateHostConfig(config, hostName, isEnabled) {
     config.hosts[hostName] = isEnabled
-    store.set(currentHost, config)
+    store.setValue(currentHost, config)
   }
 
   const css_248z =
-    "@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(1turn)}}.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{background-position:50%;background-repeat:no-repeat;background-size:contain;content:\"\";height:100%;left:50%;position:absolute;top:50%;transform:translate(-50%,-50%);width:100%;z-index:2}.iv-icon--hover:after{opacity:0;transition:opacity .35s ease}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{height:50px;width:50px}.iv-icon--type-loading:after{animation:spin 1s linear infinite;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8Z'/%3E%3C/svg%3E\")!important;opacity:1}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z'/%3E%3C/svg%3E\")}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M10.02 6 8.61 7.41 13.19 12l-4.58 4.59L10.02 18l6-6-6-6z'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M15.61 7.41 14.2 6l-6 6 6 6 1.41-1.41L11.03 12l4.58-4.59z'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z'/%3E%3C/svg%3E\")}.iv-icon--type-expand:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z'/%3E%3C/svg%3E\")}.iv-icon--type-shrink:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42 3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.iv-image-link{border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);display:inline-flex;margin:3px;min-height:50px;min-width:50px;padding:4px;vertical-align:top}.iv-image-link img{margin:0}.iv-image-link>:not(img){align-items:center;display:flex;justify-content:center;width:100%}.iv-image-link:before{background-color:rgba(0,0,0,.5);bottom:4px;content:\"\";left:4px;opacity:0;position:absolute;right:4px;top:4px;transition:opacity .35s ease;z-index:1}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{background-color:rgba(0,0,0,.2);height:100%;left:0;top:0;width:100%}.iv-image-link img:after{height:35px;width:35px;z-index:0}.iv-image-view{background-color:rgba(0,0,0,.8);color:#fff;display:none;flex-direction:column;height:0;opacity:0;transition:opacity .35s ease-out;user-select:none}.iv-image-view--open body,html.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{bottom:0;display:flex;height:auto;left:0;opacity:1;position:fixed;right:0;top:0;z-index:3}.iv-image-view--single .single-hide{visibility:hidden}.iv-image-view__footer,.iv-image-view__header{background-color:rgba(0,0,0,.8);display:flex}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:2}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__header{justify-content:space-between}.iv-image-view__footer{justify-content:center}.iv-image-view__body{display:flex;height:100%;overflow:auto;position:relative}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-thumbnail-wrapper{display:flex;height:100%;left:0;position:absolute;top:0;width:100%;z-index:0}.iv-image-view__number{align-items:center;display:flex;font-size:18px;padding:0 40px}.iv-image-view__backdrop{height:100%;left:0;position:fixed;top:0;width:100%;z-index:1}.iv-image,.iv-thumbnail{margin:auto;max-height:100%;max-width:100%;object-fit:contain}.iv-image{opacity:1;transition:opacity .35s ease-out;z-index:2}.iv-thumbnail{filter:blur(5px)}.iv-icon--type-error .iv-image,.iv-image-view__image--loading .iv-image,.iv-image-view__image--thumbnail .iv-image{opacity:0}.iv-image-view__image--thumbnail .iv-thumbnail-wrapper{z-index:2}.iv-image-view--full-height .iv-image,.iv-image-view--full-height .iv-thumbnail{cursor:grab;max-height:none}.iv-image-view--full-height .iv-image--grabbing{cursor:grabbing}.iv-icon-button{height:50px;transition:all .35s ease-out;width:50px}.iv-icon-button--small{height:25px;width:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}.iv-config-form{background-color:rgba(0,0,0,.85);color:#fff;display:none;flex-direction:column;height:50%;left:10px;max-width:500px;padding:10px;top:10px;width:50%}.iv-config-form--open{display:flex;position:fixed;z-index:3}.iv-config-form__header{align-items:center;display:flex;padding:10px}.iv-config-form__header-title{flex-grow:1}.iv-config-form__options{display:flex;flex-flow:column wrap;flex-grow:1;overflow:auto}.iv-config-form__label{align-items:center;display:flex;flex:0 0 auto;margin:0;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0!important}"
+    "@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(1turn)}}.iv-icon{position:relative}.iv-icon:after,.iv-image-link img:after{background-position:50%;background-repeat:no-repeat;background-size:contain;content:\"\";height:100%;left:50%;position:absolute;top:50%;transform:translate(-50%,-50%);width:100%;z-index:2}.iv-icon--hover:after{opacity:0;transition:opacity .35s ease}.iv-icon--hover:hover:after{opacity:1}.iv-icon--size-button:after{height:50px;width:50px}.iv-icon--type-loading:after{animation:spin 1s linear infinite;background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8Z'/%3E%3C/svg%3E\")!important;opacity:1}.iv-icon--type-zoom:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z'/%3E%3C/svg%3E\")}.iv-icon--type-open-in-new:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E\");height:40px;width:40px}.iv-icon--type-next:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M10.02 6 8.61 7.41 13.19 12l-4.58 4.59L10.02 18l6-6-6-6z'/%3E%3C/svg%3E\")}.iv-icon--type-previous:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M15.61 7.41 14.2 6l-6 6 6 6 1.41-1.41L11.03 12l4.58-4.59z'/%3E%3C/svg%3E\")}.iv-icon--type-close:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z'/%3E%3C/svg%3E\")}.iv-icon--type-expand:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z'/%3E%3C/svg%3E\")}.iv-icon--type-shrink:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24' fill='%23fff'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z'/%3E%3C/svg%3E\")}.iv-icon--type-image-broken:after,.iv-image-link img:after{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff'%3E%3Cpath d='M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2m-3 6.42 3 3.01V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6.58l3 2.99 4-4 4 4'/%3E%3C/svg%3E\")}.iv-image-link{border:1px solid rgba(0,0,0,.2);box-shadow:1px 1px 3px rgba(0,0,0,.5);display:inline-flex;margin:3px;min-height:50px;min-width:50px;padding:4px;vertical-align:top}.iv-image-link img{margin:0}.iv-image-link>:not(img){align-items:center;display:flex;justify-content:center;width:100%}.iv-image-link:before{background-color:rgba(0,0,0,.5);bottom:4px;content:\"\";left:4px;opacity:0;position:absolute;right:4px;top:4px;transition:opacity .35s ease;z-index:1}.iv-image-link.iv-icon--type-loading:before,.iv-image-link:hover:before{opacity:1}.iv-image-link img:after,.iv-image-link img:before{content:\"\";position:absolute}.iv-image-link img:before{background-color:rgba(0,0,0,.2);height:100%;left:0;top:0;width:100%}.iv-image-link img:after{height:35px;width:35px;z-index:0}.iv-image-view{background-color:rgba(0,0,0,.8);color:#fff;display:none;flex-direction:column;height:0;opacity:0;transition:opacity .35s ease-out;user-select:none}.iv-image-view--open body,html.iv-image-view--open{overflow:hidden}.iv-image-view--open .iv-image-view{bottom:0;display:flex;height:auto;left:0;opacity:1;position:fixed;right:0;top:0;z-index:3}.iv-image-view--single .single-hide{visibility:hidden}.iv-image-view__footer,.iv-image-view__header{background-color:rgba(0,0,0,.8);display:flex}.iv-image-view__footer-wrapper,.iv-image-view__header-wrapper{z-index:2}.iv-image-view__header-wrapper{box-shadow:0 3px 7px rgba(0,0,0,.7)}.iv-image-view__footer-wrapper{box-shadow:0 -3px 7px rgba(0,0,0,.7)}.iv-image-view__header{justify-content:space-between}.iv-image-view__footer{justify-content:center}.iv-image-view__body{display:flex;height:100%;overflow:auto;position:relative}.iv-image-view__body::-webkit-scrollbar{width:20px}.iv-image-view__body::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,.8)}.iv-image-view__body::-webkit-scrollbar-track{background-color:hsla(0,0%,100%,.8)}.iv-thumbnail-wrapper{display:flex;height:100%;left:0;position:absolute;top:0;width:100%;z-index:0}.iv-image-view__number{align-items:center;display:flex;font-size:18px;padding:0 40px}.iv-image-view__backdrop{height:100%;left:0;position:fixed;top:0;width:100%;z-index:1}.iv-image,.iv-thumbnail{margin:auto;max-height:100%;max-width:100%;object-fit:contain}.iv-image{opacity:1;transition:opacity .35s ease-out;z-index:2}.iv-thumbnail{filter:blur(5px)}.iv-icon--type-error .iv-image,.iv-image-view__image--loading .iv-image,.iv-image-view__image--thumbnail .iv-image{opacity:0}.iv-image-view__image--thumbnail .iv-thumbnail-wrapper{z-index:2}.iv-image-view--full-height .iv-image,.iv-image-view--full-height .iv-thumbnail{cursor:grab;max-height:none}.iv-image-view--full-height .iv-image--grabbing{cursor:grabbing}.iv-icon-button{height:50px;transition:all .35s ease-out;width:50px}.iv-icon-button--small{height:25px;width:25px}.iv-icon-button+.iv-icon-button{margin-left:5px}.iv-icon-button:hover{background-color:hsla(0,0%,100%,.1)}.iv-icon-button--active,.iv-icon-button:active{background-color:hsla(0,0%,100%,.2)}.iv-config-form{background-color:rgba(0,0,0,.85);color:#fff;display:none;flex-direction:column;height:50%;left:10px;max-width:500px;padding:10px;top:10px;width:50%}.iv-config-form--open{display:flex;position:fixed;z-index:3}.iv-config-form__header{align-items:center;display:flex;padding:10px}.iv-config-form__header-title{flex-grow:1}.iv-config-form__options{display:flex;flex-flow:column wrap;flex-grow:1;overflow:auto}.iv-config-form__label{align-items:center;display:flex;flex:0 0 auto;margin:0;padding:10px;transition:all .35s ease-out}.iv-config-form__label:hover{background-color:hsla(0,0%,100%,.15)}.iv-config-form__checkbox{margin:0 5px 0 0!important}"
 
   const CLASSES = {
     imageLink: 'js-image-link',
-    imageLinkZoom: 'iv-icon--type-zoom',
+    imageLinkOpenInNew: 'js-image-link-open-in-new',
+    zoomIcon: 'iv-icon--type-zoom',
+    openInNewIcon: 'iv-icon--type-open-in-new',
     imageLinkHover: 'iv-icon--hover',
-    brokenImage: 'iv-icon--type-image-broken',
+    brokenImageIcon: 'iv-icon--type-image-broken',
     loadingIcon: 'iv-icon--type-loading',
     loading: 'iv-image-view__image--loading',
     thumbnail: 'iv-image-view__image--thumbnail',
@@ -707,6 +670,7 @@
 
   const SELECTORS = {
     imageLink: `.${CLASSES.imageLink}`,
+    imageOpenInNewLink: `.${CLASSES.imageLinkOpenInNew}`,
   }
 
   const EMPTY_SRC =
@@ -719,35 +683,49 @@
 
     const container = $('body')
 
-    const linkClasses = [
-      CLASSES.imageLink,
+    const linkCommonClasses = [
       'iv-image-link',
       'iv-icon',
       'iv-icon--hover',
-      CLASSES.imageLinkZoom,
       'iv-icon--size-button',
     ]
 
-    const getHostName = urlExtractor.getHostNameMatcher(enabledHosts)
+    const getExtractor = urlExtractor.getHostExtractorMatcher(enabledHosts)
 
     const imagesWithLinks = $$('a > img, a > var', container)
       .map((img) => ({
         link: img.parentElement,
-        thumbnailUrl: img.src || img.title,
+        thumbnailUrl: img.src ?? img.title,
       }))
       .filter(({ link }) => link.href)
 
     for (const { link, thumbnailUrl } of imagesWithLinks) {
-      const hostName = getHostName(link.href)
+      const extractor = getExtractor(link.href)
 
-      if (hostName) {
-        link.dataset.ivHost = hostName
-        link.dataset.ivThumbnail = thumbnailUrl
-        link.classList.add(...linkClasses)
+      if (!extractor) {
+        continue
       }
+
+      link.dataset.ivHost = extractor.id
+      link.dataset.ivThumbnail = thumbnailUrl
+
+      let viewModeClasses
+
+      if (extractor.viewMode === 'new-tab') {
+        viewModeClasses = [CLASSES.imageLinkOpenInNew, CLASSES.openInNewIcon]
+        link.setAttribute('title', 'Open in new tab')
+      } else {
+        viewModeClasses = [CLASSES.imageLink, CLASSES.zoomIcon]
+        link.setAttribute('title', 'Open viewer')
+      }
+
+      link.classList.add(...linkCommonClasses, ...viewModeClasses)
     }
 
-    $.delegate(container, 'click', SELECTORS.imageLink, events.linkClick)
+    $.delegate(container, 'click', {
+      [SELECTORS.imageLink]: events.openViewerLinkClick,
+      [SELECTORS.imageOpenInNewLink]: events.openInTabLinkClick,
+    })
   }
 
   const elements = {
@@ -784,10 +762,46 @@
   }
 
   const image = {
-    async show(link) {
-      const container = elements.container
-      const img = elements.image
-      const thumbnail = elements.imageThumbnail
+    async getFullSizeURL(link) {
+      let imageURL = link.dataset.ivImgUrl
+
+      if (imageURL) {
+        return imageURL
+      }
+
+      const thumbnailURL = link.dataset.ivThumbnail
+      const imageHost = link.dataset.ivHost
+
+      if (!thumbnailURL || !imageHost) {
+        throw new Error(
+          '[image-viewer] Either thumbnail URL or host is not set'
+        )
+      }
+
+      imageURL = await urlExtractor.getImageURL({
+        url: link.href,
+        thumbnailURL,
+        host: imageHost,
+      })
+
+      if (!imageURL) {
+        image.markAsBroken(link)
+
+        return
+      }
+
+      link.dataset.ivImgUrl = imageURL
+
+      return imageURL
+    },
+
+    async showInViewer(link) {
+      const {
+        container,
+        image: img,
+        imageThumbnail: thumbnail,
+        imageNumber,
+      } = elements
 
       state.currentLink = link
 
@@ -795,9 +809,7 @@
         container.classList.add(CLASSES.single)
       } else {
         container.classList.remove(CLASSES.single)
-        elements.imageNumber.textContent = (
-          state.getCurrentLinkIndex() + 1
-        ).toString()
+        imageNumber.textContent = (state.getCurrentLinkIndex() + 1).toString()
       }
 
       if (!state.isOpened) {
@@ -807,17 +819,17 @@
 
       img.src = EMPTY_SRC
 
-      if (link.classList.contains(CLASSES.brokenImage)) {
-        container.classList.add(CLASSES.brokenImage)
+      if (link.classList.contains(CLASSES.brokenImageIcon)) {
+        container.classList.add(CLASSES.brokenImageIcon)
 
         return
       }
 
-      container.classList.remove(CLASSES.brokenImage)
+      container.classList.remove(CLASSES.brokenImageIcon)
 
       container.classList.add(CLASSES.loading, CLASSES.loadingIcon)
 
-      const isSizeKnown = !!link.dataset.ivWidth
+      const isSizeKnown = Boolean(link.dataset.ivWidth)
       const thumbnailURL = link.dataset.ivThumbnail
       const imageHost = link.dataset.ivHost
 
@@ -834,26 +846,16 @@
         container.classList.add(CLASSES.thumbnail)
       }
 
-      let imageURL = link.dataset.ivImgUrl
+      const imageURL = await image.getFullSizeURL(link)
 
       if (!imageURL) {
-        imageURL = await urlExtractor.getImageURL({
-          url: link.href,
-          thumbnailURL,
-          host: imageHost,
-        })
-
-        if (!imageURL) {
-          image.markAsBroken(link)
-
-          return
-        }
-
-        link.dataset.ivImgUrl = imageURL
+        return
       }
 
       try {
-        if (urlExtractor.isHotLinkingDisabled(imageHost)) {
+        const extractor = urlExtractor.getExtractorByHost(imageHost)
+
+        if (extractor.viewMode === 'origin-download') {
           img.src = await image.loadAsBlob(imageURL)
         } else {
           await image.preload(
@@ -875,7 +877,7 @@
         link.classList.remove(CLASSES.imageLink)
         image.markAsBroken(link)
 
-        $.attributes(link, { target: '_blank' })
+        link.setAttribute('target', '_blank')
       }
     },
 
@@ -895,13 +897,18 @@
     },
 
     async loadAsBlob(url) {
+      const origin = new URL(url).origin
+
       const response = await request({
         url,
-        headers: { referer: url, origin: url },
+        headers: {
+          referer: origin,
+          origin,
+        },
         responseType: 'blob',
       })
 
-      return window.URL.createObjectURL(response.response)
+      return URL.createObjectURL(response.response)
     },
 
     getSize(img) {
@@ -954,7 +961,7 @@
       const newIndex =
         currentIndex < state.getLastLinkIndex() ? currentIndex + 1 : 0
 
-      image.show(state.linksSet[newIndex])
+      image.showInViewer(state.linksSet[newIndex])
     },
 
     previous() {
@@ -962,7 +969,7 @@
       const newIndex =
         currentIndex === 0 ? state.getLastLinkIndex() : currentIndex - 1
 
-      image.show(state.linksSet[newIndex])
+      image.showInViewer(state.linksSet[newIndex])
     },
 
     toggleFullHeight() {
@@ -974,15 +981,16 @@
     markAsBroken(link) {
       elements.container.classList.replace(
         CLASSES.loadingIcon,
-        CLASSES.brokenImage
+        CLASSES.brokenImageIcon
       )
       elements.container.classList.remove(CLASSES.loading)
-      link.classList.replace(CLASSES.imageLinkZoom, CLASSES.brokenImage)
+      link.classList.replace(CLASSES.zoomIcon, CLASSES.brokenImageIcon)
+      link.setAttribute('title', '')
     },
   }
 
   const events = {
-    linkClick(event) {
+    openViewerLinkClick(event) {
       event.preventDefault()
 
       if (state.isFirstClick) {
@@ -1001,7 +1009,23 @@
 
       events.keyboard.bind()
 
-      image.show(link)
+      image.showInViewer(link)
+    },
+
+    async openInTabLinkClick(event) {
+      event.preventDefault()
+
+      const link = event.target
+
+      link.classList.replace(CLASSES.openInNewIcon, CLASSES.loadingIcon)
+
+      const imageURL = await image.getFullSizeURL(event.target)
+
+      link.classList.replace(CLASSES.loadingIcon, CLASSES.openInNewIcon)
+
+      if (imageURL) {
+        openInTab(imageURL, false)
+      }
     },
 
     keyboard: {

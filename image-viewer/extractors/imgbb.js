@@ -1,17 +1,22 @@
-/** @typedef {import('../url-extractor').Extractor} Extractor */
+import { getURLFromPage } from './helpers.js'
 
-/*
-  link:       https://ibb.co/cx4HBK
-  thumbnail:  https://thumb.ibb.co/cx4HBK/horrorvillian.jpg
-  image:      https://image.ibb.co/fAyNdz/horrorvillian.jpg or https://image.ibb.co/cx4HBK/horrorvillian.jpg
-*/
-
-/** @type {Extractor} */
+/**
+ *  Modern + legacy links support.
+ *
+ * @type {import('../url-extractor').Extractor}
+ */
 export const imgbb = {
-  name: 'imgbb.com',
-  linkRegExp: /^https:\/\/ibb\.co/,
+  id: 'imgbb',
+  name: 'ImgBB',
+  linkRegExp: /\/ibb\.co/,
+  imageURLRegExp: /rel="image_src" href="(?<url>http[^"]+)"/,
 
   async getURL(link) {
-    return link.thumbnailURL.replace('//thumb', '//image')
+    // Legacy link format
+    if (link.thumbnailURL.includes('//thumb')) {
+      return link.thumbnailURL.replace('//thumb', '//image')
+    }
+
+    return getURLFromPage(link, imgbb)
   },
 }

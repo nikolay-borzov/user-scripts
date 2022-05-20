@@ -1,17 +1,16 @@
-import { getURLFromPage } from './helpers'
+import { getURLFromPage } from './helpers.js'
 
-/** @typedef {import('../url-extractor').Extractor} Extractor */
-
-/*
-  link:       https://www.imagebam.com/image/561a4d65163499
-  thumbnail:  http://thumbnails28.imagebam.com/6517/561a4d65163499.gif
-  image:      https://images3.imagebam.com/cf/52/50/561a4d65163499.jpg
- */
-
-/** @type {Extractor} */
+/** @type {import('../url-extractor').Extractor} */
 export const imagebam = {
+  id: 'imagebam',
   name: 'ImageBam',
-  linkRegExp: /^http:\/\/www\.imagebam\.com\/image/,
+  linkRegExp: /www\.imagebam\.com\//,
   imageURLRegExp: /src="(?<url>[^"]+)".+class="main-image/,
-  getURL: getURLFromPage,
+
+  async getURL(link, extractor) {
+    return getURLFromPage(link, extractor, {
+      // Pass through NSFW image intermediate page
+      cookie: 'nsfw_inter=1',
+    })
+  },
 }

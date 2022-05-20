@@ -1,4 +1,4 @@
-import { TOKENS } from './token-types'
+import { TOKENS } from './token-types.js'
 
 const dateTimeMap = {
   день: 'day',

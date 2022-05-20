@@ -1,35 +1,52 @@
-import { getGM4PolyfilledMethod } from './gm-polyfill'
+import { getGM4PolyfilledMethod } from './gm-polyfill.js'
 
 /**
  * Adds the given style to the document and returns the injected style element.
  *
  * @type {typeof GM_addStyle}
  */
-export const addStyle =
-  'GM_addStyle' in window
-    ? GM_addStyle // eslint-disable-line camelcase
-    : (css) => {
-        const head = document.querySelectorAll('head')[0]
-        const style = document.createElement('style')
+export let addStyle = (css) => {
+  addStyle =
+    'GM_addStyle' in window
+      ? GM_addStyle // eslint-disable-line camelcase
+      : (css) => {
+          const head = document.querySelectorAll('head')[0]
+          const style = document.createElement('style')
 
-        style.innerHTML = css
-        head.append(style)
+          style.innerHTML = css
+          head.append(style)
 
-        return style
-      }
+          return style
+        }
+
+  return addStyle(css)
+}
 
 /**
  * Makes an xmlHttpRequest.
  *
  * @type {typeof GM.xmlHttpRequest}
  */
-export const request = getGM4PolyfilledMethod('GM_xmlhttpRequest')
+export let request = (details) => {
+  request = getGM4PolyfilledMethod('GM_xmlhttpRequest')
+
+  return request(details)
+}
 
 export const store = {
   /** @type {typeof GM.getValue} */
-  get: getGM4PolyfilledMethod('GM_getValue'),
+  getValue: (name, defaultValue) => {
+    store.getValue = getGM4PolyfilledMethod('GM_getValue')
+
+    return store.getValue(name, defaultValue)
+  },
+
   /** @type {typeof GM.setValue} */
-  set: getGM4PolyfilledMethod('GM_setValue'),
+  setValue: (name, value) => {
+    store.setValue = getGM4PolyfilledMethod('GM_setValue')
+
+    return store.setValue(name, value)
+  },
   /**
    * Patches store value assuming the value is object.
    *
@@ -38,9 +55,9 @@ export const store = {
    * @returns {Promise<void>}
    */
   async patch(name, value) {
-    const oldValue = await store.get(name)
+    const oldValue = await store.getValue(name)
 
-    store.set(name, {
+    store.setValue(name, {
       ...oldValue,
       ...value,
     })
@@ -52,6 +69,17 @@ export const store = {
  *
  * @type {typeof GM.registerMenuCommand}
  */
-export const registerMenuCommand = getGM4PolyfilledMethod(
-  'GM_registerMenuCommand'
-)
+export let registerMenuCommand = (name, onClick, accessKey) => {
+  registerMenuCommand = getGM4PolyfilledMethod('GM_registerMenuCommand')
+
+  return registerMenuCommand(name, onClick, accessKey)
+}
+
+/**
+ *  @type {typeof GM.openInTab}
+ */
+export let openInTab = (url, openInBackground) => {
+  openInTab = getGM4PolyfilledMethod('GM_openInTab')
+
+  return openInTab(url, openInBackground)
+}

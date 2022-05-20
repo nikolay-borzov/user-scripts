@@ -1,19 +1,9 @@
-/** @typedef {import('../url-extractor').Extractor} Extractor */
+import { imgbum } from './imgbum.js'
 
-/*
-  A lot of ads
-  link:       http://freescreens.ru/1892/532639/
-                     imgclick.ru
-                     picclick.ru
-                     payforpic.ru
-                     picforall.ru
-  thumbnail:  http://freescreens.ru/allimage/4/532639-thumb.jpeg
-  image:      http://freescreens.ru/allimage/4/532639.jpeg
-*/
-
-/** @type {Extractor} */
+/** @type {import('../url-extractor').Extractor} */
 export const picforall = {
-  name: 'PicForAll.ru',
+  id: 'picforall',
+  name: 'PicForAll',
   hosts: [
     'freescreens.ru',
     'imgclick.ru',
@@ -23,9 +13,6 @@ export const picforall = {
     'imgbase.ru',
   ],
   linkRegExp:
-    /^http:\/\/(freescreens\.ru|imgclick\.ru|picclick\.ru|payforpic\.ru|picforall\.ru)/,
-
-  async getURL(link) {
-    return link.thumbnailURL.replace('-thumb', '')
-  },
+    /\/(freescreens|imgclick|picclick|payforpic|picforall|imgbase)\.ru/,
+  getURL: imgbum.getURL,
 }

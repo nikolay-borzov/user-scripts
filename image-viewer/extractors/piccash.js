@@ -1,15 +1,8 @@
-/** @typedef {import('../url-extractor').Extractor} Extractor */
-
-/*
-  link:       http://piccash.net/53489/845533/
-  thumbnail:  http://piccash.net/allimage/2018/7-15/img_thumb/845533-thumb.jpeg
-  image:      http://piccash.net/allimage/2018/7-15/img_full/845533.jpeg
-*/
-
-/** @type {Extractor} */
+/** @type {import('../url-extractor').Extractor}} */
 export const piccash = {
-  name: 'PicCash.net',
-  linkRegExp: /^http:\/\/piccash\.net\//,
+  id: 'piccash',
+  name: 'PicCash',
+  linkRegExp: /\/piccash\.net/,
 
   async getURL(link) {
     return link.thumbnailURL.replace('_thumb', '_full').replace('-thumb', '')

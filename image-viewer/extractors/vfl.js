@@ -1,17 +1,12 @@
-/** @typedef {import('../url-extractor').Extractor} Extractor */
+const REMOVE_SUFFIX_REGEXP = /_.?(.+)$/
 
-/*
-  link:       http://vfl.ru/fotos/e720f58222754036.html
-  thumbnail:  http://images.vfl.ru/ii/1533382125/e720f582/22754036_s.jpg
-  image:      http://images.vfl.ru/ii/1533382125/e720f582/22754036.jpg
-*/
-
-/** @type {Extractor} */
+/** @type {import('../url-extractor').Extractor} */
 export const vfl = {
-  name: 'VFL.ru',
+  id: 'vfl',
+  name: 'VFL.Ru',
   linkRegExp: /^http:\/\/vfl\.ru/,
 
   async getURL(link) {
-    return link.thumbnailURL.replace('_s', '')
+    return link.thumbnailURL.replace(REMOVE_SUFFIX_REGEXP, '$1')
   },
 }

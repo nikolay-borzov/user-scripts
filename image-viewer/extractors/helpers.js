@@ -1,19 +1,15 @@
-import { request } from '../../common/api'
-
-/**
- * @typedef {import('../url-extractor').Link} Link
- * @typedef {import('../url-extractor').Extractor} Extractor
- */
+import { request } from '../../common/api.js'
 
 /**
  * Extracts full image URL from image host page content.
  *
- * @param {Link} link
- * @param {Extractor} extractor
+ * @param {import('../url-extractor').Link} link
+ * @param {import('../url-extractor').Extractor} extractor
+ * @param {Partial<Tampermonkey.Request>} [requestDetails] Optional request parametes.
  * @returns {Promise<string | undefined>}
  */
-export async function getURLFromPage(link, extractor) {
-  const html = await getPageHtml(link.url)
+export async function getURLFromPage(link, extractor, requestDetails) {
+  const html = await getPageHtml({ url: link.url, ...requestDetails })
 
   const match = extractor.imageURLRegExp?.exec(html)
 
@@ -26,7 +22,9 @@ export async function getURLFromPage(link, extractor) {
   }
 
   if (!url) {
-    console.warn(`[image-viewer] Unable to get URL from page ${link.url}`)
+    console.error(
+      `[image-viewer] Failed to get URL from page source: ${link.url}`
+    )
   }
 
   return url
@@ -35,11 +33,11 @@ export async function getURLFromPage(link, extractor) {
 /**
  * Loads page's source content.
  *
- * @param {string} pageURL
+ * @param {Tampermonkey.Request} requestDetails
  * @returns {Promise<string>}
  */
-async function getPageHtml(pageURL) {
-  const response = await request({ url: pageURL })
+async function getPageHtml(requestDetails) {
+  const response = await request(requestDetails)
 
   return response.responseText
 }

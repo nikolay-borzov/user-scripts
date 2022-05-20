@@ -1,10 +1,10 @@
-import { translate } from './core/translate'
-import { main } from './pages/main'
-import { privateMessages } from './pages/private-messages'
-import { profile } from './pages/profile'
-import { search } from './pages/search'
-import { topic } from './pages/topic'
-import { tracker } from './pages/tracker'
+import { translate } from './core/translate.js'
+import { main } from './pages/main.js'
+import { privateMessages } from './pages/private-messages.js'
+import { profile } from './pages/profile.js'
+import { search } from './pages/search.js'
+import { topic } from './pages/topic.js'
+import { tracker } from './pages/tracker.js'
 
 const pages = [main, topic, tracker, search, privateMessages, profile]
 
