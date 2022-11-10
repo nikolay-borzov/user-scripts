@@ -17,21 +17,22 @@
 // ==/UserScript==
 
 ;(function () {
-  const addStyle =
-    'GM_addStyle' in window
-      ? GM_addStyle // eslint-disable-line camelcase
-      : (css) => {
-          const head = document.querySelectorAll('head')[0]
-
-          if (head) {
+  let addStyle = (css) => {
+    addStyle =
+      'GM_addStyle' in window
+        ? GM_addStyle // eslint-disable-line camelcase
+        : (css) => {
+            const head = document.querySelectorAll('head')[0]
             const style = document.createElement('style')
 
             style.innerHTML = css
             head.append(style)
 
-            return css
+            return style
           }
-        }
+
+    return addStyle(css)
+  }
 
   const dom = {
     on(parent, eventName, selector, callback) {

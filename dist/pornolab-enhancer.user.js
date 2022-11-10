@@ -61,37 +61,45 @@
     }
   }
 
-  const addStyle =
-    'GM_addStyle' in window
-      ? GM_addStyle // eslint-disable-line camelcase
-      : (css) => {
-          const head = document.querySelectorAll('head')[0]
-          const style = document.createElement('style')
+  let addStyle = (css) => {
+    addStyle =
+      'GM_addStyle' in window
+        ? GM_addStyle // eslint-disable-line camelcase
+        : (css) => {
+            const head = document.querySelectorAll('head')[0]
+            const style = document.createElement('style')
 
-          style.innerHTML = css
-          head.append(style)
+            style.innerHTML = css
+            head.append(style)
 
-          return style
-        }
+            return style
+          }
 
-  getGM4PolyfilledMethod('GM_xmlhttpRequest')
+    return addStyle(css)
+  }
 
   const store = {
-    get: getGM4PolyfilledMethod('GM_getValue'),
+    getValue: (name, defaultValue) => {
+      store.getValue = getGM4PolyfilledMethod('GM_getValue')
 
-    set: getGM4PolyfilledMethod('GM_setValue'),
+      return store.getValue(name, defaultValue)
+    },
+
+    setValue: (name, value) => {
+      store.setValue = getGM4PolyfilledMethod('GM_setValue')
+
+      return store.setValue(name, value)
+    },
 
     async patch(name, value) {
-      const oldValue = await store.get(name)
+      const oldValue = await store.getValue(name)
 
-      store.set(name, {
+      store.setValue(name, {
         ...oldValue,
         ...value,
       })
     },
   }
-
-  getGM4PolyfilledMethod('GM_registerMenuCommand')
 
   /* global Bliss */
   // eslint-disable-next-line -- blissfuljs v1.0.6 Shy https://blissfuljs.com/
@@ -116,7 +124,7 @@
   async function initConfig() {
     const features = {
       ...FEATURES_DEFAULT,
-      ...(await store.get('features')),
+      ...(await store.getValue('features')),
     }
 
     await $.ready()
@@ -362,10 +370,6 @@
   const css_248z$1 =
     '.nav .menu-root,.small>b>.menu-root,a.pg{background-color:#efefef;border:1px solid #cacaca;display:inline-block;padding:.5em .7em;text-decoration:none}a.pg{margin-right:.1em}.nav .menu-root,.small>b>.menu-root{background-position:95% 50%;background-repeat:no-repeat;padding-right:20px}.nav .menu-root:hover,.small>b>.menu-root:hover,a.pg:hover{border-color:#345da4;color:#345da4;text-decoration:none!important}.menu-root~b{border:1px solid transparent;display:inline-block;margin-right:.1em;padding:.5em .7em}'
 
-  function hasOwnProperty(object, property) {
-    return Object.prototype.hasOwnProperty.call(object, property)
-  }
-
   const css_248z =
     ".tags-row{padding:3px 0 0}.tags-row-tag{background-color:#efefef;border:1px solid #cacaca;border-radius:5px;display:inline-block;margin:2px 5px;padding:5px;position:relative;text-decoration:none}.tags-row-tag:hover{border-color:#345da4;color:#345da4;text-decoration:none!important}.tags-row-tag:nth-child{margin-left:0}.tag-with-icon{padding-left:25px}.tag-with-icon:before{background-position:50%;background-repeat:no-repeat;background-size:contain;border:1px solid #cacaca;border-radius:100%;box-sizing:border-box;content:\"\";height:16px;left:5px;position:absolute;top:50%;transform:translateY(-50%);width:16px}.icon-en:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23F0F0F0'/%3E%3Cpath d='M52.92 100.142c-20.11 26.163-35.272 56.318-44.1 89.077h133.177L52.92 100.14zm450.26 89.078c-8.828-32.76-23.992-62.914-44.1-89.077l-89.075 89.076H503.18zM8.82 322.784c8.83 32.758 23.992 62.913 44.1 89.075l89.074-89.076H8.82zM411.858 52.92c-26.163-20.108-56.317-35.27-89.076-44.1v133.176l89.076-89.075zM100.142 459.08c26.163 20.108 56.318 35.27 89.076 44.1V370.006l-89.076 89.074zM189.217 8.82c-32.758 8.83-62.913 23.992-89.075 44.1l89.075 89.075V8.82zm133.566 494.36c32.758-8.83 62.913-23.992 89.075-44.1l-89.075-89.075V503.18zm47.222-180.396 89.075 89.076c20.108-26.162 35.272-56.318 44.1-89.076H370.006z' fill='%230052B4'/%3E%3Cg fill='%23D80027'%3E%3Cpath d='M509.833 222.61h-220.44V2.166a258.478 258.478 0 0 0-66.783.001v220.44H2.166a258.478 258.478 0 0 0 .001 66.783h220.44v220.443a258.335 258.335 0 0 0 66.783 0v-220.44h220.443A258.583 258.583 0 0 0 512 256c0-11.317-.744-22.46-2.167-33.39z'/%3E%3Cpath d='M322.783 322.784 437.02 437.02a256.914 256.914 0 0 0 15.047-16.435l-97.802-97.802h-31.482zm-133.566 0h-.002L74.98 437.02a256.914 256.914 0 0 0 16.435 15.047l97.802-97.804v-31.48zm0-133.564v-.003L74.98 74.98a256.914 256.914 0 0 0-15.047 16.435l97.803 97.803h31.48zm133.566 0L437.02 74.98a256.605 256.605 0 0 0-16.435-15.046l-97.802 97.803v31.482z'/%3E%3C/g%3E%3C/svg%3E\")}.icon-ja:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23F0F0F0'/%3E%3Ccircle cx='256' cy='256' r='111.304' fill='%23D80027'/%3E%3C/svg%3E\")}.icon-ru:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23F0F0F0'/%3E%3Cpath d='M496.077 345.043C506.367 317.31 512 287.313 512 256s-5.632-61.31-15.923-89.043H15.923C5.633 194.69 0 224.687 0 256s5.633 61.31 15.923 89.043L256 367.303l240.077-22.26z' fill='%230052B4'/%3E%3Cpath d='M256 512c110.07 0 203.906-69.472 240.077-166.957H15.923C52.093 442.528 145.93 512 256 512z' fill='%23D80027'/%3E%3C/svg%3E\")}.icon-zh:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-49 141 512 512'%3E%3Ccircle cx='207' cy='397' r='256' style='fill:%23d80027'/%3E%3Cpath d='m91.1 296.8 22.1 68h71.5l-57.8 42.1 22.1 68-57.9-42-57.9 42 22.2-68-57.9-42.1H69zm163.4 240.7-16.9-20.8-25 9.7 14.5-22.5-16.9-20.9 25.9 6.9 14.6-22.5 1.4 26.8 26 6.9-25.1 9.6zm33.6-61 8-25.6-21.9-15.5 26.8-.4 7.9-25.6 8.7 25.4 26.8-.3-21.5 16 8.6 25.4-21.9-15.5zm45.3-147.6L321.6 353l19.2 18.7-26.5-3.8-11.8 24-4.6-26.4-26.6-3.8 23.8-12.5-4.6-26.5 19.2 18.7zm-78.2-73-2 26.7 24.9 10.1-26.1 6.4-1.9 26.8-14.1-22.8-26.1 6.4 17.3-20.5-14.2-22.7 24.9 10.1z' style='fill:%23ffda44'/%3E%3C/svg%3E\")}.icon-es:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M0 256c0 31.314 5.633 61.31 15.923 89.043L256 367.303l240.077-22.26C506.367 317.31 512 287.313 512 256s-5.633-61.31-15.923-89.043L256 144.697l-240.077 22.26C5.633 194.69 0 224.687 0 256z' fill='%23FFDA44'/%3E%3Cpath d='M496.077 166.957C459.907 69.473 366.07 0 256 0S52.094 69.473 15.923 166.957h480.154zM15.923 345.043C52.093 442.527 145.93 512 256 512s203.906-69.473 240.077-166.957H15.923z' fill='%23D80027'/%3E%3C/svg%3E\")}.icon-pt:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M0 256c0 110.07 69.472 203.905 166.955 240.076L189.217 256 166.955 15.922C69.472 52.095 0 145.93 0 256z' fill='%236DA544'/%3E%3Cpath d='M512 256C512 114.616 397.384 0 256 0c-31.314 0-61.31 5.633-89.045 15.923v480.154C194.69 506.367 224.685 512 256 512c141.384 0 256-114.616 256-256z' fill='%23D80027'/%3E%3Ccircle cx='166.957' cy='256' r='89.043' fill='%23FFDA44'/%3E%3Cpath d='M116.87 211.478v55.652c0 27.662 22.424 50.087 50.087 50.087s50.087-22.424 50.087-50.087v-55.652H116.87z' fill='%23D80027'/%3E%3Cpath d='M166.957 283.826c-9.206 0-16.696-7.49-16.696-16.696v-22.26h33.392v22.26c0 9.206-7.49 16.696-16.695 16.696z' fill='%23F0F0F0'/%3E%3C/svg%3E\")}.icon-de:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M15.923 345.043C52.093 442.527 145.93 512 256 512s203.906-69.473 240.077-166.957L256 322.783l-240.077 22.26z' fill='%23FFDA44'/%3E%3Cpath d='M256 0C145.93 0 52.094 69.472 15.923 166.957L256 189.217l240.077-22.26C459.907 69.47 366.07 0 256 0z'/%3E%3Cpath d='M15.923 166.957C5.633 194.69 0 224.687 0 256s5.633 61.31 15.923 89.043h480.155C506.368 317.31 512 287.313 512 256s-5.632-61.31-15.923-89.043H15.923z' fill='%23D80027'/%3E%3C/svg%3E\")}.icon-fr:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23f0f0f0'/%3E%3Cpath d='M512 256c0-110.071-69.472-203.906-166.957-240.077v480.155C442.528 459.906 512 366.071 512 256z' fill='%23d80027'/%3E%3Cpath d='M0 256c0 110.071 69.473 203.906 166.957 240.077V15.923C69.473 52.094 0 145.929 0 256z' fill='%230052b4'/%3E%3C/svg%3E\")}.icon-ko:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='256' fill='%23f0f0f0'/%3E%3Cpath d='M345.043 256c0 22.261-39.866 77.913-89.043 77.913S166.957 278.261 166.957 256c0-49.178 39.866-89.043 89.043-89.043s89.043 39.865 89.043 89.043z' fill='%23d80027'/%3E%3Cpath d='M345.043 256c0 49.178-39.866 89.043-89.043 89.043S166.957 305.178 166.957 256' fill='%230052b4'/%3E%3Cpath d='m350.442 334.705 23.61-23.61 15.741 15.74-23.61 23.61zm-39.357 39.355 23.61-23.612 15.741 15.741-23.61 23.611zm86.585 7.857 23.611-23.61 15.74 15.74-23.61 23.61zm-39.356 39.361 23.61-23.61 15.741 15.74-23.61 23.611zm15.741-62.965 23.61-23.61 15.741 15.74-23.61 23.61zm-39.346 39.354 23.61-23.61 15.741 15.74-23.61 23.611zm62.969-220.377-62.963-62.963 15.741-15.74 62.962 62.962zm-62.965-15.732-23.61-23.61 15.74-15.74 23.61 23.61zm39.347 39.349-23.61-23.611 15.74-15.74 23.61 23.61zm7.855-86.571-23.61-23.611 15.74-15.741 23.61 23.61zm39.368 39.352-23.611-23.61 15.74-15.741 23.612 23.61zm-330.56 204.63 62.962 62.962-15.74 15.74-62.963-62.961zm62.957 15.732 23.611 23.611-15.74 15.74-23.61-23.61zm-39.35-39.347 23.611 23.611-15.74 15.741-23.611-23.61zm23.613-23.612 62.962 62.963-15.74 15.74-62.963-62.962zM153.684 90.72 90.72 153.683l-15.74-15.741 62.962-62.963zm23.603 23.605-62.963 62.963-15.74-15.741 62.962-62.962zm23.625 23.622-62.962 62.962-15.74-15.74 62.962-62.962z'/%3E%3C/svg%3E\")}.icon-in-progress:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cdefs%3E%3CclipPath clipPathUnits='userSpaceOnUse' id='a'%3E%3Cpath style='fill:%23262425' d='M0 100h500v100H0z'/%3E%3C/clipPath%3E%3CclipPath clipPathUnits='userSpaceOnUse' id='b'%3E%3Cpath style='fill:%23262425' d='M0 300h500v100H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3Ccircle cy='353.553' r='250' style='fill:%23ebb531' transform='rotate(-45)'/%3E%3Ccircle cx='250' cy='250' r='250' style='fill:%23262425' clip-path='url(%23a)' transform='rotate(-45 250 250)'/%3E%3Ccircle cx='250' cy='250' r='250' style='fill:%23262425' clip-path='url(%23b)' transform='rotate(-45 250 250)'/%3E%3C/svg%3E\")}.icon-dimension:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg height='24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E\");border-width:0}.icon-cen:before{background-image:url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAA9AAAAPQAUrNa1AAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTnU1rJkAAAAT0lEQVQ4T2P4fW6uAzJ+Mav6CD6Mrn44GPDr3JzDyPjLvLr/KHguKkZXPxwN+NBX/h8F96JidPXDwQD0hPF9RfcxFLy0CwWjqx/yBsx1AAAIrOl/m8CdZwAAAABJRU5ErkJggg==\")}.icon-uncen:before{background-image:url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 58 58'%3E%3Ccircle cx='29' cy='29' r='29' fill='%23fbce9d'/%3E%3Cpath d='M43.993 37.703c.004-.135.006-.271.007-.405.005-1.052-.495-2.022-1.239-2.765-1.245-1.243-1.678-3.17-1.298-4.89.194-.879-.007-1.794-.452-2.577-2.198-3.868-5.215-7.903-7.674-10.962a5.55 5.55 0 0 0-8.659-.003c-2.485 3.088-5.539 7.176-7.741 11.095-.437.777-.533 1.673-.387 2.552.279 1.681-.2 3.51-1.438 4.68a3.545 3.545 0 0 0-1.089 2.508l-.002.179c-.008 1.28.582 2.542 1.647 3.251 1.682 1.121 2.345 3.278 1.992 5.219a3.703 3.703 0 0 0 .784 3.025C20.8 51.443 24.219 54.267 29.01 57c5.142-2.933 8.708-5.97 11.071-9.012.639-.823.985-1.868.856-2.902-.208-1.666.319-3.439 1.581-4.552.835-.736 1.442-1.718 1.475-2.831z' fill='%23f98d85'/%3E%3Cpath d='M24.679 16.101c2.228-2.769 6.432-2.767 8.658.003 1.515 1.884 3.24 4.14 4.856 6.498C38.912 10.427 29.011 1 29.011 1s-9.896 9.422-9.183 21.593a106.439 106.439 0 0 1 4.851-6.492z' fill='%23ea6248'/%3E%3Cpath d='M31.853 14.812A4 4 0 1 0 25.011 12c0 1.095.442 2.086 1.155 2.808a5.564 5.564 0 0 1 5.687.004z' fill='%23c64646'/%3E%3Cpath d='M29.011 18s-20.75 19.75 0 39c20.75-19.25 0-39 0-39z' fill='%23ea6248'/%3E%3Cpath d='m31.171 48.395-.956 1.148a1.58 1.58 0 0 1-2.429 0l-.956-1.148A12.203 12.203 0 0 1 24 40.581V35.16A3.16 3.16 0 0 1 27.16 32h3.681a3.16 3.16 0 0 1 3.16 3.16v5.421a12.214 12.214 0 0 1-2.83 7.814z' fill='%23bf5a45'/%3E%3Cpath d='M29 40c-2.109 0-3.91 1.438-4.644 3.471a12.195 12.195 0 0 0 2.473 4.924l.956 1.148a1.58 1.58 0 0 0 2.429 0l.956-1.148a12.195 12.195 0 0 0 2.473-4.924C32.91 41.438 31.109 40 29 40z' fill='%23f98d85'/%3E%3C/svg%3E\")}.icon-ptcen:before{background-image:url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAA9AAAAPQAUrNa1AAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTnU1rJkAAABqElEQVQ4T5WTSy8DURTHx0fpxjeRImHBxmOBikeipSvxqBShlWqpjUbTJiRlw05YeWzEhpadxIaFdKFCVDLTubP4u+eYmc5UJbX4Tf5zXvfec89VALio3KebjXx20bjLHmun6yWCNNnIVxvv/GkS+WzQKGRVCcR1Cm9TXQxpspGPYijWyrOTjULmxAxiPpN+PHR7GdJOH8VaRbgAVfV4PPgP5k4UPnO9gEagXIWaU8/ZCLK5YYU77DqfbOB+AlpkHq/DbQxpkUu4YhiZq0hRdBkvUtATq/iY6serr5UhTTZxbt+GRfFXAXGUhEqry8SXoR9Iq5E56dtyJhOyQM0R9O01fIUCeBr04rKvhSH9NT8BPR1zJptHoKmzDDcZ6FsRlGfH8ThQLUC6PDMGfTPCMY4C4Z/RNaePEIdJuZofz752lJamGdK0A3GwUU2WOXyN1iDZjqsdaNEFlEY6oMaWGdJaNARxVm2iPUj0kbhGWezG8T7Zi2JwgHkP9EDsxWHcWtuvGWWriLkTVfYFldwaSqOdDGmz+J+PyYZ7Yj5nNbdSJvim6j5nKN+A2Me46jRxowAAAABJRU5ErkJggg==\")}"
 
@@ -508,7 +512,7 @@
 
         const tagkey = tag.toLowerCase()
 
-        if (hasOwnProperty(TAG_ICON_MAP, tagkey)) {
+        if (Object.hasOwn(TAG_ICON_MAP, tagkey)) {
           className = `${className} tag-with-icon icon-${TAG_ICON_MAP[tagkey]}`
         }
 
