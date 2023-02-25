@@ -1,12 +1,14 @@
 # user-scripts
 
-[![JavaScript Style Guide][standard-image]][standard-url] [![Build Status][travis-image]][travis-url]
+[![JavaScript Style Guide][standard-image]][standard-url]
 
-User scripts for Tampermonkey and ~~Greasemonkey~~
+User scripts for Tampermonkey and Greasemonkey (not tested yet)
 
 # Image Viewer
 
 [![IV file size][iv-size]][iv-url] [![IV OpenUserJS][open-user-js-image]][iv-open-user-js-url] [![IV GreasyFork][greasy-fork-image]][iv-greasy-fork-url]
+
+[![CHANGELOG][changelog-image]](./image-viewer/CHANGELOG.md)
 
 View full-size images from image hosts (e.g. Fastpic) w/o leaving the page or on a new tab w/o ads. Some image hosts disallow hotlinking. Such image host links are opened in new tab
 
@@ -34,6 +36,8 @@ Available through the "Settings" script command at the Tampermonkey menu.
 
 [![JRDB file size][jrdb-size]][jrdb-url] [![JRDB OpenUserJS][open-user-js-image]][jrdb-open-user-js-url] [![JRDB GreasyFork][greasy-fork-image]][jrdb-greasy-fork-url]
 
+[![CHANGELOG][changelog-image]](./joyreactor-download-button/CHANGELOG.md)
+
 - Shows image download link on hover
 - Makes gif image link downloadable
 
@@ -42,6 +46,8 @@ Available through the "Settings" script command at the Tampermonkey menu.
 # Pornolab Enhancer
 
 [![PLE file size][ple-size]][ple-url] [![PLE OpenUserJS][open-user-js-image]][ple-open-user-js-url] [![PLE GreasyFork][greasy-fork-image]][ple-greasy-fork-url]
+
+[![CHANGELOG][changelog-image]](./pornolab-enhancer/CHANGELOG.md)
 
 Improves UX
 
@@ -82,8 +88,7 @@ Disable/enable certain features. Available through the site menu link "PLE"
 - [Keep a Changelog](http://keepachangelog.com/en/1.0.0)
 - [Online regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript](https://regex101.com)
 
-[travis-image]: https://travis-ci.org/nikolay-borzov/user-scripts.svg?branch=master
-[travis-url]: https://travis-ci.org/nikolay-borzov/user-scripts
+[changelog-image]: https://img.shields.io/badge/-CHANGELOG-blue
 [greenkeeper-image]: https://badges.greenkeeper.io/nikolay-borzov/user-scripts.svg
 [greenkeeper-url]: https://greenkeeper.io/
 [standard-image]: https://img.shields.io/badge/code_style-standard-brightgreen.svg

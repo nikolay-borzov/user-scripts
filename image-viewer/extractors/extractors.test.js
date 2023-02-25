@@ -145,9 +145,8 @@ const testData = [
       'https://fastpic.org/view/117/2022/0515/b17e98658d0743e2fb723ad4789cd58f.jpg.html',
     thumbnailURL:
       'https://i117.fastpic.org/thumb/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpeg',
-    // HACK: For some reason `https.request` treated as non https by image host
     imageURL:
-      'http://i117.fastpic.org/big/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpg',
+      'https://i117.fastpic.org/big/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpg?md5=jYSTbD5_R2_CnnRubC3iVA&expires=1677193200',
   },
   {
     extractor: ['./fastpic.js', 'fastpicDirect'],
@@ -156,7 +155,7 @@ const testData = [
     thumbnailURL:
       'https://i117.fastpic.org/thumb/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpeg',
     imageURL:
-      'http://i117.fastpic.org/big/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpg',
+      'https://i117.fastpic.org/big/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpg?md5=jYSTbD5_R2_CnnRubC3iVA&expires=1677193200',
   },
   {
     extractor: ['./imagebam.js', 'imagebam'],

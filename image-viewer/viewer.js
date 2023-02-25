@@ -510,24 +510,29 @@ const events = {
       }
 
       switch (event.key) {
-        case 'ArrowRight':
+        case 'ArrowRight': {
           image.next()
           break
+        }
 
-        case 'ArrowLeft':
+        case 'ArrowLeft': {
           image.previous()
           break
+        }
 
-        case 'Escape':
+        case 'Escape': {
           image.hide()
           break
+        }
 
-        case ' ':
+        case ' ': {
           image.toggleFullHeight()
           break
+        }
 
-        default:
+        default: {
           return
+        }
       }
 
       event.preventDefault()
@@ -539,34 +544,39 @@ const events = {
    */
   mouse(event) {
     switch (event.type) {
-      case 'mousedown':
+      case 'mousedown': {
         state.dragging = true
         state.dragPosition = event.clientY
         elements.image.classList.add(CLASSES.grabbing)
         break
+      }
 
-      case 'mousemove':
+      case 'mousemove': {
         if (state.dragging) {
           elements.imageContainer.scrollTop -=
             event.clientY - state.dragPosition
           state.dragPosition = event.clientY
         }
         break
+      }
 
       case 'mouseup':
 
       // fall through
-      case 'mouseout':
+      case 'mouseout': {
         state.dragging = false
         elements.image.classList.remove(CLASSES.grabbing)
         break
+      }
 
-      case 'dblclick':
+      case 'dblclick': {
         image.toggleFullHeight()
         break
+      }
 
-      default:
+      default: {
         return
+      }
     }
 
     event.preventDefault()

@@ -20,7 +20,7 @@ module.exports = {
     browser: true,
     greasemonkey: true,
     jquery: true,
-    es2021: true,
+    es2022: true,
   },
 
   extends: [
@@ -80,6 +80,10 @@ module.exports = {
 
     // I like reduce
     'unicorn/no-array-reduce': 'off',
+    // At the moment user script is bundled as IIFE
+    'unicorn/prefer-top-level-await': 'off',
+    // `eslint-disable-next-line` is only used for third-party code (e.g. Bliss.js)
+    'unicorn/no-abusive-eslint-disable': 'off',
 
     /* eslint-plugin-import */
 
@@ -139,16 +143,6 @@ module.exports = {
         'import/no-default-export': 'off',
       },
     },
-    // Build ESM files
-    //{
-    //  files: ['build/*.js', 'rollup.config.js'],
-    //  rules: {
-    //    /* eslint-plugin-import */
-
-    //    // Require extension for imports. Required by Node.js with `type: "module"`
-    //    'import/extensions': ['error', 'always', { ignorePackages: true }],
-    //  },
-    //},
     // Test files
     {
       files: '**/*.test.js',

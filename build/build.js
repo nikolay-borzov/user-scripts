@@ -14,81 +14,92 @@ import { getConfig } from './config.js'
 
 const root = url.fileURLToPath(new URL('..', import.meta.url))
 
-async function run() {
-  const config = await getConfig()
+const config = await getConfig()
 
-  const { output, input } = createRollupOptions(config)
+const { output, input } = await createRollupOptions(config)
 
-  const buildStartMessage = `🕓 Building ${config.scriptName}...`
-  const buildFinishMessage = `✅ Building ${config.scriptName} finished!${os.EOL}`
+const buildStartMessage = `🕓 Building ${config.scriptName}...`
+const buildFinishMessage = `✅ Building ${config.scriptName} finished!${os.EOL}`
 
-  if (config.watch) {
-    const watchEmitter = watch({
-      ...input,
-      output,
-      watch: {
-        clearScreen: true,
-        chokidar: {
-          cwd: root,
-          ignoreInitial: true,
-          usePolling: true,
-          interval: 500,
-        },
+if (config.watch) {
+  const watchEmitter = watch({
+    ...input,
+    output,
+    watch: {
+      clearScreen: true,
+      chokidar: {
+        cwd: root,
+        ignoreInitial: true,
+        usePolling: true,
+        interval: 500,
       },
-    })
+    },
+  })
 
-    console.log(`Watching ${config.scriptName}`, os.EOL)
+  console.log(`Watching ${config.scriptName}`, os.EOL)
 
-    if (watchEmitter) {
-      watchEmitter.on('event', (event) => {
-        switch (event.code) {
-          case 'START':
-            console.log(buildStartMessage)
-            break
-
-          case 'END':
-            console.log(buildFinishMessage)
-            break
-
-          case 'BUNDLE_END':
-            event.result.close()
-            break
-
-          case 'ERROR':
-            console.log(`Watcher error: ${event.error}`)
-            break
+  if (watchEmitter) {
+    watchEmitter.on('event', (event) => {
+      switch (event.code) {
+        case 'START': {
+          console.log(buildStartMessage)
+          break
         }
-      })
-    }
-  } else {
-    try {
-      console.log(buildStartMessage)
 
-      const bundle = await rollup(input)
+        case 'END': {
+          console.log(buildFinishMessage)
+          break
+        }
 
-      await bundle.write(output)
-      await bundle.close()
+        case 'BUNDLE_END': {
+          event.result.close()
+          break
+        }
 
-      console.log(buildFinishMessage)
-    } catch (error) {
-      console.error(error)
-    }
+        case 'ERROR': {
+          console.log(`Watcher error: ${event.error}`)
+          break
+        }
+      }
+    })
+  }
+} else {
+  try {
+    console.log(buildStartMessage)
+
+    const bundle = await rollup(input)
+
+    await bundle.write(output)
+    await bundle.close()
+
+    console.log(buildFinishMessage)
+  } catch (error) {
+    console.error(error)
   }
 }
 
 /**
  * @param {import('./config').ScriptBuildConfig} config
- * @returns {{ input: RollupOptions; output: OutputOptions }}
+ * @returns {Promise<{ input: RollupOptions; output: OutputOptions }>}
  */
-function createRollupOptions({ scriptName, rollupOptions }) {
+async function createRollupOptions({ scriptName, rollupOptions }) {
   const scriptDirectory = path.resolve(root, `${scriptName}`)
 
   const commonPlugins = getCommonPlugins(scriptDirectory)
 
+  const resolvedPlugins = await rollupOptions.plugins
+
   return {
     input: {
       ...rollupOptions,
-      plugins: [...(rollupOptions.plugins ?? []), ...commonPlugins],
+      plugins: [
+        ...(Array.isArray(resolvedPlugins)
+          ? resolvedPlugins
+          : resolvedPlugins
+          ? [resolvedPlugins]
+          : []),
+        ...commonPlugins,
+      ],
       input: path.resolve(scriptDirectory, 'index.js'),
     },
     output: {
@@ -99,5 +110,3 @@ function createRollupOptions({ scriptName, rollupOptions }) {
     },
   }
 }
-
-run()

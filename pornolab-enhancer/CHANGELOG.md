@@ -1,35 +1,47 @@
 # Pornolab Enhancer Changelog
 
+<!--
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+### BREAKING CHANGES
+-->
+
 ## 1.12.3 - 2022-05-14
+
+### Changed
 
 - Update Bliss.js to v1.0.6
 
 ## 1.12.2 - 2018-08-23
 
-## Fixed
+### Changed
 
-- Formatting
+- [Internal] Formatting
 
 ## 1.12.1 - 2018-08-23
 
-## Changed
+### Changed
 
 - Rebuild with improved Greasemonkey 4 compatibility
 
 ## 1.12.0 - 2018-04-22
 
-## Removed
+### Removed
 
 - Move `Image view` to a separate user script
 
 ## 1.11.3 - 2018-04-12
 
-## Added
+### Added
 
 - [Tags] 544p
 - [Image view] Support `imageban.ru`, `picturelol.com`
 
-## Fixed
+### Fixed
 
 - [Image view] Top align image links
 - [Config] Fix `Apply` handling
@@ -37,30 +49,30 @@
 
 ## 1.11.2 - 2018-01-20
 
-## Added
+### Added
 
 - [Image view] Direct `fastpic.ru` URLs support
 
 ## 1.11.1 - 2018-01-20
 
-## Fixed
-
-- [Image view] ImageTwist URL extracting
-
-## Added
+### Added
 
 - [Image view] Support `imgbox.com`, `payforpic.ru`
 
+### Fixed
+
+- [Image view] ImageTwist URL extracting
+
 ## 1.11.0 - 2018-01-20
 
-## Fixed
+### Fixed
 
 - Icon path
 - [Tags] `•` as a tag separator
 
 ## 1.10.0 - 2018-01-16
 
-## Changed
+### Changed
 
 - Refactoring: BEM (kind of), JS and folders structure
 - [Image view] Replace loading and error icons
@@ -70,85 +82,85 @@
 
 ## 1.9.3 - 2018-01-08
 
-## Fixed
+### Fixed
 
 - [Config] Fix for Firefox
 - Update icon
 
 ## 1.9.2 - 2018-01-08
 
-## Changed
+### Changed
 
 - [Config] Align styles with existing menus
 - [Config] Use existing menus behavior
 
 ## 1.9.1 - 2018-01-06
 
-## Changed
+### Changed
 
 - [Find similar] Scroll to the search options block
 
 ## 1.9.0 - 2018-01-05
 
-## Added
+### Added
 
 - [Image view] Image view close, next, previous, toggle full height buttons
 
-## Fixed
-
-- [Image view] Image view image scaling
-
-## Changed
+### Changed
 
 - Wire up `postcss`
 - Styles refactoring
 
+### Fixed
+
+- [Image view] Image view image scaling
+
 ## 1.8.5 - 2017-12-30
 
-## Added
+### Added
 
 - [Tags] ptcen, cn, ko, 640p icons
 
 ## 1.8.4 - 2017-12-30
 
-## Added
+### Added
 
 - [Tags] cen/uncen icons
 
 ## 1.8.3 - 2017-12-30
 
-## Fixed
+### Fixed
 
 - [Config] Pointer cursor for PLE config link
 - [Find similar] Take into account search term max length
 
 ## 1.8.2 - 2017-12-27
 
-## Added
+### Added
 
 - [Image view] Image hosts support: nikapic.ru, imgtaxi.com
 
-## Fixed
+### Fixed
 
-- [Image view] Extracting image URL for fastpic for some cases
+- [Image view] Extracting image URL for Fastpic for some cases
 
 ## 1.8.1 - 2017-12-26
 
-## Changed
+### Changed
 
 - [Image view] Remove forbidden host icon
 
-## Fixed
+### Fixed
 
 - [Image view] Extracting image URL from image hosting page
 
 ## 1.8.0 - 2017-12-25
 
-## Added
+### Added
 
 - [Config] Disable/enable certain features. Available through menu link "PLE"
 
-## Changed
+### Changed
 
 - Icon
 

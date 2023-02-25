@@ -34,7 +34,7 @@
     часа: 'hours',
     часов: 'hours',
     час: 'hour',
-    минутa: 'minute',
+    минута: 'minute',
     минуты: 'minutes',
     минут: 'minutes',
     месяца: 'months',
@@ -102,39 +102,47 @@
 
   function translate(token, value, $container) {
     switch (token) {
-      case TOKENS.value:
+      case TOKENS.value: {
         $container.val(value)
         break
+      }
 
-      case TOKENS.placeholder:
+      case TOKENS.placeholder: {
         $container.attr('placeholder', value)
         break
+      }
 
-      case TOKENS.title:
+      case TOKENS.title: {
         $container.attr('title', value)
         break
+      }
 
-      case TOKENS.textNodeIndexMap:
+      case TOKENS.textNodeIndexMap: {
         replaceTextNodes($container, value)
         break
+      }
 
-      case TOKENS.replaceMap:
+      case TOKENS.replaceMap: {
         replaceText($container, value)
         break
+      }
 
-      case TOKENS.replaceSubForum:
+      case TOKENS.replaceSubForum: {
         replaceSubForum(value)
         break
+      }
 
-      case TOKENS.dateTime:
+      case TOKENS.dateTime: {
         replaceDateTime(value)
         break
+      }
 
-      case TOKENS.function:
+      case TOKENS.function: {
         value($container)
         break
+      }
 
-      default:
+      default: {
         if ($.isPlainObject(value)) {
           $container = $container ? $(token, $container) : $(token)
 
@@ -151,6 +159,7 @@
           if ($element.length > 0) $element.html(value)
         }
         break
+      }
     }
   }
 
