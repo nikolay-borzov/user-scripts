@@ -80,10 +80,10 @@ const requestStub = async ({ url, cookie }) => {
 /**
  * @typedef {object} ExtractorTest
  * @property {string} [testName]
- * @property {[string, string]} extractor Exctractor import path and name.
+ * @property {[string, string]} extractor Extractor import path and name.
  * @property {string} linkURL Image host image view link.
  * @property {string} thumbnailURL
- * @property {string} imageURL Expected full image URL.
+ * @property {string | RegExp} imageURL Expected full image URL.
  * @property {boolean} [only] Use `test.only`.
  */
 
@@ -120,7 +120,11 @@ function testExtractor({
       extractor
     )
 
-    t.is(url, imageURL)
+    if (typeof imageURL === 'string') {
+      t.is(url, imageURL)
+    } else {
+      t.regex(url, imageURL)
+    }
   })
 }
 
@@ -146,7 +150,7 @@ const testData = [
     thumbnailURL:
       'https://i117.fastpic.org/thumb/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpeg',
     imageURL:
-      'https://i117.fastpic.org/big/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpg?md5=jYSTbD5_R2_CnnRubC3iVA&expires=1677193200',
+      /https:\/\/i117\.fastpic\.org\/big\/2022\/0515\/8f\/b17e98658d0743e2fb723ad4789cd58f\.jpg\?md5=.{22}&expires=\d{10}/,
   },
   {
     extractor: ['./fastpic.js', 'fastpicDirect'],
@@ -155,7 +159,7 @@ const testData = [
     thumbnailURL:
       'https://i117.fastpic.org/thumb/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpeg',
     imageURL:
-      'https://i117.fastpic.org/big/2022/0515/8f/b17e98658d0743e2fb723ad4789cd58f.jpg?md5=jYSTbD5_R2_CnnRubC3iVA&expires=1677193200',
+      /https:\/\/i117\.fastpic\.org\/big\/2022\/0515\/8f\/b17e98658d0743e2fb723ad4789cd58f\.jpg\?md5=.{22}&expires=\d{10}/,
   },
   {
     extractor: ['./imagebam.js', 'imagebam'],
@@ -194,6 +198,22 @@ const testData = [
     thumbnailURL: 'https://img165.imagetwist.com/th/33192/4clvkzs1b6wa.jpg',
     imageURL:
       'https://img165.imagetwist.com/i/33192/4clvkzs1b6wa.jpg/horrorvillian.jpg',
+  },
+  {
+    testName: 'imagetwist (Legacy)',
+    extractor: ['./imagetwist', 'imagetwist'],
+    linkURL: 'https://imagetwist.com/4clvkzs1b6wa/horrorvillian.jpg.html',
+    thumbnailURL: 'https://img165.imagetwist.com/th/33192/4clvkzs1b6wa.jpg',
+    imageURL:
+      'https://img165.imagetwist.com/i/33192/4clvkzs1b6wa.jpg/horrorvillian.jpg',
+  },
+  {
+    testName: 'imagetwist (Different length extension)',
+    extractor: ['./imagetwist', 'imagetwist'],
+    linkURL: 'https://imagetwist.com/h6malhv2wnot/horrorvillian.jpeg',
+    thumbnailURL: 'https://img119.imagetwist.com/th/54675/h6malhv2wnot.jpg',
+    imageURL:
+      'https://img119.imagetwist.com/i/54675/h6malhv2wnot.jpeg/horrorvillian.jpeg',
   },
   {
     testName: 'imagetwist (Subdomain)',

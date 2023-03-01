@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Image Viewer
-// @version      1.3.0
+// @version      1.3.1
 // @description  View full image without leaving the page or on a new tab without ads
 // @namespace    https://github.com/nikolay-borzov
 // @author       nikolay-borzov
@@ -274,12 +274,14 @@
 
     async getURL(link) {
       const imageName = link.url.split('/').pop()?.replace('.html', '')
-      const extension = imageName?.split('.').pop() ?? ''
+      const imageExtension = imageName?.split('.').pop() ?? ''
+
+      const thumbnailExtension = link.thumbnailURL.split('.').pop() ?? ''
       const imageUrl = link.thumbnailURL
         .replace('/th/', '/i/')
-        .slice(0, -extension.length)
+        .slice(0, -thumbnailExtension.length)
 
-      return `${imageUrl}${extension}/${imageName}`
+      return `${imageUrl}${imageExtension}/${imageName}`
     },
   }
 

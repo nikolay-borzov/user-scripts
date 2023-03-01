@@ -4,7 +4,7 @@ export default {
    */
   '**/*.?(c)js': (filenames) => [
     `eslint --cache --fix ${filenames.join(' ')}`,
-    // 'ava --fail-fast', TODO: uncomment when testing is implemented
+    'ava --node-arguments="--loader=esmock" --fail-fast',
   ],
   // Format supported non JavaScript files
   '**/*.!(?(c)js)': 'prettier --write --ignore-unknown',

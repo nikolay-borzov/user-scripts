@@ -6,13 +6,16 @@ export const imagetwist = {
   viewMode: 'origin-download',
 
   async getURL(link) {
+    // Legacy links have `.html` at the end
     const imageName = link.url.split('/').pop()?.replace('.html', '')
-    const extension = imageName?.split('.').pop() ?? ''
+    const imageExtension = imageName?.split('.').pop() ?? ''
+
+    const thumbnailExtension = link.thumbnailURL.split('.').pop() ?? ''
     const imageUrl = link.thumbnailURL
       .replace('/th/', '/i/')
-      .slice(0, -extension.length)
+      .slice(0, -thumbnailExtension.length)
 
-    return `${imageUrl}${extension}/${imageName}`
+    return `${imageUrl}${imageExtension}/${imageName}`
   },
 }
 

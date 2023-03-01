@@ -10,6 +10,12 @@
 ### BREAKING CHANGES
 -->
 
+### 1.3.1 - 2023-03-02
+
+### Fixed
+
+- `imagetwist` image URL extracting for case when uploaded image has `.jpeg` extensions
+
 ## 1.3.0 - 2022-05-20
 
 ### Added

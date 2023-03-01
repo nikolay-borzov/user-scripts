@@ -2,7 +2,7 @@
 
 [![JavaScript Style Guide][standard-image]][standard-url]
 
-User scripts for Tampermonkey and Greasemonkey (not tested yet)
+User scripts for Tampermonkey and other user script managers (not tested yet)
 
 # Image Viewer
 
@@ -31,6 +31,16 @@ View full-size images from image hosts (e.g. Fastpic) w/o leaving the page or on
 ## Config
 
 Available through the "Settings" script command at the Tampermonkey menu.
+
+## Alternatives
+
+- [Imagus](https://chrome.google.com/webstore/detail/imagus/immpkjjlgappgfkkfieppnmlhakdmaab)
+- [Handy Image](https://sleazyfork.org/en/scripts/109-handy-image)
+- [Imagehost Redirect](https://sleazyfork.org/en/scripts/2641-imagehost-redirect)
+<!--
+- [PornoLab.net Thumbnail Expander](https://sleazyfork.org/en/scripts/13546-pornolab-net-thumbnail-expander)
+- [pornolab.net Full Size Images](https://greasyfork.org/en/scripts/32681-pornolab-net-full-size-images)
+  -->
 
 # JoyReactor Download Button
 
